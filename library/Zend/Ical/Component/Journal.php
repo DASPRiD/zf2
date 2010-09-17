@@ -14,6 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
@@ -22,52 +23,18 @@
 /**
  * @namespace
  */
-namespace Zend\Ical;
-
-use Zend\Ical\Component;
+namespace Zend\Ical\Component;
 
 /**
+ * Journal component
+ *
  * @category   Zend
  * @package    Zend_Ical
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Ical
+class Journal
 {
-    protected $_calendars = array();
 
-    /**
-     * Add a calendar
-     *
-     * @param  Component\Calendar $calendar
-     * @return void
-     */
-    public function addCalendar(Component\Calendar $calendar)
-    {
-        $this->_calendars[] = $calendar;
-    }
-
-    /**
-     * Create an Ical object from a string
-     *
-     * @param  string $string
-     * @return Ical
-     */
-    public static function fromString($string)
-    {
-        return self::fromUri('data://text/calendar,' . $string);
-    }
-
-    /**
-     * Create an Ical object from an URI
-     *
-     * @param  string $string
-     * @return Ical
-     */
-    public static function fromUri($uri)
-    {
-        $parser = new Parser(fopen($uri, 'r'));
-
-        return $parser->parse();
-    }
 }

@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Analyzer
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
@@ -23,19 +23,18 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Analyzer;
+namespace Zend\Ical\Component;
 
 /**
+ * Timezone component
+ *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Analyzer
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Parser
+class Timezone
 {
-    public function __construct($filename = null)
-    {
 
-    }
 }
