@@ -16,7 +16,6 @@
  * @package    Zend_Ical
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -36,6 +35,12 @@ use Zend\Ical\Component;
  */
 class Parser
 {
+    /**
+     * Special component types
+     */
+    const NO_COMPONENT = 0;
+    const X_COMPONENT  = 1;
+
     /**
      * Stream resource
      *
@@ -63,6 +68,35 @@ class Parser
      * @var integer
      */
     protected $_currentPos;
+
+    /**
+     * Ical object
+     * 
+     * @var Ical
+     */
+    protected $_ical;
+
+    /**
+     * Component stack
+     *
+     * @var array
+     */
+    protected $_components;
+
+    /**
+     * Component type map
+     *
+     * @var array
+     */
+    protected $_componentTypes = array(
+        'VCALENDAR' => 'Component\Calendar',
+        'VALARM'    => 'Component\Alarm',
+        'VEVENT'    => 'Component\Event',
+        'VFREEBUSY' => 'Component\FreeBusy',
+        'VJOURNAL'  => 'Component\Journal',
+        'VTODO'     => 'Component\Todo',
+        'VTIMEZONE' => 'Component\Timezone'
+    );
 
     /**
      * Create a new lexer with an open file stream.
@@ -106,118 +140,106 @@ class Parser
      */
     public function parse()
     {
-        $ical          = new Ical();
-        $calendar      = null;
-        $component     = null;
-        $componentName = null;
-        $buffer        = null;
+        $this->_ical       = new Ical();
+        $this->_components = new SplStack();
 
         while (($this->_rawData = $this->_getNextUnfoldedLine() !== null)) {
-            $this->_currentPos = 0;
-
-            $propertyName = $this->_getPropertyName();
-
-            if ($propertyName === null) {
-                // error?
-            }
-
-            // If the property name is BEGIN or END, we are actually starting or
-            // ending a new component
-            
-            if (strcasecmp($match['name'], 'BEGIN') === 0) {
-                $componentName = $this->_getNextValue();
-            } elseif (strcasecmp($match['name'], 'END') === 0) {
-                $componentName = $this->_getNextValue();
-            }
-
-            /*
-            componentBegin:
-                if (!preg_match('(\G:(?<component>' . $this->_regex['value'] . ')\r\n)S', $rawData, $match, $currentPos)) {
-                    goto inputError;
-                }
-
-                $currentPos += strlen($match[0]);
-
-                if ($calendar === null) {
-                    if (strcasecmp($match['component'], 'VCALENDAR') === 0) {
-                        $calendar = new Component\Calendar();
-
-                        continue;
-                    } else {
-                        goto inputError;
-                    }
-                }
-
-                $componentName = strtoupper($match['component']);
-
-                switch ($componentName) {
-                    case 'VALARM':
-                        $component = new Component\Alarm();
-                        break;
-
-                    case 'VEVENT':
-                        $component = new Component\Event();
-                        break;
-
-                    case 'VFREEBUSY':
-                        $component = new Component\FreeBusy();
-                        break;
-
-                    case 'VJOURNAL':
-                        $component = new Component\Journal();
-                        break;
-
-                    case 'VTIMEZONE':
-                        $component = new Component\Timezone();
-                        break;
-
-                    case 'VTODO':
-                        $component = new Component\Todo();
-                        break;
-
-                    default:
-                        goto inputError;
-                }
-
-                continue;
-
-            componentEnd:
-                if (!preg_match('(\G:(?<component>' . $this->_regex['value'] . ')\r\n)S', $rawData, $match, $currentPos)) {
-                    goto inputError;
-                }
-
-                $currentPos += strlen($match[0]);
-
-                if ($component === null) {
-                    if (strcasecmp($match['component'], 'VCALENDAR') === 0) {
-                        $ical->addCalendar($calendar);
-                        $calendar = null;
-                        continue;
-                    } else {
-                        goto inputError;
-                    }
-                }
-
-                if (strtoupper($match['component']) !== $componentName) {
-                    goto inputError;
-                }
-
-                $calendar->addComponent($component);
-                $component     = null;
-                $componentName = null;
-                
-                continue;
-
-            inputError:
+            if (!$this->_parseLine()) {
                 throw new InvalidInputException('Unexpected data in input stream');
-            */
+            }
         }
 
-        if ($calendar !== null) {
+        if (count($this->_components) > 0) {
             throw new InvalidInputException('Unexpected end in input stream');
         }
 
-        return $ical;
+        return $this->_ical;
+    }
+
+    /**
+     * Parse a single line
+     *
+     * @return boolean
+     */
+    protected function _parseLine()
+    {
+        $this->_currentPos = 0;
+        $propertyName      = $this->_getPropertyName();
+
+        if ($propertyName === null) {
+            return false;
+        }
+
+        // If the property name is BEGIN or END, we are actually starting or
+        // ending a new component
+        if (strcasecmp($match['name'], 'BEGIN') === 0) {
+            return $this->_handleComponentBegin();
+        } elseif (strcasecmp($match['name'], 'END') === 0) {
+            return $this->_handleComponentEnd();
+        }
+    }
+
+    /**
+     * Handle the beginning of a component
+     *
+     * @return boolean
+     */
+    protected function _handleComponentBegin()
+    {
+        $componentName = $this->_getNextValue();
+        $componentType = $this->_getComponentType();
+
+        if ($componentType === self::NO_COMPONENT) {
+            return false;
+        } elseif ($componentType === self::X_COMPONENT) {
+            $component = $this->_newXComponent($componentName);
+        } else {
+            $component = $this->_newComponent($componentType);
+        }
+
+        $this->_components->push($component);
+
+        return true;
+    }
+
+    /**
+     * Handle the ending of a component
+     *
+     * @return boolean
+     */
+    protected function _handleComponentEnd()
+    {
+        $componentName    = $this->_getNextValue();
+        $componentType    = $this->_getComponentType();
+        $currentComponent = $this->_components->pop();
+
+        if ($componentType === self::NO_COMPONENT) {
+            return false;
+        } elseif ($componentType === self::X_COMPONENT) {
+            if ($componentType !== $currentComponent->getName()) {
+                return false;
+            }
+            
+            $component = $this->_newXComponent($componentName);
+        } else {
+            if (!$currentComponent instanceof $componentType) {
+                return false;
+            }
+
+            $component = $this->_newComponent($componentType);
+        }
+
+        if ($componentType === 'Component/Calendar') {
+            if (count($this->_components) > 0) {
+                return false;
+            }
+
+            $this->_ical->addCalendar($currentComponent);
+        } else {
+            $this->_components->top()->addComponent($currentComponent);
+        }
+
+        return true;
     }
 
     /**
@@ -263,6 +285,49 @@ class Parser
     }
 
     /**
+     * Get the component type for a component
+     *
+     * @param  string $component
+     * @return mixed
+     */
+    protected function _getComponentType($component)
+    {
+        $component = strtoupper($component);
+
+        if (!in_array($component, $this->_componentTypes)) {
+            if (preg_match('(^' . $this->_regex['x-name'] . '$)', $component)) {
+                return self::X_COMPONENT;
+            }
+
+            return self::NO_COMPONENT;
+        }
+
+        return $this->_componentTypes[$componentName];
+    }
+
+    /**
+     * Get a new XName component
+     *
+     * @param  string $name
+     * @return Component\XName
+     */
+    protected function newXComponent($name)
+    {
+        return new Component\XName($name);
+    }
+
+    /**
+     * Get a new component
+     *
+     * @param  string $type
+     * @return mixed
+     */
+    protected function newComponent($type)
+    {
+        return new $type();
+    }
+
+    /**
      * Get the next unfolded line from the stream
      *
      * @return string
@@ -279,7 +344,8 @@ class Parser
             !feof($this->_stream) && $this->_buffer = fgetc($this->_stream)
             && ($buffer === ' ' || $buffer === "\t")
         ) {
-            $rawData = rtrim($rawData, "\r\n") . fgets($this->_stream);
+            $rawData       = rtrim($rawData, "\r\n") . fgets($this->_stream);
+            $this->_buffer = '';
         }
 
         return $rawData;
