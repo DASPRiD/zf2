@@ -14,6 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
+ * @subpackage Zend_Ical_Parser
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -21,15 +22,17 @@
 /**
  * @namespace
  */
-namespace Zend\Ical;
+namespace Zend\Ical\Parser;
 
-use Zend\Ical\Component;
+use Zend\Ical\Ical,
+    Zend\Ical\Component;
 
 /**
- * Ical parser inspired by libical
+ * Ical parser based on libical
  *
  * @category   Zend
  * @package    Zend_Ical
+ * @subpackage Zend_Ical_Parser
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -144,13 +147,11 @@ class Parser
         $this->_components = new SplStack();
 
         while (($this->_rawData = $this->_getNextUnfoldedLine() !== null)) {
-            if (!$this->_parseLine()) {
-                throw new InvalidInputException('Unexpected data in input stream');
-            }
+            $this->_parseLine();
         }
 
         if (count($this->_components) > 0) {
-            throw new InvalidInputException('Unexpected end in input stream');
+            throw new ParseException('Unexpected end in input stream');
         }
 
         return $this->_ical;
@@ -159,7 +160,7 @@ class Parser
     /**
      * Parse a single line
      *
-     * @return boolean
+     * @return void
      */
     protected function _parseLine()
     {
@@ -167,22 +168,38 @@ class Parser
         $propertyName      = $this->_getPropertyName();
 
         if ($propertyName === null) {
-            return false;
+            throw new ParseException('Could not find a property name, component begin or end tag');
         }
 
         // If the property name is BEGIN or END, we are actually starting or
-        // ending a new component
+        // ending a new component.
         if (strcasecmp($match['name'], 'BEGIN') === 0) {
             return $this->_handleComponentBegin();
         } elseif (strcasecmp($match['name'], 'END') === 0) {
             return $this->_handleComponentEnd();
         }
+
+        // At this point, the property name really is a property name (Not a
+        // component name), so make a new property and add it to the component.
+        if (count($this->_components) === 0) {
+            throw new ParseException('Found property name within root');
+        }
+
+        $propertyType = $this->_getPropertyType($propertyName);
+
+        if ($propertyType === self::NO_PROPERTY) {
+            throw new ParseException('Invalid property name');
+        }
+
+        $property = new Property($propertyType);
+
+        $this->_components->top()->addProperty($property);
     }
 
     /**
      * Handle the beginning of a component
      *
-     * @return boolean
+     * @return void
      */
     protected function _handleComponentBegin()
     {
@@ -190,7 +207,7 @@ class Parser
         $componentType = $this->_getComponentType();
 
         if ($componentType === self::NO_COMPONENT) {
-            return false;
+            throw new ParseException('Invalid component name');
         } elseif ($componentType === self::X_COMPONENT) {
             $component = $this->_newXComponent($componentName);
         } else {
@@ -205,7 +222,7 @@ class Parser
     /**
      * Handle the ending of a component
      *
-     * @return boolean
+     * @return void
      */
     protected function _handleComponentEnd()
     {
@@ -214,32 +231,26 @@ class Parser
         $currentComponent = $this->_components->pop();
 
         if ($componentType === self::NO_COMPONENT) {
-            return false;
+            throw new ParseException('Invalid component name');
         } elseif ($componentType === self::X_COMPONENT) {
             if ($componentType !== $currentComponent->getName()) {
-                return false;
+                throw new ParseException('Ending component does not match current component');
             }
-            
-            $component = $this->_newXComponent($componentName);
         } else {
             if (!$currentComponent instanceof $componentType) {
-                return false;
+                throw new ParseException('Ending component does not match current component');
             }
-
-            $component = $this->_newComponent($componentType);
         }
 
         if ($componentType === 'Component/Calendar') {
             if (count($this->_components) > 0) {
-                return false;
+                throw new ParseException('Calendar component found outside of root');
             }
 
             $this->_ical->addCalendar($currentComponent);
         } else {
             $this->_components->top()->addComponent($currentComponent);
         }
-
-        return true;
     }
 
     /**
