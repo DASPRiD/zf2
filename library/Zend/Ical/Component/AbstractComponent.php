@@ -25,7 +25,7 @@
 namespace Zend\Ical\Component;
 
 /**
- * Calendar component
+ * Abstract component
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -33,7 +33,15 @@ namespace Zend\Ical\Component;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Calendar extends AbstractComponent
+abstract class AbstractComponent
 {
+    public function addComponent(AbstractComponent $component)
+    {
 
+    }
+
+    public function addProperty(Property $property)
+    {
+        
+    }
 }

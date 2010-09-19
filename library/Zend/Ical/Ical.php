@@ -55,7 +55,7 @@ class Ical
      */
     public static function fromString($string)
     {
-        return self::fromUri('data://text/calendar,' . $string);
+        return self::fromUri('data:text/calendar,' . $string);
     }
 
     /**

@@ -39,10 +39,11 @@ use Zend\Ical\Ical,
 class Parser
 {
     /**
-     * Special component types
+     * Special component and property types
      */
     const NO_COMPONENT = 0;
     const X_COMPONENT  = 1;
+    const NO_PROPERTY  = 1;
 
     /**
      * Stream resource
@@ -92,13 +93,13 @@ class Parser
      * @var array
      */
     protected $_componentTypes = array(
-        'VCALENDAR' => 'Component\Calendar',
-        'VALARM'    => 'Component\Alarm',
-        'VEVENT'    => 'Component\Event',
-        'VFREEBUSY' => 'Component\FreeBusy',
-        'VJOURNAL'  => 'Component\Journal',
-        'VTODO'     => 'Component\Todo',
-        'VTIMEZONE' => 'Component\Timezone'
+        'VCALENDAR' => 'Calendar',
+        'VALARM'    => 'Alarm',
+        'VEVENT'    => 'Event',
+        'VFREEBUSY' => 'FreeBusy',
+        'VJOURNAL'  => 'Journal',
+        'VTODO'     => 'Todo',
+        'VTIMEZONE' => 'Timezone'
     );
 
     /**
@@ -133,7 +134,7 @@ class Parser
         $this->_regex['param-name']    = '(?:('. $this->_regex['x-name'] . ')|(' . $this->_regex['iana-token'] . '))';
         $this->_regex['param-value']   = '(?:'. $this->_regex['quoted-string'] . '|' . $this->_regex['param-text'] . ')';
         $this->_regex['text']          = '((?:' . $this->_regex['tsafe-char'] . '|' . $this->_regex['escaped-char'] . '|[:"])*)';
-        $this->_regex['value']         = '(?:' . $this->_regex['value-char'] . '*)';
+        $this->_regex['value']         = $this->_regex['value-char'] . '*';
     }
 
     /**
@@ -144,9 +145,9 @@ class Parser
     public function parse()
     {
         $this->_ical       = new Ical();
-        $this->_components = new SplStack();
+        $this->_components = new \SplStack();
 
-        while (($this->_rawData = $this->_getNextUnfoldedLine() !== null)) {
+        while (($this->_rawData = $this->_getNextUnfoldedLine()) !== null) {
             $this->_parseLine();
         }
 
@@ -173,9 +174,9 @@ class Parser
 
         // If the property name is BEGIN or END, we are actually starting or
         // ending a new component.
-        if (strcasecmp($match['name'], 'BEGIN') === 0) {
+        if (strcasecmp($propertyName, 'BEGIN') === 0) {
             return $this->_handleComponentBegin();
-        } elseif (strcasecmp($match['name'], 'END') === 0) {
+        } elseif (strcasecmp($propertyName, 'END') === 0) {
             return $this->_handleComponentEnd();
         }
 
@@ -191,9 +192,11 @@ class Parser
             throw new ParseException('Invalid property name');
         }
 
-        $property = new Property($propertyType);
+        $property = new Component\Property($propertyType);
 
         $this->_components->top()->addProperty($property);
+
+ 
     }
 
     /**
@@ -204,19 +207,27 @@ class Parser
     protected function _handleComponentBegin()
     {
         $componentName = $this->_getNextValue();
-        $componentType = $this->_getComponentType();
+        $componentType = $this->_getComponentType($componentName);
 
         if ($componentType === self::NO_COMPONENT) {
-            throw new ParseException('Invalid component name');
+            throw new ParseException(sprintf('Invalid component name "%s"', $componentName));
         } elseif ($componentType === self::X_COMPONENT) {
             $component = $this->_newXComponent($componentName);
         } else {
             $component = $this->_newComponent($componentType);
         }
 
-        $this->_components->push($component);
+        if ($componentType === 'Calendar') {
+            if (count($this->_components) > 0) {
+                throw new ParseException('Calendar component found outside of root');
+            }
+        } else {
+            if (count($this->_components) === 0) {
+                throw new ParseException('Component found inside root which does not belong there');
+            }
+        }
 
-        return true;
+        $this->_components->push($component);
     }
 
     /**
@@ -227,26 +238,24 @@ class Parser
     protected function _handleComponentEnd()
     {
         $componentName    = $this->_getNextValue();
-        $componentType    = $this->_getComponentType();
+        $componentType    = $this->_getComponentType($componentName);
         $currentComponent = $this->_components->pop();
 
         if ($componentType === self::NO_COMPONENT) {
-            throw new ParseException('Invalid component name');
+            throw new ParseException(sprintf('Invalid component name "%s"', $componentName));
         } elseif ($componentType === self::X_COMPONENT) {
             if ($componentType !== $currentComponent->getName()) {
-                throw new ParseException('Ending component does not match current component');
+                throw new ParseException(sprintf('Ending component does not match current component'));
             }
         } else {
-            if (!$currentComponent instanceof $componentType) {
+            $className = 'Zend\Ical\Component\\' . $componentType;
+
+            if (!$currentComponent instanceof $className) {
                 throw new ParseException('Ending component does not match current component');
             }
         }
 
-        if ($componentType === 'Component/Calendar') {
-            if (count($this->_components) > 0) {
-                throw new ParseException('Calendar component found outside of root');
-            }
-
+        if ($componentType === 'Calendar') {
             $this->_ical->addCalendar($currentComponent);
         } else {
             $this->_components->top()->addComponent($currentComponent);
@@ -262,7 +271,7 @@ class Parser
     {
         if (!preg_match(
             '(\G(?<name>' . $this->_regex['name'] . ')[;:])S',
-            $this->_rawData, $match, $this->_currentPos
+            $this->_rawData, $match, 0, $this->_currentPos
         )) {
             return null;
         }
@@ -281,11 +290,11 @@ class Parser
      * @param  string $kind
      * @return string
      */
-    protected function _getNextValue($kind)
+    protected function _getNextValue($kind = null)
     {
         if (!preg_match(
             '(\G(?<value>' . $this->_regex['value'] . ')(?<sep>,|\r\n))S',
-            $this->_rawData, $match, $this->_currentPos
+            $this->_rawData, $match, 0, $this->_currentPos
         )) {
             return null;
         }
@@ -305,7 +314,7 @@ class Parser
     {
         $component = strtoupper($component);
 
-        if (!in_array($component, $this->_componentTypes)) {
+        if (!isset($this->_componentTypes[$component])) {
             if (preg_match('(^' . $this->_regex['x-name'] . '$)', $component)) {
                 return self::X_COMPONENT;
             }
@@ -313,7 +322,18 @@ class Parser
             return self::NO_COMPONENT;
         }
 
-        return $this->_componentTypes[$componentName];
+        return $this->_componentTypes[$component];
+    }
+
+    /**
+     * Get the property type for a property
+     *
+     * @param  string $property
+     * @return mixed
+     */
+    protected function _getPropertyType($property)
+    {
+        return $property;
     }
 
     /**
@@ -322,7 +342,7 @@ class Parser
      * @param  string $name
      * @return Component\XName
      */
-    protected function newXComponent($name)
+    protected function _newXComponent($name)
     {
         return new Component\XName($name);
     }
@@ -333,9 +353,10 @@ class Parser
      * @param  string $type
      * @return mixed
      */
-    protected function newComponent($type)
+    protected function _newComponent($type)
     {
-        return new $type();
+        $className = 'Zend\Ical\Component\\' . $type;
+        return new $className();
     }
 
     /**
@@ -352,8 +373,8 @@ class Parser
         $rawData = $this->_buffer . fgets($this->_stream);
 
         while (
-            !feof($this->_stream) && $this->_buffer = fgetc($this->_stream)
-            && ($buffer === ' ' || $buffer === "\t")
+            !feof($this->_stream) && ($this->_buffer = fgetc($this->_stream))
+            && ($this->_buffer === ' ' || $this->_buffer === "\t")
         ) {
             $rawData       = rtrim($rawData, "\r\n") . fgets($this->_stream);
             $this->_buffer = '';
