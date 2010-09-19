@@ -25,7 +25,8 @@
 namespace Zend\Ical\Parser;
 
 use Zend\Ical\Ical,
-    Zend\Ical\Component;
+    Zend\Ical\Component,
+    Zend\Ical\Specs;
 
 /**
  * Ical parser based on libical
@@ -119,7 +120,7 @@ class Parser
         // Base regex types
         $this->_regex = array(
             'iana-token'   => '[A-Za-z\d\-]+',
-            'x-name'       => 'X-[A-Za-z\d]{3,}-[A-Za-z\d\-]+',
+            'x-name'       => '[Xx]-[A-Za-z\d]{3,}-[A-Za-z\d\-]+',
             'safe-char'    => '[\x20\x09\x21\x23-\x2B\x2D-\x39\x3C-\x7E\x80-\xFB]',
             'qsafe-char'   => '[\x20\x09\x21\x23-\x7E\x80-\xFB]',
             'tsafe-char'   => '[\x20\x21\x23-\x2B\x2D-\x39\x3C-\x5B\x5D-\x7E\x80-\xFB]',
@@ -186,17 +187,15 @@ class Parser
             throw new ParseException('Found property name within root');
         }
 
-        $propertyType = $this->_getPropertyType($propertyName);
+        $propertyType = Specs\Properties::nameToType($propertyName);
 
-        if ($propertyType === self::NO_PROPERTY) {
+        if ($propertyType === Specs\Properties::NO_PROPERTY) {
             throw new ParseException('Invalid property name');
         }
 
         $property = new Component\Property($propertyType);
 
         $this->_components->top()->addProperty($property);
-
- 
     }
 
     /**
