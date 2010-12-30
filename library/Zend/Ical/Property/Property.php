@@ -22,7 +22,9 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
+namespace Zend\Ical\Property;
+
+use Zend\Ical\Ical;
 
 /**
  * Component property
@@ -50,7 +52,7 @@ class Property
      *
      * @var array
      */
-    protected static $_propertyMap = array(
+    protected static $propertyMap = array(
         // Descriptive properties
         'ATTACH'           => array('value-types' => array('URI', 'BINARY')),
         'CATEGORIES'       => array('value-types' => 'TEXT'),
@@ -111,4 +113,27 @@ class Property
         'X-*'            => array('value-types' => 'TEXT'),
         'REQUEST-STATUS' => array('value-types' => 'TEXT'),
     );
+
+    /**
+     * Get the default value type for a property name
+     *
+     * @param  string $name
+     * @return string
+     */
+    public static function getDefaultValueType($name)
+    {
+        if (isset(self::$propertyMap[$name]) && $name !== 'X-*') {
+            if (is_string(self::$propertyMap[$name]['value-types'])) {
+                return self::$propertyMap[$name]['value-types'];
+            } else {
+                self::$propertyMap[$name]['value-types'][0];
+            }
+        } elseif (Ical::isXName($name)) {
+            return self::X_PROPERTY;
+        } elseif (Ical::isIANAToken($name)) {
+            return self::IANA_PROPERTY;
+        }
+
+        return self::NO_PROPERTY;
+    }
 }

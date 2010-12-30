@@ -34,7 +34,7 @@ use Zend\Ical\Component,
  */
 class Ical
 {
-    protected $_calendars = array();
+    protected $calendars = array();
 
     /**
      * Add a calendar
@@ -44,7 +44,7 @@ class Ical
      */
     public function addCalendar(Component\Calendar $calendar)
     {
-        $this->_calendars[] = $calendar;
+        $this->calendars[] = $calendar;
     }
 
     /**
@@ -69,5 +69,27 @@ class Ical
         $parser = new Parser(fopen($uri, 'r'));
 
         return $parser->parse();
+    }
+
+    /**
+     * Check if a string is an IANA token
+     *
+     * @param  string $string
+     * @return boolean
+     */
+    public static function isIANAToken($string)
+    {
+        return (bool) preg_match('(^[A-Za-z\d\-]+$)S', $string);
+    }
+
+    /**
+     * Check if a string is an X-Name
+     *
+     * @param  string $string
+     * @return boolean
+     */
+    public static function isXName($string)
+    {
+        return (bool) preg_match('(^[Xx]-[A-Za-z\d]{3,}-[A-Za-z\d\-]+$)S', $string);
     }
 }

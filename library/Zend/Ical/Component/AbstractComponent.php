@@ -24,6 +24,8 @@
  */
 namespace Zend\Ical\Component;
 
+use Zend\Ical\Property\Property;
+
 /**
  * Abstract component
  *

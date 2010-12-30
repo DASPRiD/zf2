@@ -39,7 +39,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
     public function testParsingCalendarComponent()
     {
-        $parser = $this->_getParser('BEGIN:VCALENDAR
+        $parser = $this->getParser('BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 BEGIN:VEVENT
@@ -63,7 +63,7 @@ END:VCALENDAR');
      * @param  string $icalString
      * @return Parser\Parser
      */
-    protected function _getParser($icalString)
+    protected function getParser($icalString)
     {
         // Correct lazyness in tests
         $icalString = rtrim(
