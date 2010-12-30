@@ -14,16 +14,16 @@
  *
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
  * @namespace
  */
 namespace Zend\Pdf\InternalType;
+use Zend\Pdf\Exception;
 use Zend\Pdf;
 
 /**
@@ -34,7 +34,7 @@ use Zend\Pdf;
  * @uses       \Zend\Pdf\Exception
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -63,12 +63,12 @@ class ArrayObject extends AbstractTypeObject
         if ($val !== null  &&  is_array($val)) {
             foreach ($val as $element) {
                 if (!$element instanceof AbstractTypeObject) {
-                    throw new Pdf\Exception('Array elements must be \Zend\Pdf\InternalType\AbstractTypeObject objects');
+                    throw new Exception\RuntimeException('Array elements must be \Zend\Pdf\InternalType\AbstractTypeObject objects');
                 }
                 $this->items[] = $element;
             }
         } else if ($val !== null){
-            throw new Pdf\Exception('Argument must be an array');
+            throw new Exception\RuntimeException('Argument must be an array');
         }
     }
 
@@ -81,7 +81,7 @@ class ArrayObject extends AbstractTypeObject
      */
     public function __get($property)
     {
-        throw new Pdf\Exception('Undefined property: \Zend\Pdf\InternalType\ArrayObject::$' . $property);
+        throw new Exception\RuntimeException('Undefined property: \Zend\Pdf\InternalType\ArrayObject::$' . $property);
     }
 
 
@@ -94,7 +94,7 @@ class ArrayObject extends AbstractTypeObject
      */
     public function __set($property, $value)
     {
-        throw new Pdf\Exception('Undefined property: \Zend\Pdf\InternalType\ArrayObject::$' . $property);
+        throw new Exception\RuntimeException('Undefined property: \Zend\Pdf\InternalType\ArrayObject::$' . $property);
     }
 
     /**
@@ -111,10 +111,10 @@ class ArrayObject extends AbstractTypeObject
     /**
      * Return object as string
      *
-     * @param Zend_PDF_Factory $factory
+     * @param \Zend\Pdf\ObjectFactory $factory
      * @return string
      */
-    public function toString($factory = null)
+    public function toString(Pdf\ObjectFactory $factory = null)
     {
         $outStr = '[';
         $lastNL = 0;
@@ -130,6 +130,39 @@ class ArrayObject extends AbstractTypeObject
         $outStr .= ']';
 
         return $outStr;
+    }
+
+    /**
+     * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+     *
+     * @param \Zend\Pdf\ObjectFactory $factory  The factory to attach
+     * @param array &$processed List of already processed indirect objects, used to avoid objects duplication
+     * @param integer $mode  Cloning mode (defines filter for objects cloning)
+     * @returns \Zend\Pdf\InternalType\AbstractTypeObject
+     */
+    public function makeClone(Pdf\ObjectFactory $factory, array &$processed, $mode)
+    {
+        $newArray = new self();
+
+        foreach ($this->items as $key => $value) {
+            $newArray->items[$key] = $value->makeClone($factory, $processed, $mode);
+        }
+
+        return $newArray;
+    }
+
+    /**
+     * Set top level parent indirect object.
+     *
+     * @param \Zend\Pdf\InternalType\IndirectObject $parent
+     */
+    public function setParentObject(IndirectObject $parent)
+    {
+        parent::setParentObject($parent);
+
+        foreach ($this->items as $item) {
+            $item->setParentObject($parent);
+        }
     }
 
     /**

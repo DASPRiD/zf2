@@ -16,7 +16,6 @@
  * @package   Zend_Measure
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id$
  */
 
 /**
@@ -76,7 +75,7 @@ abstract class AbstractMeasure
      */
     public function __construct($value, $type = null, $locale = null)
     {
-        if (($type !== null) and (Locale\Locale::isLocale($type, null, false))) {
+        if (($type !== null) and (Locale\Locale::isLocale($type))) {
             $locale = $type;
             $type = null;
         }
@@ -122,8 +121,8 @@ abstract class AbstractMeasure
             $locale = new Locale\Locale();
         }
 
-        if (!Locale\Locale::isLocale($locale, true, false)) {
-            if (!Locale\Locale::isLocale($locale, false, false)) {
+        if (!Locale\Locale::isLocale($locale, true)) {
+            if (!Locale\Locale::isLocale($locale, false)) {
                 throw new Exception("Language (" . (string) $locale . ") is unknown");
             }
 
@@ -171,7 +170,7 @@ abstract class AbstractMeasure
      */
     public function setValue($value, $type = null, $locale = null)
     {
-        if (($type !== null) and (Locale\Locale::isLocale($type, null, false))) {
+        if (($type !== null) and (Locale\Locale::isLocale($type))) {
             $locale = $type;
             $type = null;
         }

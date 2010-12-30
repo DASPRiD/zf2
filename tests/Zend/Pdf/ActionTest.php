@@ -17,7 +17,6 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -304,7 +303,7 @@ class ActionTest extends \PHPUnit_Framework_TestCase
         }
         $this->assertEquals(18, $actionsCount);
 
-        $action->dumpAction(new ObjectFactory\ElementFactory(1));
+        $action->dumpAction(new ObjectFactory(1));
         $this->assertEquals(
             $action->getResource()->toString(),
             '<</Type /Action '
@@ -318,7 +317,7 @@ class ActionTest extends \PHPUnit_Framework_TestCase
         $action1 = Action\GoToAction::create('SomeNamedDestination');
         $action1->next[] = Action\GoToAction::create('AnotherNamedDestination');
 
-        $action1->dumpAction(new ObjectFactory\ElementFactory(1));
+        $action1->dumpAction(new ObjectFactory(1));
 
         $this->assertEquals($action1->getResource()->toString(),
                             '<</Type /Action /S /GoTo /D (SomeNamedDestination) /Next 1 0 R >>');
@@ -334,7 +333,7 @@ class ActionTest extends \PHPUnit_Framework_TestCase
 
         $action = Action\GoToAction::create($destination);
 
-        $action->dumpAction(new ObjectFactory\ElementFactory(1));
+        $action->dumpAction(new ObjectFactory(1));
 
         $this->assertEquals($action->getResource()->toString(),
                             '<</Type /Action /S /GoTo /D [4 0 R /Fit ] >>');
@@ -388,12 +387,9 @@ class ActionTest extends \PHPUnit_Framework_TestCase
         $dictionary->S    = new InternalType\NameObject('URI');
 
 
-        try {
-            $action = Action\AbstractAction::load($dictionary);
-            $this->fail("exception expected");
-        } catch (Pdf\Exception $e) {
-            $this->assertContains('URI action dictionary entry is required', $e->getMessage());
-        }
+        $this->setExpectedException('\Zend\Pdf\Exception\CorruptedPdfException', 'URI action dictionary entry is required');
+        $action = Action\AbstractAction::load($dictionary);
+
     }
 
     public function testActionURICreate()
@@ -433,15 +429,11 @@ class ActionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPhpVersionBug()
     {
-        try {
-            $file = __DIR__ . '/_files/ZF-8462.pdf';
-            $pdf = Pdf\PdfDocument::load($file);
-        } catch (Pdf\Exception $e) {
-            if (strpos($e->getMessage(), 'Cross-reference streams are not supported yet.') !== false) {
-                // Skip expected exception
-                return;
-            }
-            throw $e;
-        }
+        $this->setExpectedException(
+            '\Zend\Pdf\Exception\NotImplementedException',
+            'Cross-reference streams are not supported yet'
+        );
+
+        $pdf = Pdf\PdfDocument::load(__DIR__ . '/_files/ZF-8462.pdf');
     }
 }

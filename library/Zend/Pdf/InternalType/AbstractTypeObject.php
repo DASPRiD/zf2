@@ -14,16 +14,16 @@
  *
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
  * @namespace
  */
 namespace Zend\Pdf\InternalType;
+use Zend\Pdf;
 
 /**
  * PDF file element implementation
@@ -34,7 +34,7 @@ namespace Zend\Pdf\InternalType;
  * @uses       \Zend\Pdf\InternalType\NumericObject
  * @uses       \Zend\Pdf\InternalType\StringObject
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -70,11 +70,30 @@ abstract class AbstractTypeObject
      *
      * $factory parameter defines operation context.
      *
-     * @param Zend_PDF_Factory $factory
+     * @param \Zend\Pdf\ObjectFactory $factory
      * @return string
      */
-    abstract public function toString($factory = null);
+    abstract public function toString(Pdf\ObjectFactory $factory = null);
 
+
+    const CLONE_MODE_SKIP_PAGES    = 1; // Do not follow pages during deep copy process
+    const CLONE_MODE_FORCE_CLONING = 2; // Force top level object cloning even it's already processed
+
+    /**
+     * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+     *
+     * @todo It's necessary to check if SplObjectStorage class works faster
+     * (Needs PHP 5.3.x to attach object _with_ additional data to storage)
+     *
+     * @param \Zend\Pdf\ObjectFactory $factory  The factory to attach
+     * @param array &$processed List of already processed indirect objects, used to avoid objects duplication
+     * @param integer $mode  Cloning mode (defines filter for objects cloning)
+     * @returns \Zend\Pdf\InternalType\AbstractTypeObject
+     */
+    public function makeClone(Pdf\ObjectFactory $factory, array &$processed, $mode)
+    {
+        return clone $this;
+    }
 
     /**
      * Set top level parent indirect object.

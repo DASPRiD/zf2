@@ -17,7 +17,6 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -115,7 +114,7 @@ class FormMultiCheckboxTest extends \PHPUnit_Framework_TestCase
 
     public function testCanRendersAsXHtml()
     {
-        $this->view->doctype('XHTML1_STRICT');
+        $this->view->broker('doctype')->direct('XHTML1_STRICT');
         $options = array(
             'foo' => 'Foo',
             'bar' => 'Bar',

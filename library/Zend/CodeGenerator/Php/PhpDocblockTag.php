@@ -17,7 +17,6 @@
  * @subpackage PHP
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -27,8 +26,6 @@ namespace Zend\CodeGenerator\Php;
 
 /**
  * @uses       \Zend\CodeGenerator\AbstractCodeGenerator
- * @uses       \Zend\CodeGenerator\Php\Docblock\Tag\Param
- * @uses       \Zend\CodeGenerator\Php\Docblock\Tag\Return
  * @uses       \Zend\Loader\PluginLoader
  * @category   Zend
  * @package    Zend_CodeGenerator
@@ -52,7 +49,7 @@ class PhpDocblockTag extends AbstractPhp
             '@<name> <description>'
             )
         );
-    
+
     /**
      * @var string
      */

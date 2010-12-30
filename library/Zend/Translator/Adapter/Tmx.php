@@ -13,9 +13,8 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Translate
+ * @package    Zend_Translator
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id$
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -25,18 +24,21 @@
 namespace Zend\Translator\Adapter;
 use Zend\Translator\Adapter as TranslationAdapter,
     Zend\Translator,
-    Zend\Locale;
+    Zend\Locale,
+    Zend\Translator\Adapter\Exception\InvalidArgumentException,
+    Zend\Translator\Adapter\Exception\InvalidFileTypeException;
 
 /**
  * @uses       \Zend\Locale\Locale
  * @uses       \Zend\Translator\Adapter\Adapter
- * @uses       \Zend\Translator\Exception
+ * @uses       \Zend\Translator\Adapter\Exception\InvalidArgumentException
+ * @uses       \Zend\Translator\Adapter\Exception\InvalidFileTypeException
  * @category   Zend
- * @package    Zend_Translate
+ * @package    Zend_Translator
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Tmx extends TranslationAdapter 
+class Tmx extends TranslationAdapter
 {
     // Internal variables
     private $_file    = false;
@@ -55,14 +57,15 @@ class Tmx extends TranslationAdapter
      * @param  string  $locale    Locale has no effect for TMX because TMX defines all languages within
      *                            the source file
      * @param  array   $option    OPTIONAL Options to use
-     * @throws Zend_Translation_Exception
+     * @throws \Zend\Translator\Adapter\Exception\InvalidArgumentException
+     * @throws \Zend\Translator\Adapter\Exception\InvalidFileTypeException
      * @return array
      */
     protected function _loadTranslationData($filename, $locale, array $options = array())
     {
         $this->_data = array();
         if (!is_readable($filename)) {
-            throw new Translator\Exception('Translation file \'' . $filename . '\' is not readable.');
+            throw new InvalidArgumentException('Translation file \'' . $filename . '\' is not readable.');
         }
 
         if (isset($options['useId'])) {
@@ -81,7 +84,7 @@ class Tmx extends TranslationAdapter
                           xml_error_string(xml_get_error_code($this->_file)),
                           xml_get_current_line_number($this->_file));
             xml_parser_free($this->_file);
-            throw new Translator\Exception($ex);
+            throw new InvalidFileTypeException($ex);
         }
 
         return $this->_data;

@@ -16,7 +16,6 @@
  * @package   Zend_Measure
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id$
  */
 
 /**
@@ -146,7 +145,7 @@ class Number extends AbstractMeasure
      */
     public function __construct($value, $type, $locale = null)
     {
-        if (($type !== null) and (Locale\Locale::isLocale($type, null, false))) {
+        if (($type !== null) and (Locale\Locale::isLocale($type))) {
             $locale = $type;
             $type = null;
         }
@@ -155,8 +154,8 @@ class Number extends AbstractMeasure
             $locale = new Locale\Locale();
         }
 
-        if (!Locale\Locale::isLocale($locale, true, false)) {
-            if (!Locale\Locale::isLocale($locale, true, false)) {
+        if (!Locale\Locale::isLocale($locale, true)) {
+            if (!Locale\Locale::isLocale($locale, false)) {
                 throw new Exception("Language (" . (string) $locale . ") is unknown");
             }
 

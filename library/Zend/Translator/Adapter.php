@@ -13,11 +13,10 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Translate
- * @subpackage Zend_Translate_Adapter
+ * @package    Zend_Translator
+ * @subpackage Zend_Translator_Adapter
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -26,7 +25,8 @@
 namespace Zend\Translator;
 
 use Zend\Log,
-    Zend\Locale;
+    Zend\Locale,
+    Zend\Translator\Exception\InvalidArgumentException;
 
 /**
  * Basic adapter class for each translation source adapter
@@ -36,14 +36,14 @@ use Zend\Log,
  * @uses       \Zend\Cache\Cache
  * @uses       \Zend\Locale\Locale
  * @uses       \Zend\Translator\Plural
- * @uses       \Zend\Translator\Exception
+ * @uses       \Zend\Translator\Exception\InvalidArgumentException
  * @category   Zend
- * @package    Zend_Translate
- * @subpackage Zend_Translate_Adapter
+ * @package    Zend_Translator
+ * @subpackage Zend_Translator_Adapter
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class Adapter 
+abstract class Adapter
 {
     /**
      * Shows if locale detection is in automatic level
@@ -123,7 +123,7 @@ abstract class Adapter
      * Generates the adapter
      *
      * @param  array|Zend_Config $options Translation options for this adapter
-     * @throws Zend_Translate_Exception
+     * @throws \Zend\Translator\Exception\InvalidArgumentException
      * @return void
      */
     public function __construct($options = array())
@@ -192,8 +192,8 @@ abstract class Adapter
      * language will be replaced and added otherwise
      *
      * @param  array|Zend_Config $options Options and translations to be added
-     * @throws Zend_Translate_Exception
-     * @return Zend_Translate_Adapter Provides fluent interface
+     * @throws \Zend\Translator\Exception\InvalidArgumentException
+     * @return \Zend\Translator\Adapter Provides fluent interface
      */
     public function addTranslation($options = array())
     {
@@ -221,13 +221,13 @@ abstract class Adapter
             $originate = (string) $options['locale'];
         }
 
-        if ((array_key_exists('log', $options)) && !($options['log'] instanceof Zend\Log\Logger)) {
-            throw new Exception('Instance of Zend\Log\Logger expected for option log');
+        if ((array_key_exists('log', $options)) && !($options['log'] instanceof \Zend\Log\Logger)) {
+            throw new InvalidArgumentException('Instance of Zend_Log_Logger expected for option log');
         }
 
 
         try {
-            if (!($options['content'] instanceof Translator\Translator) && !($options['content'] instanceof Adapter)) {
+            if (!($options['content'] instanceof \Zend\Translator\Translator) && !($options['content'] instanceof \Zend\Translator\Adapter)) {
                 if (empty($options['locale'])) {
                     $options['locale'] = null;
                 }
@@ -235,7 +235,7 @@ abstract class Adapter
                 $options['locale'] = Locale\Locale::findLocale($options['locale']);
             }
         } catch (Locale\Exception $e) {
-            throw new Exception("The given Language '{$options['locale']}' does not exist", 0, $e);
+            throw new InvalidArgumentException("The given Language '{$options['locale']}' does not exist", 0, $e);
         }
 
         $options  = $options + $this->_options;
@@ -267,7 +267,7 @@ abstract class Adapter
 
                 if ($info->isDir()) {
                     // pathname as locale
-                    if (($options['scan'] === self::LOCALE_DIRECTORY) and (Locale\Locale::isLocale($file, true, false))) {
+                    if (($options['scan'] === self::LOCALE_DIRECTORY) and (Locale\Locale::isLocale($file, true))) {
                         $options['locale'] = $file;
                         $prev              = (string) $options['locale'];
                     }
@@ -277,7 +277,7 @@ abstract class Adapter
                         $filename = explode('.', $file);
                         array_pop($filename);
                         $filename = implode('.', $filename);
-                        if (Locale\Locale::isLocale((string) $filename, true, false)) {
+                        if (Locale\Locale::isLocale((string) $filename, true)) {
                             $options['locale'] = (string) $filename;
                         } else {
                             $parts  = explode('.', $file);
@@ -294,7 +294,7 @@ abstract class Adapter
                             $parts = array_unique($parts);
                             $prev  = '';
                             foreach($parts as $token) {
-                                if (Locale\Locale::isLocale($token, true, false)) {
+                                if (Locale\Locale::isLocale($token, true)) {
                                     if (strlen($prev) <= strlen($token)) {
                                         $options['locale'] = $token;
                                         $prev              = $token;
@@ -327,7 +327,7 @@ abstract class Adapter
      * Sets new adapter options
      *
      * @param  array $options Adapter options
-     * @throws \Zend\Translator\Exception
+     * @throws \Zend\Translator\Exception\InvalidArgumentException
      * @return \Zend\Translator\Adapter\Adapter Provides fluent interface
      */
     public function setOptions(array $options = array())
@@ -337,10 +337,10 @@ abstract class Adapter
         foreach ($options as $key => $option) {
             if ($key == 'locale') {
                 $locale = $option;
-            } else if ((isset($this->_options[$key]) and ($this->_options[$key] != $option)) or
+            } else if ((isset($this->_options[$key]) and ($this->_options[$key] !== $option)) or
                     !isset($this->_options[$key])) {
-                if (($key == 'log') && !($option instanceof Log\Logger)) {
-                    throw new Exception('Instance of Zend_Log expected for option log');
+                if (($key == 'log') && !($option instanceof \Zend\Log\Logger)) {
+                    throw new InvalidArgumentException('Instance of Zend_Log expected for option log');
                 }
 
                 if ($key == 'cache') {
@@ -403,7 +403,7 @@ abstract class Adapter
      * Sets locale
      *
      * @param  string|\Zend\Locale\Locale $locale Locale to set
-     * @throws \Zend\Translator\Exception
+     * @throws \Zend\Translator\Exception\InvalidArgumentException
      * @return \Zend\Translator\Adapter\Adapter Provides fluent interface
      */
     public function setLocale($locale)
@@ -417,7 +417,7 @@ abstract class Adapter
         try {
             $locale = Locale\Locale::findLocale($locale);
         } catch (Locale\Exception $e) {
-            throw new Exception("The given Language ({$locale}) does not exist", 0, $e);
+            throw new InvalidArgumentException("The given Language ({$locale}) does not exist", 0, $e);
         }
 
         if (!isset($this->_translate[$locale])) {
@@ -469,7 +469,7 @@ abstract class Adapter
     public function getList()
     {
         $list = array_keys($this->_translate);
-        $result = null;
+        $result = array();
         foreach($list as $value) {
             if (!empty($this->_translate[$value])) {
                 $result[$value] = $value;
@@ -483,7 +483,7 @@ abstract class Adapter
      * If no locale is given, the actual language will be used
      *
      * @param  string             $message Message to get the key for
-     * @param  string|Zend\Locale\Locale $locale (optional) Language to return the message ids from
+     * @param  string|\Zend\Locale\Locale $locale (optional) Language to return the message ids from
      * @return string|array|false
      */
     public function getMessageId($message, $locale = null)
@@ -564,9 +564,9 @@ abstract class Adapter
      * language is replaced and added otherwise
      *
      * @see    Zend_Locale
-     * @param  array|Zend_Config $content Translation data to add
-     * @throws Zend_Translate_Exception
-     * @return Zend_Translate_Adapter Provides fluent interface
+     * @param  array|\Zend\Config $content Translation data to add
+     * @throws \Zend\Translate\Exception\InvalidArgumentException
+     * @return \Zend\Translate\Adapter Provides fluent interface
      */
     private function _addTranslationData($options = array())
     {
@@ -605,7 +605,7 @@ abstract class Adapter
         try {
             $options['locale'] = Locale\Locale::findLocale($options['locale']);
         } catch (Locale\Exception $e) {
-            throw new Exception("The given Language '{$locale}' does not exist", 0, $e);
+            throw new InvalidArgumentException("The given Language '{$locale}' does not exist", 0, $e);
         }
 
         if ($options['clear'] || !isset($this->_translate[$options['locale']])) {
@@ -706,8 +706,8 @@ abstract class Adapter
             }
         }
 
-        if (!Locale\Locale::isLocale($locale, true, false)) {
-            if (!Locale\Locale::isLocale($locale, false, false)) {
+        if (!Locale\Locale::isLocale($locale, true)) {
+            if (!Locale\Locale::isLocale($locale, false)) {
                 // language does not exist, return original string
                 $this->_log($messageId, $locale);
                 // use rerouting when enabled
@@ -862,8 +862,8 @@ abstract class Adapter
             $locale = $this->_options['locale'];
         }
 
-        if (!Locale\Locale::isLocale($locale, true, false)) {
-            if (!Locale\Locale::isLocale($locale, false, false)) {
+        if (!Locale\Locale::isLocale($locale, true)) {
+            if (!Locale\Locale::isLocale($locale, false)) {
                 // language does not exist, return original string
                 return false;
             }
@@ -968,7 +968,7 @@ abstract class Adapter
     private static function _getTagSupportForCache()
     {
         $backend = self::$_cache->getBackend();
-        if ($backend instanceof Zend_Cache_Backend_ExtendedInterface) {
+        if ($backend instanceof \Zend\Cache\Backend\ExtendedInterface) {
             $cacheOptions = $backend->getCapabilities();
             self::$_cacheTags = $cacheOptions['tags'];
         } else {

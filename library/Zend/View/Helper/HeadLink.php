@@ -16,7 +16,6 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id$
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -286,7 +285,7 @@ class HeadLink extends Placeholder\Container\Standalone
         }
 
         if ($this->view instanceof View\AbstractView) {
-            $link .= ($this->view->doctype()->isXhtml()) ? '/>' : '>';
+            $link .= ($this->view->broker('doctype')->isXhtml()) ? '/>' : '>';
         } else {
             $link .= '/>';
         }

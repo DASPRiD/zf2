@@ -13,11 +13,10 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Validate
+ * @package    Zend_Validator
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -29,23 +28,23 @@ use Zend\Validator\Hostname;
 
 /**
  * @category   Zend
- * @package    Zend_Validate
+ * @package    Zend_Validator
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @group      Zend_Validate
+ * @group      Zend_Validator
  */
 class EmailAddressTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Default instance created for all test methods
      *
-     * @var Zend_Validate_EmailAddress
+     * @var Zend_Validator_EmailAddress
      */
     protected $_validator;
 
     /**
-     * Creates a new Zend_Validate_EmailAddress object for each test method
+     * Creates a new Zend_Validator_EmailAddress object for each test method
      *
      * @return void
      */
@@ -499,7 +498,7 @@ class EmailAddressTest extends \PHPUnit_Framework_TestCase
     {
         $messages = $this->_validator->getMessageTemplates();
         $this->assertNotEquals('TestMessage', $messages[Validator\EmailAddress::INVALID]);
-        $this->_validator->setMessage('TestMessage');
+        $this->_validator->setMessage('TestMessage', Validator\EmailAddress::INVALID);
         $messages = $this->_validator->getMessageTemplates();
         $this->assertEquals('TestMessage', $messages[Validator\EmailAddress::INVALID]);
     }
@@ -530,6 +529,20 @@ class EmailAddressTest extends \PHPUnit_Framework_TestCase
     public function testGetDeepMxCheck()
     {
         $this->assertFalse($this->_validator->getDeepMxCheck());
+    }
+
+    /**
+     * Testing setMessage for all messages
+     *
+     * @group ZF-10690
+     */
+    public function testSetMultipleMessages()
+    {
+        $messages = $this->_validator->getMessageTemplates();
+        $this->assertNotEquals('TestMessage', $messages[Validator\EmailAddress::INVALID]);
+        $this->_validator->setMessage('TestMessage');
+        $messages = $this->_validator->getMessageTemplates();
+        $this->assertEquals('TestMessage', $messages[Validator\EmailAddress::INVALID]);
     }
 
     /**

@@ -17,7 +17,6 @@
  * @subpackage Renderer_Markup_Html
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -62,10 +61,10 @@ class Url extends AbstractHtml
         }
 
         // check if the URL is valid
-        // TODO: use the new Zend\Uri for this
-        if (!\Zend\Markup\Renderer\Html::isValidUri($uri)) {
-            return $text;
-        }
+        // TODO: re-implement this (probably with the new \Zend\Uri)
+        //if (!\Zend\Markup\Renderer\Html::isValidUri($uri)) {
+        //   return $text;
+        //}
 
         $attributes = $this->renderAttributes($token);
 

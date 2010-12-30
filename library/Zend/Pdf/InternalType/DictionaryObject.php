@@ -14,16 +14,16 @@
  *
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
  * @namespace
  */
 namespace Zend\Pdf\InternalType;
+use Zend\Pdf\Exception;
 use Zend\Pdf;
 
 /**
@@ -34,7 +34,7 @@ use Zend\Pdf;
  * @uses       \Zend\Pdf\Exception
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -60,15 +60,15 @@ class DictionaryObject extends AbstractTypeObject
         if ($val === null) {
             return;
         } else if (!is_array($val)) {
-            throw new Pdf\Exception('Argument must be an array');
+            throw new Exception\RuntimeException('Argument must be an array');
         }
 
         foreach ($val as $name => $element) {
             if (!$element instanceof AbstractTypeObject) {
-                throw new Pdf\Exception('Array elements must be \Zend\Pdf\InternalType\AbstractTypeObject objects');
+                throw new Exception\RuntimeException('Array elements must be \Zend\Pdf\InternalType\AbstractTypeObject objects');
             }
             if (!is_string($name)) {
-                throw new Pdf\Exception('Array keys must be strings');
+                throw new Exception\RuntimeException('Array keys must be strings');
             }
             $this->_items[$name] = $element;
         }
@@ -137,21 +137,20 @@ class DictionaryObject extends AbstractTypeObject
         return AbstractTypeObject::TYPE_DICTIONARY;
     }
 
-
     /**
      * Return object as string
      *
-     * @param Zend_PDF_Factory $factory
+     * @param \Zend\Pdf\ObjectFactory $factory
      * @return string
      */
-    public function toString($factory = null)
+    public function toString(Pdf\ObjectFactory $factory = null)
     {
         $outStr = '<<';
         $lastNL = 0;
 
         foreach ($this->_items as $name => $element) {
             if (!is_object($element)) {
-                throw new Pdf\Exception('Wrong data');
+                throw new Exception\RuntimeException('Wrong data');
             }
 
             if (strlen($outStr) - $lastNL > 128)  {
@@ -167,6 +166,53 @@ class DictionaryObject extends AbstractTypeObject
         return $outStr;
     }
 
+    /**
+     * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+     *
+     * @param \Zend\Pdf\ObjectFactory $factory  The factory to attach
+     * @param array &$processed List of already processed indirect objects, used to avoid objects duplication
+     * @param integer $mode  Cloning mode (defines filter for objects cloning)
+     * @returns \Zend\Pdf\InternalType\AbstractTypeObject
+     * @throws \Zend\Pdf\Exception
+     */
+    public function makeClone(Pdf\ObjectFactory $factory, array &$processed, $mode)
+    {
+        if (isset($this->_items['Type'])) {
+            if ($this->_items['Type']->value == 'Pages') {
+                // It's a page tree node
+                // skip it and its children
+                return new NullObject();
+            }
+
+            if ($this->_items['Type']->value == 'Page'  &&
+                $mode == AbstractTypeObject::CLONE_MODE_SKIP_PAGES
+            ) {
+                // It's a page node, skip it
+                return new NullObject();
+            }
+        }
+
+        $newDictionary = new self();
+        foreach ($this->_items as $key => $value) {
+            $newDictionary->_items[$key] = $value->makeClone($factory, $processed, $mode);
+        }
+
+        return $newDictionary;
+    }
+
+    /**
+     * Set top level parent indirect object.
+     *
+     * @param \Zend\Pdf\InternalType\IndirectObject $parent
+     */
+    public function setParentObject(IndirectObject $parent)
+    {
+        parent::setParentObject($parent);
+
+        foreach ($this->_items as $item) {
+            $item->setParentObject($parent);
+        }
+    }
 
     /**
      * Convert PDF element to PHP type.

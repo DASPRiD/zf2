@@ -17,7 +17,6 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -68,7 +67,7 @@ class HeadMetaTest extends \PHPUnit_Framework_TestCase
         }
         $this->basePath = __DIR__ . '/_files/modules';
         $this->view     = new View\View();
-        $this->view->doctype('XHTML1_STRICT');
+        $this->view->broker('doctype')->direct('XHTML1_STRICT');
         $this->helper   = new Helper\HeadMeta();
         $this->helper->setView($this->view);
     }
@@ -334,7 +333,7 @@ class HeadMetaTest extends \PHPUnit_Framework_TestCase
 
     public function testStringRepresentationReflectsDoctype()
     {
-        $this->view->doctype('HTML4_STRICT');
+        $this->view->broker('doctype')->direct('HTML4_STRICT');
         $this->helper->direct('some content', 'foo');
         $test = $this->helper->toString();
         $this->assertNotContains('/>', $test);
@@ -449,7 +448,3 @@ class HeadMetaTest extends \PHPUnit_Framework_TestCase
 
 }
 
-// Call Zend_View_Helper_HeadMetaTest::main() if this source file is executed directly.
-if (PHPUnit_MAIN_METHOD == "Zend_View_Helper_HeadMetaTest::main") {
-    \Zend_View_Helper_HeadMetaTest::main();
-}

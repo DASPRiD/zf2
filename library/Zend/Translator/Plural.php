@@ -13,10 +13,9 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Locale
+ * @package    Zend_Translator
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -27,9 +26,9 @@ namespace Zend\Translator;
 /**
  * Utility class for returning the plural rules according to the given locale
  *
- * @uses       \Zend\Translator\Exception
+ * @uses       \Zend\Translator\Exception\InvalidArgumentException
  * @category   Zend
- * @package    Zend_Locale
+ * @package    Zend_Translator
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -207,6 +206,7 @@ class Plural
      *
      * @param string $rule   Callback which acts as rule
      * @param string $locale Locale which is used for this callback
+     * @throws \Zend\Translator\Exception\InvalidArgumentException
      * @return null
      */
     public static function setPlural($rule, $locale)
@@ -221,7 +221,7 @@ class Plural
         }
 
         if (!is_callable($rule)) {
-            throw new Exception('The given rule can not be called');
+            throw new InvalidArgumentException('The given rule can not be called');
         }
 
         self::$_plural[$locale] = $rule;

@@ -14,10 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -33,7 +32,7 @@ use Zend\Pdf;
  * @uses       \Zend\Pdf\InternalType\AbstractTypeObject
  * @category   Zend
  * @package    Zend_PDF
- * @package    Zend_PDF_Internal
+ * @subpackage Zend_PDF_Internal
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -46,7 +45,6 @@ class StreamContent extends AbstractTypeObject
      */
     public $value;
 
-
     /**
      * Object constructor
      *
@@ -57,7 +55,6 @@ class StreamContent extends AbstractTypeObject
         $this->value = Pdf\PdfDocument::getMemoryManager()->create($val);
     }
 
-
     /**
      * Return type of the element.
      *
@@ -67,7 +64,6 @@ class StreamContent extends AbstractTypeObject
     {
         return AbstractTypeObject::TYPE_STREAM;
     }
-
 
     /**
      * Stream length.
@@ -80,7 +76,6 @@ class StreamContent extends AbstractTypeObject
         return strlen($this->value->getRef());
     }
 
-
     /**
      * Clear stream
      *
@@ -91,7 +86,6 @@ class StreamContent extends AbstractTypeObject
         $ref = '';
         $this->value->touch();
     }
-
 
     /**
      * Append value to a stream
@@ -105,14 +99,26 @@ class StreamContent extends AbstractTypeObject
         $this->value->touch();
     }
 
+    /**
+      * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+      *
+      * @param \Zend\Pdf\ObjectFactory $factory  The factory to attach
+      * @param array &$processed  List of already processed indirect objects, used to avoid objects duplication
+      * @param integer $mode  Cloning mode (defines filter for objects cloning)
+      * @returns \Zend\Pdf\InternalType\AbstractTypeObject
+      */
+     public function makeClone(Pdf\ObjectFactory $factory, array &$processed, $mode)
+     {
+         return new self($this->value->getRef());
+     }
 
     /**
      * Return object as string
      *
-     * @param Zend_PDF_Factory $factory
+     * @param \Zend\Pdf\ObjectFactory $factory
      * @return string
      */
-    public function toString($factory = null)
+    public function toString(Pdf\ObjectFactory $factory = null)
     {
         return "stream\n" . $this->value->getRef() . "\nendstream";
     }

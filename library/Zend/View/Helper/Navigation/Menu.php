@@ -17,7 +17,6 @@
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -245,7 +244,7 @@ class Menu extends AbstractHelper
         }
 
         return '<' . $element . $this->_htmlAttribs($attribs) . '>'
-             . $this->view->escape($label)
+             . $this->view->vars()->escape($label)
              . '</' . $element . '>';
     }
 

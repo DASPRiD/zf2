@@ -16,7 +16,6 @@
  * @package    Zend_PDF
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
  */
 
 /**
@@ -28,7 +27,7 @@ namespace Zend\Pdf;
  * PDF Page
  *
  * @uses       \Zend\Pdf\PdfDocument
- * @uses       \Zend\Pdf\ObjectFactory\ElementFactory
+ * @uses       \Zend\Pdf\ObjectFactory
  * @uses       \Zend\Pdf\InternalType
  * @uses       \Zend\Pdf\Exception
  * @uses       \Zend\Pdf\Resource\Font
@@ -36,6 +35,14 @@ namespace Zend\Pdf;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+use Zend\Pdf\Resource\Font;
+
+use Zend\Acl;
+
+use Zend\Pdf\Exception;
+
+use Zend\Pdf\InternalType;
+
 class Page
 {
     /**** Class Constants ****/
@@ -181,31 +188,31 @@ class Page
      * 1. Load PDF page from a parsed PDF file.
      *    Object factory is created by PDF parser.
      * ---------------------------------------------------------
-     * new Zend_PDF_Page(\Zend\Pdf\InternalType\DictionaryObject $pageDict,
-     *                   \Zend\Pdf\InternalType\ObjectFactory $factory);
+     * new \Zend\Pdf\Page(\Zend\Pdf\InternalType\DictionaryObject $pageDict,
+     *                    \Zend\Pdf\ObjectFactory $factory);
      * ---------------------------------------------------------
      *
-     * 2. Clone PDF page.
+     * 2. Make a copy of the PDF page.
      *    New page is created in the same context as source page. Object factory is shared.
      *    Thus it will be attached to the document, but need to be placed into Zend_Pdf::$pages array
      *    to be included into output.
      * ---------------------------------------------------------
-     * new Zend_PDF_Page(Zend_PDF_Page $page);
+     * new \Zend\Pdf\Page(\Zend\Pdf\Page $page);
      * ---------------------------------------------------------
      *
      * 3. Create new page with a specified pagesize.
      *    If $factory is null then it will be created and page must be attached to the document to be
      *    included into output.
      * ---------------------------------------------------------
-     * new Zend_PDF_Page(string $pagesize, \Zend\Pdf\ObjectFactory $factory = null);
+     * new \Zend\Pdf\Page(string $pagesize, \Zend\Pdf\ObjectFactory $factory = null);
      * ---------------------------------------------------------
      *
      * 4. Create new page with a specified pagesize (in default user space units).
      *    If $factory is null then it will be created and page must be attached to the document to be
      *    included into output.
      * ---------------------------------------------------------
-     * new Zend_PDF_Page(numeric $width, numeric $height,
-     *                   \Zend\Pdf\ObjectFactory $factory = null);
+     * new \Zend\Pdf\Page(numeric $width, numeric $height,
+     *                    \Zend\Pdf\ObjectFactory $factory = null);
      * ---------------------------------------------------------
      *
      *
@@ -216,18 +223,32 @@ class Page
      */
     public function __construct($param1, $param2 = null, $param3 = null)
     {
-        if ($param1 instanceof InternalType\IndirectObjectReference &&
+        if (($param1 instanceof InternalType\IndirectObjectReference ||
+             $param1 instanceof InternalType\IndirectObject
+            ) &&
             $param1->getType() == InternalType\AbstractTypeObject::TYPE_DICTIONARY &&
             $param2 instanceof ObjectFactory &&
             $param3 === null
            ) {
-            $this->_pageDictionary = $param1;
-            $this->_objFactory     = $param2;
-            $this->_attached       = true;
-            $this->_safeGS         = false;
+            switch ($param1->getType()) {
+                case InternalType\AbstractTypeObject::TYPE_DICTIONARY:
+                    $this->_pageDictionary = $param1;
+                    $this->_objFactory     = $param2;
+                    $this->_attached       = true;
+                    $this->_safeGS         = false;
+                    return;
+                    break;
 
-            return;
+                case InternalType\AbstractTypeObject::TYPE_NULL:
+                    $this->_objFactory = $param2;
+                    $pageWidth = $pageHeight = 0;
+                    break;
 
+                default:
+                    throw new Exception\CorruptedPdfException('Unrecognized object type.');
+                    break;
+
+            }
         } else if ($param1 instanceof Page && $param2 === null && $param3 === null) {
             // Clone existing page.
             // Let already existing content and resources to be shared between pages
@@ -265,7 +286,7 @@ class Page
             if ($param2 !== null) {
                 $this->_objFactory = $param2;
             } else {
-                $this->_objFactory = ObjectFactory\ElementFactory::createFactory(1);
+                $this->_objFactory = ObjectFactory::createFactory(1);
             }
             $this->_attached   = false;
             $this->_safeGS     = true; /** New page created. That's users App responsibility to track GS changes */
@@ -296,7 +317,7 @@ class Page
                  * @todo support of user defined pagesize notations, like:
                  *       "210x297mm", "595x842", "8.5x11in", "612x792"
                  */
-                throw new Exception('Wrong pagesize notation.');
+                throw new Exception\Exception\InvalidArgumentException('Wrong pagesize notation.');
             }
             /**
              * @todo support of pagesize recalculation to "default user space units"
@@ -307,7 +328,7 @@ class Page
             if ($param3 !== null) {
                 $this->_objFactory = $param3;
             } else {
-                $this->_objFactory = ObjectFactory\ElementFactory::createFactory(1);
+                $this->_objFactory = ObjectFactory::createFactory(1);
             }
 
             $this->_attached = false;
@@ -316,7 +337,7 @@ class Page
             $pageHeight = $param2;
 
         } else {
-            throw new Exception('Unrecognized method signature, wrong number of arguments or wrong argument types.');
+            throw new Exception\BadMethodCallException('Unrecognized method signature, wrong number of arguments or wrong argument types.');
         }
 
         $this->_pageDictionary = $this->_objFactory->newObject(new InternalType\DictionaryObject());
@@ -331,16 +352,6 @@ class Page
         $this->_pageDictionary->Contents     = new InternalType\ArrayObject();
     }
 
-
-    /**
-     * Clone operator
-     *
-     * @throws \Zend\Pdf\Exception
-     */
-    public function __clone()
-    {
-        throw new Exception('Cloning \Zend\Pdf\Page object using \'clone\' keyword is not supported. Use \'new Zend_PDF_Page($srcPage)\' syntax');
-    }
 
     /**
      * Attach resource to the page
@@ -404,6 +415,59 @@ class Page
     }
 
     /**
+     * Clone page, extract it and dependent objects from the current document,
+     * so it can be used within other docs.
+     */
+    public function __clone()
+    {
+        $factory = ObjectFactory::createFactory(1);
+        $processed = array();
+
+        // Clone dictionary object.
+        // Do it explicitly to prevent sharing page attributes between different
+        // results of clonePage() operation (other resources are still shared)
+        $dictionary = new InternalType\DictionaryObject();
+        foreach ($this->_pageDictionary->getKeys() as $key) {
+            $dictionary->$key = $this->_pageDictionary->$key->makeClone($factory,
+                                                                        $processed,
+                                                                        InternalType\AbstractTypeObject::CLONE_MODE_SKIP_PAGES);
+        }
+
+        $this->_pageDictionary = $factory->newObject($dictionary);
+        $this->_objFactory     = $factory;
+        $this->_attached       = false;
+        $this->_style          = null;
+        $this->_font           = null;
+    }
+
+    /**
+     * Clone page, extract it and dependent objects from the current document,
+     * so it can be used within other docs.
+     *
+     * @internal
+     * @param \Zend\Pdf\ObjectFactory $factory
+     * @param array $processed
+     * @return \Zend\Pdf\Page
+     */
+    public function clonePage(ObjectFactory $factory, &$processed)
+    {
+        // Clone dictionary object.
+        // Do it explicitly to prevent sharing page attributes between different
+        // results of clonePage() operation (other resources are still shared)
+        $dictionary = new InternalType\DictionaryObject();
+        foreach ($this->_pageDictionary->getKeys() as $key) {
+            $dictionary->$key = $this->_pageDictionary->$key->makeClone($factory,
+                                                                        $processed,
+                                                                        InternalType\AbstractTypeObject::CLONE_MODE_SKIP_PAGES);
+        }
+
+        $clonedPage = new Page($factory->newObject($dictionary), $factory);
+        $clonedPage->_attached = false;
+
+        return $clonedPage;
+    }
+
+    /**
      * Retrive PDF file reference to the page
      *
      * @internal
@@ -424,7 +488,7 @@ class Page
     public function flush()
     {
         if ($this->_saveCount != 0) {
-            throw new Exception('Saved graphics state is not restored');
+            throw new Exception\LogicException('Saved graphics state is not restored');
         }
 
         if ($this->_contents == '') {
@@ -490,15 +554,7 @@ class Page
         }
 
         if ($this->_attached) {
-            throw new Exception('Page is attached to one documen, but rendered in context of another.');
-            /**
-             * @todo Page cloning must be implemented here instead of exception.
-             *       PDF objects (ex. fonts) can be shared between pages.
-             *       Thus all referenced objects, which can be modified, must be cloned recursively,
-             *       to avoid producing wrong object references in a context of source PDF.
-             */
-
-            //...
+            throw new Exception\LogicException('Page is attached to other documen. Use clone $page to get it context free.');
         } else {
             $objFactory->attach($this->_objFactory);
         }
@@ -643,10 +699,10 @@ class Page
     {
         if (!in_array($mode, array('Normal', 'Multiply', 'Screen', 'Overlay', 'Darken', 'Lighten', 'ColorDodge',
                                    'ColorBurn', 'HardLight', 'SoftLight', 'Difference', 'Exclusion'))) {
-            throw new Exception('Unsupported transparency mode.');
+            throw new Exception\InvalidArgumentException('Unsupported transparency mode.');
         }
         if (!is_numeric($alpha)  ||  $alpha < 0  ||  $alpha > 1) {
-            throw new Exception('Alpha value must be numeric between 0 (transparent) and 1 (opaque).');
+            throw new Exception\InvalidArgumentException('Alpha value must be numeric between 0 (transparent) and 1 (opaque).');
         }
 
         $this->_addProcSet('Text');
@@ -711,7 +767,7 @@ class Page
     /**
      * Extract fonts attached to the page
      *
-     * returns array of Zend_PDF_Resource_Font_Extracted objects
+     * returns array of \Zend\Pdf\Resource\Font\Extracted objects
      *
      * @return array
      * @throws \Zend\Pdf\Exception
@@ -732,7 +788,7 @@ class Page
 
             if (! ($fontDictionary instanceof InternalType\IndirectObjectReference  ||
                    $fontDictionary instanceof InternalType\IndirectObject) ) {
-                throw new Exception('Font dictionary has to be an indirect object or object reference.');
+                throw new Exception\CorruptedPdfException('Font dictionary has to be an indirect object or object reference.');
             }
 
             $fontResourcesUnique[spl_object_hash($fontDictionary->getObject())] = $fontDictionary;
@@ -745,9 +801,10 @@ class Page
                 $extractedFont = new Resource\Font\Extracted($fontDictionary);
 
                 $fonts[$resourceId] = $extractedFont;
-            } catch (Exception $e) {
-                if ($e->getMessage() != 'Unsupported font type.') {
-                    throw new Exception($e->getMessage(), $e->getCode(), $e);
+            } catch (Exception\NotImplementedException $e) {
+                // Just skip unsupported font types.
+                if ($e->getMessage() != Resource\Font\Font\Extracted::TYPE_NOT_SUPPORTED) {
+                    throw $e;
                 }
             }
         }
@@ -779,7 +836,7 @@ class Page
 
             if (! ($fontDictionary instanceof InternalType\IndirectObjectReference  ||
                    $fontDictionary instanceof InternalType\IndirectObject) ) {
-                throw new Exception('Font dictionary has to be an indirect object or object reference.');
+                throw new Exception\CorruptedPdfException('Font dictionary has to be an indirect object or object reference.');
             }
 
             $resourceId = spl_object_hash($fontDictionary->getObject());
@@ -797,9 +854,10 @@ class Page
             try {
                 // Try to extract font
                 return new Resource\Font\Extracted($fontDictionary);
-            } catch (Exception $e) {
-                if ($e->getMessage() != 'Unsupported font type.') {
-                    throw new Exception($e->getMessage(), $e->getCode(), $e);
+            } catch (Exception\NotImplementedException $e) {
+                // Just skip unsupported font types.
+                if ($e->getMessage() != Resource\Font\Font\Extracted::TYPE_NOT_SUPPORTED) {
+                    throw $e;
                 }
 
                 // Continue searhing font with specified name
@@ -836,7 +894,7 @@ class Page
      * any rotation/translation/scaling that has been applied.
      *
      * @todo check for the open paths
-     * @throws \Zend\Pdf\Exception    - if a save is performed with an open path
+     * @throws \Zend\Pdf\Exception
      * @return \Zend\Pdf\Page
      */
     public function saveGS()
@@ -852,13 +910,13 @@ class Page
     /**
      * Restore the graphics state that was saved with the last call to saveGS().
      *
-     * @throws \Zend\Pdf\Exception   - if there is no previously saved state
+     * @throws \Zend\Pdf\Exception
      * @return \Zend\Pdf\Page
      */
     public function restoreGS()
     {
         if ($this->_saveCount-- <= 0) {
-            throw new Exception('Restoring graphics state which is not saved');
+            throw new Exception\LogicException('Restoring graphics state which is not saved');
         }
         $this->_contents .= " Q\n";
 
@@ -1040,7 +1098,7 @@ class Page
     }
 
     /**
-     * Draw a Zend_PDF_ContentStream at the specified position on the page
+     * Draw a \Zend\Pdf\ContentStream at the specified position on the page
      *
      * @param ZPDFContentStream $cs
      * @param float $x1
@@ -1290,8 +1348,8 @@ class Page
     /**
      * Draw a polygon.
      *
-     * If $fillType is Zend_PDF_Page::SHAPE_DRAW_FILL_AND_STROKE or
-     * Zend_PDF_Page::SHAPE_DRAW_FILL, then polygon is automatically closed.
+     * If $fillType is \Zend\Pdf\Page::SHAPE_DRAW_FILL_AND_STROKE or
+     * \Zend\Pdf\Page::SHAPE_DRAW_FILL, then polygon is automatically closed.
      * See detailed description of these methods in a PDF documentation
      * (section 4.4.2 Path painting Operators, Filling)
      *
@@ -1351,9 +1409,9 @@ class Page
      * Draw a rectangle.
      *
      * Fill types:
-     * Zend_PDF_Page::SHAPE_DRAW_FILL_AND_STROKE - fill rectangle and stroke (default)
-     * Zend_PDF_Page::SHAPE_DRAW_STROKE      - stroke rectangle
-     * Zend_PDF_Page::SHAPE_DRAW_FILL        - fill rectangle
+     * \Zend\Pdf\Page::SHAPE_DRAW_FILL_AND_STROKE - fill rectangle and stroke (default)
+     * \Zend\Pdf\Page::SHAPE_DRAW_STROKE      - stroke rectangle
+     * \Zend\Pdf\Page::SHAPE_DRAW_FILL        - fill rectangle
      *
      * @param float $x1
      * @param float $y1
@@ -1393,9 +1451,9 @@ class Page
      * Draw a rounded rectangle.
      *
      * Fill types:
-     * Zend_PDF_Page::SHAPE_DRAW_FILL_AND_STROKE - fill rectangle and stroke (default)
-     * Zend_PDF_Page::SHAPE_DRAW_STROKE      - stroke rectangle
-     * Zend_PDF_Page::SHAPE_DRAW_FILL        - fill rectangle
+     * \Zend\Pdf\Page::SHAPE_DRAW_FILL_AND_STROKE - fill rectangle and stroke (default)
+     * \Zend\Pdf\Page::SHAPE_DRAW_STROKE      - stroke rectangle
+     * \Zend\Pdf\Page::SHAPE_DRAW_FILL        - fill rectangle
      *
      * radius is an integer representing radius of the four corners, or an array
      * of four integers representing the radius starting at top left, going
@@ -1542,7 +1600,7 @@ class Page
     public function drawText($text, $x, $y, $charEncoding = '')
     {
         if ($this->_font === null) {
-            throw new Exception('Font has not been set');
+            throw new Exception\LogicException('Font has not been set');
         }
 
         $this->_addProcSet('Text');
@@ -1612,7 +1670,7 @@ class Page
      /**
      * Close the path by drawing a straight line back to it's beginning.
      *
-     * @throws \Zend\Pdf\Exception    - if a path hasn't been started with pathMove()
+     * @throws \Zend\Pdf\Exception
      * @return \Zend\Pdf\Page
      */
     public function pathClose()
