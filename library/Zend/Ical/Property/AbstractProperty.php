@@ -38,6 +38,26 @@ use Zend\Ical\Ical;
 class AbstractProperty
 {
     /**
+     * Vendor parameters.
+     * 
+     * @var array
+     */
+    protected $vendorParameters = array();
+    
+    /**
+     * Add a vendor parameter.
+     * 
+     * @param  string $name
+     * @param  string $value 
+     * @return self
+     */
+    public function addVendorParameter($name, $value)
+    {
+        $this->vendorParameters[$name] = $value;
+        return $this;
+    }
+    
+    /**
      * Sanitize a value by checking it and returning value type and value.
      * 
      * @param  mixed $value

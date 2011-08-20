@@ -66,7 +66,12 @@ class Event extends AbstractComponent
     
     protected $priority;
     
-    protected $dtStamp;
+    /**
+     * Date/Time stamp.
+     * 
+     * @var Property\DateTimeStamp
+     */
+    protected $dateTimeStamp;
     
     protected $sequence;
     
@@ -189,6 +194,32 @@ class Event extends AbstractComponent
     public function getOrganizer()
     {
         return $this->organizer;
+    }
+    
+    /**
+     * Set Date/Time stamp.
+     * 
+     * @param  mixed $dateTimeStamp
+     * @return self
+     */
+    public function setDateTimeStamp($dateTimeStamp)
+    {
+        if (!$dateTimeStamp instanceof Property\Summary) {
+            $dateTimeStamp = new Property\Organizer($dateTimeStamp);
+        }
+        
+        $this->dateTimeStamp = $dateTimeStamp;
+        return $this;
+    }
+    
+    /**
+     * Get Date/Time stamp.
+     * 
+     * @return Property\Organizer
+     */
+    public function getDateTimeStamp()
+    {
+        return $this->dateTimeStamp;
     }
     
     /**

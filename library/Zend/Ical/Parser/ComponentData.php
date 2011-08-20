@@ -129,22 +129,17 @@ class ComponentData
     /**
      * Add a component.
      * 
+     * @param  string            $type
      * @param  AbstractComponent $component
-     * @param  ComponentData     $data
      * @return void
      */
-    public function addComponent(AbstractComponent $component, ComponentData $data)
-    {
-        $type = $data->getType();
-        
+    public function addComponent($type, AbstractComponent $component)
+    {       
         if (!isset($this->components[$type])) {
             $this->components[$type] = array();
         }
         
-        $this->components[$type][] = array(
-            'component' => $component,
-            'data'      => $data
-        );
+        $this->components[$type][] = $component;
     }
     
     /**

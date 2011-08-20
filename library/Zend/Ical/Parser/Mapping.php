@@ -177,10 +177,10 @@ class Mapping
      */
     protected $propertyTypes = array(
         // Calendar properties
-        'VERSION'  => array('value-types' => 'VERSION'),
-        'PRODID'   => array('value-types' => 'TEXT'),
-        'CALSCALE' => array('value-types' => 'CALSCALE'),
-        'METHOD'   => array('value-types' => 'TEXT'),
+        'VERSION'  => array('type' => 'Version'),
+        'PRODID'   => array('type' => 'ProductId'),
+        'CALSCALE' => array('type' => 'CalendarScale'),
+        'METHOD'   => array('type' => 'Method'),
         
         // Descriptive properties
         'ATTACH'           => array('value-types' => array('URI', 'BINARY')),
@@ -194,7 +194,7 @@ class Mapping
         'PRIORITY'         => array('value-types' => 'INTEGER'),
         'RESOURCES'        => array('value-types' => 'TEXT'),
         'STATUS'           => array('value-types' => 'TEXT'),
-        'SUMMARY'          => array('value-types' => 'TEXT'),
+        'SUMMARY'          => array('type' => 'Summary', 'parameters' => array('ALTREP', 'LANGUAGE')),
 
         // Date and time properties
         'COMPLETED' => array('value-types' => 'DATE-TIME'),
@@ -215,11 +215,11 @@ class Mapping
         // Relationship properties
         'ATTENDEE'      => array('value-types' => 'CAL-ADDRESS'),
         'CONTACT'       => array('value-types' => 'TEXT'),
-        'ORGANIZER'     => array('value-types' => 'CAL-ADDRESS'),
+        'ORGANIZER'     => array('type' => 'Organizer', 'parameters' => array('CN', 'DIR', 'SENTBY', 'LANGUAGE')),
         'RECURRENCE-ID' => array('value-types' => 'DATE-TIME'),
         'RELATED-TO'    => array('value-types' => 'TEXT'),
         'URL'           => array('value-types' => 'URI'),
-        'UID'           => array('value-types' => 'TEXT'),
+        'UID'           => array('type' => 'Uid'),
 
         // Recurrence properties
         'EXDATE' => array('value-types' => array('DATE-TIME', 'DATE')),
@@ -234,14 +234,14 @@ class Mapping
 
         // Change managment properties
         'CREATED'       => array('value-types' => 'DATE-TIME'),
-        'DTSTAMP'       => array('value-types' => 'DATE-TIME'),
+        'DTSTAMP'       => array('type' => 'DateTimeStamp'),
         'LAST-MODIFIED' => array('value-types' => 'DATE-TIME'),
         'SEQUENCE'      => array('value-types' => 'INTEGER'),
 
         // Miscellaneous properties
-        '*X'             => array('value-types' => 'TEXT'),
-        '*IANA'          => array('value-types' => 'TEXT'),
         'REQUEST-STATUS' => array('value-types' => 'TEXT'),
+        self::X          => array('value-types' => 'TEXT'),
+        self::IANA       => array('value-types' => 'TEXT'),
     );
     
     /**

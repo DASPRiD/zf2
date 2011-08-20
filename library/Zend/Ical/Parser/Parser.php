@@ -282,7 +282,7 @@ class Parser
         if ($componentType === 'Calendar') {
             $this->ical->addCalendar($component);
         } elseif ($componentType) {
-            $this->data->top()->addComponent($component, $componentData);
+            $this->data->top()->addComponent($componentType, $component);
         }
     }
     
@@ -429,19 +429,19 @@ class Parser
         foreach ($data->getComponents() as $componentType => $subComponents) {
             if ($componentType === Mapping::IANA) {
                 foreach ($subComponents as $subComponent) {
-                    $component->addIanaComponent($subComponent['component']);
+                    $component->addIanaComponent($subComponent);
                 }
             } elseif ($componentType === Mapping::X) {
                 foreach ($subComponents as $subComponent) {
-                    $component->addVendorComponent($subComponent['component']);
+                    $component->addVendorComponent($subComponent);
                 }
             } elseif ($componentType === 'Standard' || $componentType === 'Daylight') {
                 foreach ($subComponents as $subComponent) {
-                    $component->addOffset($subComponent['component']);
+                    $component->addOffset($subComponent);
                 }
             } else {
                 foreach ($subComponents as $subComponent) {
-                    $component->{'add' . $componentType}($subComponent['component']);
+                    $component->{'add' . $componentType}($subComponent);
                 }
             }
         }
@@ -473,26 +473,59 @@ class Parser
             } elseif (!$componentDefinitions['properties'][$propertyName]['multiple'] && count($properties) > 1) {
                 throw new Exception\ParseException(sprintf('Property %s may not occur more than once in %s', $propertyName, $data->getName()));
             }
-            /*
-            foreach ($properties as $property) {
-                switch ($propertyName) {
-                    case 'SUMMARY':
-                        $component->setSummary();
-                        break;
-                }
+            
+            foreach ($properties as $propertyData) {
+                $property = $this->createProperty($propertyName, $propertyData, $definitions);
+                
+                $component->{'set' . $definitions['type']}($property);
             }
-             */
         }
     }
     
     /**
      * Create a new property.
      * 
-     * @param  array $definitions
+     * @param  string  $name
+     * @param  array   $data
+     * @param  array   $definitions
      * @return Property\PropertyAbstract
      */
-    protected function createProperty($definitions)
+    protected function createProperty($name, array $data, array $definitions)
     {
+        // Validate data
+        $standardParameters = array();
+        $vendorParameters   = array();
         
+        // Check standard parameters
+        if (isset($definitions['parameters'])) {
+            foreach ($definitions['parameters'] as $parameterName) {
+                if (isset($data['parameters'][$parameterName])) {
+                    $parameters[$parameterName] = $data['parameters'][$parameterName];
+                    unset($data['parameters'][$parameterName]);
+                }
+            }
+        }
+        
+        // Check remaining parameters
+        foreach ($data['parameters'] as $parameterName => $parameterValue) {
+            if (!Ical::isXName($parameterName)) {
+                throw new Exception\ParseException(sprintf('Parameter name %s is not valid', $parameterName));
+            } else {
+                $vendorParameters[$parameterName] = $parameterValue;
+            }
+        }
+        
+        $className = '\Zend\Ical\Property\\' . $definitions['type'];
+        $property  = new $className($data['values'][0]);
+        
+        foreach ($standardParameters as $parameterName => $parameterValue) {
+            //$property->{'set' . } addVendorParameter($parameterName, $parameterValue);
+        }
+        
+        foreach ($vendorParameters as $parameterName => $parameterValue) {
+            $property->addVendorParameter($parameterName, $parameterValue);
+        }
+               
+        return $property;
     }
 }

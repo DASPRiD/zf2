@@ -53,12 +53,19 @@ class Organizer extends AbstractProperty
     protected $commonName;
     
     /**
+     * Sent by.
+     * 
+     * @var string 
+     */
+    protected $sentBy;
+    
+    /**
      * Directory.
      * 
      * @var string
      */
     protected $directory;
-    
+        
     /**
      * Language
      * 
@@ -74,12 +81,16 @@ class Organizer extends AbstractProperty
      * @param  string $language
      * @return void
      */
-    public function __construct($organizer, $commonName = null, $directory = null, $language = null)
+    public function __construct($organizer, $commonName = null, $sentBy = null, $directory = null, $language = null)
     {
         $this->setOrganizer($organizer);
 
         if ($commonName !== null) {
             $this->setCommonName($commonName);
+        }
+        
+        if ($sentBy !== null) {
+            $this->setSentBy($sentBy);
         }
         
         if ($directory !== null) {
@@ -114,9 +125,9 @@ class Organizer extends AbstractProperty
     }
     
     /**
-     * Set summary.
+     * Set common name.
      * 
-     * @param  string $summary
+     * @param  string $commonName
      * @return self
      */
     public function setCommonName($commonName = null)
@@ -130,13 +141,40 @@ class Organizer extends AbstractProperty
     }
     
     /**
-     * Get commonName.
+     * Get common name.
      * 
      * @return string
      */
     public function getCommonName()
     {
         return $this->commonName;
+    }
+    
+    /**
+     * Set sent by.
+     * 
+     * @param  mixed $sentBy
+     * @return self
+     */
+    public function setSentBy($url = null)
+    {
+        if ($url === null) {
+            $this->sentBy = null;
+        } else {
+            $this->sentBy = ValueHelper::getUrl($url);
+        }
+
+        return $this;
+    }
+    
+    /**
+     * Get commonName.
+     * 
+     * @return string
+     */
+    public function getSentBy()
+    {
+        return $this->sentBy;
     }
     
     /**
