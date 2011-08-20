@@ -25,7 +25,7 @@
 namespace Zend\Ical\Component;
 
 /**
- * Alarm component
+ * Alarm component.
  *
  * @category   Zend
  * @package    Zend_Ical

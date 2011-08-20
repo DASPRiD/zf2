@@ -37,7 +37,7 @@ class Ical
     protected $calendars = array();
 
     /**
-     * Add a calendar
+     * Add a calendar.
      *
      * @param  Component\Calendar $calendar
      * @return void
@@ -48,7 +48,7 @@ class Ical
     }
 
     /**
-     * Create an Ical object from a string
+     * Create an Ical object from a string.
      *
      * @param  string $string
      * @return Ical
@@ -59,7 +59,7 @@ class Ical
     }
 
     /**
-     * Create an Ical object from an URI
+     * Create an Ical object from an URI.
      *
      * @param  string $string
      * @return Ical
@@ -72,18 +72,18 @@ class Ical
     }
 
     /**
-     * Check if a string is an IANA token
+     * Check if a string is an IANA token.
      *
      * @param  string $string
      * @return boolean
      */
-    public static function isIANAToken($string)
+    public static function isIanaToken($string)
     {
         return (bool) preg_match('(^[A-Za-z\d\-]+$)S', $string);
     }
 
     /**
-     * Check if a string is an X-Name
+     * Check if a string is an X-Name.
      *
      * @param  string $string
      * @return boolean

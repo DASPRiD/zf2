@@ -25,7 +25,7 @@
 namespace Zend\Ical\Component;
 
 /**
- * Journal component
+ * Journal component.
  *
  * @category   Zend
  * @package    Zend_Ical

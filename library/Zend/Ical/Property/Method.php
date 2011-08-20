@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,63 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
+namespace Zend\Ical\Property;
 
-use Zend\Ical\Property;
+use Zend\Ical,
+    Zend\Ical\Exception;
 
 /**
- * Abstract component.
+ * Method property.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
+class Method extends AbstractProperty
+{
     /**
-     * Vendor properties.
+     * Method.
      * 
-     * @var array
+     * @var string
      */
-    protected $vendorProperties = array();
+    protected $method;
     
     /**
-     * Add a vendor property.
+     * Create a new method property.
      * 
-     * @param  Property\Vendor $property
+     * @param  string $method
+     * @return void
+     */
+    public function __construct($method)
+    {
+        $this->setMethod($method);
+    }
+    
+    /**
+     * Set method.
+     * 
+     * @param  string $method
      * @return self
      */
-    public function addVendorProperty(Property\Vendor $property)
+    public function setMethod($method)
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        if (!Ical::isIanaToken($method)) {
+            throw new Exception\UnexpectedValueException(sprintf('"%s" is not a valid IANA token', $method));
+        }
+        
+        $this->method = (string) $method;
+        return $this;
+    }
+    
+    /**
+     * Get method.
+     * 
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
     }
 }

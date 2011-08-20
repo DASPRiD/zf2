@@ -24,10 +24,8 @@
  */
 namespace Zend\Ical\Component;
 
-use Zend\Ical\Property;
-
 /**
- * Abstract component.
+ * IANA component.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -35,24 +33,7 @@ use Zend\Ical\Property;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
-    /**
-     * Vendor properties.
-     * 
-     * @var array
-     */
-    protected $vendorProperties = array();
-    
-    /**
-     * Add a vendor property.
-     * 
-     * @param  Property\Vendor $property
-     * @return self
-     */
-    public function addVendorProperty(Property\Vendor $property)
-    {
-        $this->vendorProperties[] = $property;
-        return $this;        
-    }
+class Iana extends AbstractComponent
+{
+
 }

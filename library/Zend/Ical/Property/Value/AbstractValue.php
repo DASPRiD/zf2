@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property_Value
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,59 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
+namespace Zend\Ical\Property\Value;
 
-use Zend\Ical\Property;
+use Zend\Ical\Ical;
 
 /**
- * Abstract component.
+ * Abstract value.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property_Value
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
+class AbstractValue
+{
     /**
-     * Vendor properties.
+     * Get the value.
      * 
-     * @var array
+     * @var mixed
      */
-    protected $vendorProperties = array();
+    protected $value;
     
     /**
-     * Add a vendor property.
+     * Create a new value.
      * 
-     * @param  Property\Vendor $property
-     * @return self
+     * @param  mixed $value 
+     * @return void
      */
-    public function addVendorProperty(Property\Vendor $property)
+    public function __construct($value)
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        $this->setValue($value);
     }
+    
+    /**
+     * Set the value.
+     * 
+     * @param  string $value
+     * @return void
+     */
+    public function setValue($value)
+    {
+        if (null === ($value = $this->validateValue($value))) {
+            throw new InvalidArgumentException(sprintf('"%s" is not valid', $value));
+        }
+        
+        $this->value = $value;
+    }
+    
+    /**
+     * Validate a value and convert it if required.
+     * 
+     * @param  mixed $value
+     * @return mixed
+     */
+    abstract protected function validateValue($value);
 }

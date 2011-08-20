@@ -53,7 +53,7 @@ END:VEVENT
 END:VCALENDAR');
 
         $ical = $parser->parse();
-
+var_dump($ical);
         // @todo: Test that calendar exists in ical object
     }
 

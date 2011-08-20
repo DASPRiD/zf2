@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,53 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
+namespace Zend\Ical\Property;
 
-use Zend\Ical\Property;
+use Zend\Ical,
+    Zend\Ical\Exception;
 
 /**
- * Abstract component.
+ * Value helper.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
+class ValueHelper
+{
     /**
-     * Vendor properties.
+     * Get language.
      * 
-     * @var array
+     * @param  mixed $language
+     * @return string
      */
-    protected $vendorProperties = array();
+    public static function getLanguage($language)
+    {
+        if (!preg_match('(^[A-Za-z]+(?:-[A-Za-z]+)*$)S', $language)) {
+            throw new Exception\InvalidArgumentException(sprintf('"%s" is not a valid language according to RFC 1766', $language));
+        }
+        
+        return $language;
+    }
     
     /**
-     * Add a vendor property.
+     * Get URL.
      * 
-     * @param  Property\Vendor $property
+     * @param  mixed $url
      * @return self
      */
-    public function addVendorProperty(Property\Vendor $property)
+    public static function getUrl($url)
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        if (!$url instanceof \Zend\Uri\Uri) {
+            $uri = new \Zend\Uri\Uri($url);
+        }
+               
+        if (!$uri->isValid() || !$uri->isAbsolute()) {
+            throw new Exception\InvalidArgumentException('Supplied URI is not valid or not absolute');
+        }
+        
+        return $uri->toString();
     }
 }

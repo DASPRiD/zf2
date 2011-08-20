@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,56 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
-
-use Zend\Ical\Property;
+namespace Zend\Ical\Property;
 
 /**
- * Abstract component.
+ * IANA registered property.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
+class Iana extends AbstractProperty
+{
     /**
-     * Vendor properties.
+     * Value.
      * 
-     * @var array
+     * @var string
      */
-    protected $vendorProperties = array();
+    protected $value;
     
     /**
-     * Add a vendor property.
+     * Create a new IANA registered property.
      * 
-     * @param  Property\Vendor $property
+     * @param  string $value
+     * @return void
+     */
+    public function __construct($value)
+    {
+        $this->setValue($value);
+    }
+    
+    /**
+     * Set value.
+     * 
+     * @param  string $value
      * @return self
      */
-    public function addVendorProperty(Property\Vendor $property)
+    public function setProdId($value)
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        $this->value = (string) $value;
+        return $this;
+    }
+    
+    /**
+     * Get value.
+     * 
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
     }
 }

@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Parser
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,14 +22,60 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Parser;
+namespace Zend\Ical\Property;
 
 /**
+ * UID property.
+ *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Parser
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class InvalidArgumentException extends \InvalidArgumentException implements Exception
-{}
+class Uid extends AbstractProperty
+{
+    /**
+     * UID.
+     * 
+     * @var string
+     */
+    protected $uid;
+    
+    /**
+     * Create a new UID property.
+     * 
+     * @param  string $uid
+     * @return void
+     */
+    public function __construct($uid = null)
+    {
+        $this->setUid($uid);
+    }
+    
+    /**
+     * Set UID.
+     * 
+     * @param  string $uid
+     * @return self
+     */
+    public function setUid($uid)
+    {
+        if ($uid === null) {
+            $uid = gmdate('Ymd') . 'T' . gmdate('His') . 'Z-' . uniqid('', true) . '@' . gethostname();
+        }
+                
+        $this->uid = (string) $uid;
+        return $this;
+    }
+    
+    /**
+     * Get UID.
+     * 
+     * @return string
+     */
+    public function getUid()
+    {
+        return $this->uid;
+    }
+}

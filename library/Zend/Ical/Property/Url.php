@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Parser
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,14 +22,59 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Parser;
+namespace Zend\Ical\Property;
+
+use Zend\Ical,
+    Zend\Ical\Exception;
 
 /**
+ * Method property.
+ *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Parser
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class ParseException extends \RuntimeException implements Exception
-{}
+class Url extends AbstractProperty
+{
+    /**
+     * URL.
+     * 
+     * @var string
+     */
+    protected $url;
+    
+    /**
+     * Create a new URL property.
+     * 
+     * @param  mixed $url
+     * @return void
+     */
+    public function __construct($url)
+    {
+        $this->setUrl($url);
+    }
+    
+    /**
+     * Set URL.
+     * 
+     * @param  mixed $url
+     * @return self
+     */
+    public function setUrl($url)
+    {
+        $this->url = ValueHelper::getUrl($url);
+        return $this;
+    }
+    
+    /**
+     * Get URL.
+     * 
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+}

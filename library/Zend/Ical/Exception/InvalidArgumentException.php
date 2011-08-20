@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Exception
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,14 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
-
-use Zend\Ical\Property;
+namespace Zend\Ical\Exception;
 
 /**
- * Abstract component.
- *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Exception
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
-    /**
-     * Vendor properties.
-     * 
-     * @var array
-     */
-    protected $vendorProperties = array();
-    
-    /**
-     * Add a vendor property.
-     * 
-     * @param  Property\Vendor $property
-     * @return self
-     */
-    public function addVendorProperty(Property\Vendor $property)
-    {
-        $this->vendorProperties[] = $property;
-        return $this;        
-    }
-}
+class InvalidArgumentException extends \InvalidArgumentException implements Exception
+{}

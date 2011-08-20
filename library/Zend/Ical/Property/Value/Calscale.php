@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property_Value
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,30 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
+namespace Zend\Ical\Property\Value;
 
-use Zend\Ical\Property;
+use Zend\Ical\Ical;
 
 /**
- * Abstract component.
+ * CALSCALE value.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property_Value
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
+class Calscale extends AbstractValue
+{
     /**
-     * Vendor properties.
+     * validateValue(): defined by AbstractValue.
      * 
-     * @var array
+     * @see    AbstractValue::validateValue()
+     * @param  mixed $value
+     * @return mixed
      */
-    protected $vendorProperties = array();
-    
-    /**
-     * Add a vendor property.
-     * 
-     * @param  Property\Vendor $property
-     * @return self
-     */
-    public function addVendorProperty(Property\Vendor $property)
+    protected function validateValue($value)
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        
     }
 }

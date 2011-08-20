@@ -25,11 +25,12 @@
 namespace Zend\Ical\Parser;
 
 use Zend\Ical\Ical,
+    Zend\Ical\Exception,
     Zend\Ical\Component,
-    Zend\Ical\Property\Property;
+    Zend\Ical\Property;
 
 /**
- * Ical parser based on libical
+ * Ical parser based on libical.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -40,76 +41,68 @@ use Zend\Ical\Ical,
 class Parser
 {
     /**
-     * Special component and property types
-     */
-    const NO_COMPONENT = 0;
-    const X_COMPONENT  = 1;
-    const NO_PROPERTY  = 1;
-
-    /**
-     * Stream resource
+     * Stream resource.
      *
      * @var resource
      */
     protected $stream;
 
     /**
-     * Buffer for getting folded lines
+     * Buffer for getting folded lines.
      *
      * @var string
      */
     protected $buffer;
 
     /**
-     * Raw data of the current line
+     * Raw data of the current line.
      *
      * @var string
      */
     protected $rawData;
 
     /**
-     * Current position in the current line
+     * Current position in the current line.
      *
      * @var integer
      */
     protected $currentPos;
 
     /**
-     * Ical object
+     * Ical object.
      * 
      * @var Ical
      */
     protected $ical;
 
     /**
-     * Regular expressions used in the parser
+     * Regular expressions used in the parser.
      * 
      * @var array
      */
     protected $regex;
+    
+    /**
+     * Mapping table.
+     * 
+     * @var Mapping
+     */
+    protected $mapping;
 
     /**
-     * Component stack
+     * Data stack.
      *
-     * @var array
+     * @var \SplStack
+     */
+    protected $data;
+    
+    /**
+     * Component stack.
+     *
+     * @var \SplStack
      */
     protected $components;
-
-    /**
-     * Component type map
-     *
-     * @var array
-     */
-    protected $componentTypes = array(
-        'VCALENDAR' => 'Calendar',
-        'VALARM'    => 'Alarm',
-        'VEVENT'    => 'Event',
-        'VFREEBUSY' => 'FreeBusy',
-        'VJOURNAL'  => 'Journal',
-        'VTODO'     => 'Todo',
-        'VTIMEZONE' => 'Timezone'
-    );
-
+    
     /**
      * Create a new lexer with an open file stream.
      *
@@ -119,10 +112,13 @@ class Parser
     public function __construct($stream)
     {
         if (!is_resource($stream)) {
-            throw new InvalidArgumentException('Stream must be a resource');
+            throw new Exception\InvalidArgumentException('Stream must be a resource');
         }
 
         $this->stream = $stream;
+        
+        // Mapping table
+        $this->mapping = new Mapping();
 
         // Base regex types
         $this->regex = array(
@@ -146,13 +142,14 @@ class Parser
     }
 
     /**
-     * Parse the input from the stream
+     * Parse the input from the stream.
      *
      * @return Ical
      */
     public function parse()
     {
         $this->ical       = new Ical();
+        $this->data       = new \SplStack();
         $this->components = new \SplStack();
 
         while (($this->rawData = $this->getNextUnfoldedLine()) !== null) {
@@ -160,14 +157,14 @@ class Parser
         }
 
         if (count($this->components) > 0) {
-            throw new ParseException('Unexpected end in input stream');
+            throw new Exception\ParseException('Unexpected end in input stream');
         }
 
         return $this->ical;
     }
 
     /**
-     * Parse a single line
+     * Parse a single line.
      *
      * @return void
      */
@@ -177,7 +174,7 @@ class Parser
         $propertyName     = $this->getPropertyName();
 
         if ($propertyName === null) {
-            throw new ParseException('Could not find a property name, component begin or end tag');
+            throw new Exception\ParseException('Could not find a property name, component begin or end tag');
         }
 
         // If the property name is BEGIN or END, we are actually starting or
@@ -190,104 +187,107 @@ class Parser
 
         // At this point, the property name really is a property name (Not a
         // component name), so make a new property and add it to the component.
-        if (count($this->components) === 0) {
-            throw new ParseException('Found property name within root');
+        if (count($this->data) === 0) {
+            throw new Exception\ParseException('Found property name within root');
         }
-
-        $propertyType = Property::getDefaultValueType($propertyName);
-
-        if ($propertyType === Property::NO_PROPERTY) {
-            throw new ParseException('Invalid property name');
-        }
-
-        $property = new Property($propertyType);
+         
+        $property = array(
+            'parameters' => array(),
+            'values'     => array()
+        );
 
         // Handle parameter values
-        while ($this->rawData[$this->currentPos-1] !== ':') {
+        while ($this->rawData[$this->currentPos - 1] !== ':') {
             $parameterName = $this->getNextParameterName();
 
             if ($parameterName === null) {
-                throw new ParseException('Could not find a parameter name');
+                throw new Exception\ParseException('Could not find a parameter name');
             }
 
             $parameterValue = $this->getNextParameterValue();
 
             if ($parameterValue === null) {
-                throw new ParseException('Could not find a parameter value');
+                throw new Exception\ParseException('Could not find a parameter value');
             }
 
-            $parameter = new Parameter($parameterName, $parameterValue);
-            $property->addParameter($parameter);
+            $property['parameters'][$parameterName] = $parameterValue;
         }
+        
+        // Handle property values
+        do {
+            $property['values'][] = $this->getNextValue();
+        } while ($this->rawData[$this->currentPos - 1] === ',');
 
-        $this->_components->top()->addProperty($property);
+        $this->data->top()->addProperty($propertyName, $property);
     }
 
     /**
-     * Handle the beginning of a component
+     * Handle the beginning of a component.
      *
      * @return void
      */
     protected function handleComponentBegin()
     {
         $componentName = $this->getNextValue();
-        $componentType = $this->getComponentType($componentName);
+        $componentType = $this->mapping->getComponentType($componentName);
 
-        if ($componentType === self::NO_COMPONENT) {
+        if ($componentType === Mapping::NONE) {
             throw new ParseException(sprintf('Invalid component name "%s"', $componentName));
-        } elseif ($componentType === self::X_COMPONENT) {
-            $component = $this->newXComponent($componentName);
-        } else {
-            $component = $this->newComponent($componentType);
         }
 
         if ($componentType === 'Calendar') {
-            if (count($this->components) > 0) {
-                throw new ParseException('Calendar component found outside of root');
+            if (count($this->data) > 0) {
+                throw new Exception\ParseException('Calendar component found outside of root');
             }
         } else {
-            if (count($this->components) === 0) {
-                throw new ParseException('Component found inside root which does not belong there');
+            if (count($this->data) === 0) {
+                throw new Exception\ParseException('Component found inside root');
+            } else {
+                $allowedComponents = $this->mapping->getAllowedComponents($this->data->top());
+                
+                if ($allowedComponents !== '*' && !in_array($componentType, $allowedComponents)) {
+                    if ($componentType === Mapping::X) {
+                        throw new Exception\ParseException(sprintf('Vendor component found inside %s component', $componentType, $this->stack->top()->getType()));
+                    } elseif ($componentType === Mapping::IANA) {
+                        throw new Exception\ParseException(sprintf('IANA component found inside %s component', $componentType, $this->stack->top()->getType()));
+                    } else {
+                        throw new Exception\ParseException(sprintf('%s component found inside %s component', $componentType, $this->stack->top()->getType()));
+                    }
+                }
             }
         }
-
-        $this->_components->push($component);
+        
+        $this->data->push(new ComponentData($componentType, $componentName));
     }
 
     /**
-     * Handle the ending of a component
+     * Handle the ending of a component.
      *
      * @return void
      */
     protected function handleComponentEnd()
     {
-        $componentName    = $this->getNextValue();
-        $componentType    = $this->getComponentType($componentName);
-        $currentComponent = $this->components->pop();
+        $componentName = $this->getNextValue();
+        $componentType = $this->mapping->getComponentType($componentName);
+        $componentData = $this->data->pop();
 
-        if ($componentType === self::NO_COMPONENT) {
-            throw new ParseException(sprintf('Invalid component name "%s"', $componentName));
-        } elseif ($componentType === self::X_COMPONENT) {
-            if ($componentType !== $currentComponent->getName()) {
-                throw new ParseException(sprintf('Ending component does not match current component'));
-            }
-        } else {
-            $className = 'Zend\Ical\Component\\' . $componentType;
-
-            if (!$currentComponent instanceof $className) {
-                throw new ParseException('Ending component does not match current component');
-            }
+        if ($componentType === Mapping::NONE) {
+            throw new Exception\ParseException(sprintf('Invalid component name "%s"', $componentName));
+        } elseif ($componentType !== $componentData->getType()) {
+            throw new Exception\ParseException(sprintf('Ending tag does not match current component'));
         }
-
+        
+        $component = $this->createComponent($componentData);
+        
         if ($componentType === 'Calendar') {
-            $this->_ical->addCalendar($currentComponent);
-        } else {
-            $this->_components->top()->addComponent($currentComponent);
+            $this->ical->addCalendar($component);
+        } elseif ($componentType) {
+            $this->data->top()->addComponent($component, $componentData);
         }
     }
-
+    
     /**
-     * Get a property name
+     * Get a property name.
      *
      * @return string
      */
@@ -329,62 +329,45 @@ class Parser
     }
 
     /**
-     * Get the component type for a component
+     * Get the next parameter name.
      *
-     * @param  string $component
-     * @return mixed
+     * @return string
      */
-    protected function getComponentType($component)
+    protected function getNextParameterName()
     {
-        $component = strtoupper($component);
-
-        if (!isset($this->componentTypes[$component])) {
-            if (preg_match('(^' . $this->regex['x-name'] . '$)', $component)) {
-                return self::X_COMPONENT;
-            }
-
-            return self::NO_COMPONENT;
+        if (!preg_match(
+            '(\G(?<name>' . $this->regex['name'] . ')=)S',
+            $this->rawData, $match, 0, $this->currentPos
+        )) {
+            return null;
         }
 
-        return $this->componentTypes[$component];
-    }
+        $this->currentPos += strlen($match[0]);
 
+        return $match['name'];
+    }
+    
     /**
-     * Get the property type for a property
+     * Get the next parameter value.
      *
-     * @param  string $property
-     * @return mixed
+     * @return string
      */
-    protected function getPropertyType($property)
+    protected function getNextParameterValue()
     {
-        return $property;
+        if (!preg_match(
+            '(\G(?<value>' . $this->regex['param-value'] . ')[,:])S',
+            $this->rawData, $match, 0, $this->currentPos
+        )) {
+            return null;
+        }
+
+        $this->currentPos += strlen($match[0]);
+
+        return $match['value'];
     }
 
     /**
-     * Get a new XName component
-     *
-     * @param  string $name
-     * @return Component\XName
-     */
-    protected function newXComponent($name)
-    {
-        return new Component\XName($name);
-    }
-
-    /**
-     * Get a new component
-     *
-     * @param  string $type
-     * @return mixed
-     */
-    protected function newComponent($type)
-    {
-        $className = 'Zend\Ical\Component\\' . $type;
-        return new $className();
-    }
-
-    /**
-     * Get the next unfolded line from the stream
+     * Get the next unfolded line from the stream.
      *
      * @return string
      */
@@ -405,5 +388,111 @@ class Parser
         }
 
         return $rawData;
+    }
+    
+    /**
+     * Create a new component.
+     * 
+     * @param  ComponentData $data 
+     * @return Component\AbstractComponent
+     */
+    public function createComponent(ComponentData $data)
+    {
+        $type = $data->getType();
+        
+        if ($type === Mapping::X) {
+            $component = new Component\Vendor($data->getName());
+        } elseif ($type === Mapping::IANA) {
+            $component = new Component\Iana($data->getName());
+        } elseif ($type === 'Timezone') {
+            $component = new Component\Timezone('tzid and stuffz');
+        } else {
+            $className = '\Zend\Ical\Component\\' . $type;
+            $component = new $className();
+        }
+        
+        $this->fillComponentWithComponents($component, $data);
+        $this->fillComponentWithProperties($component, $data);
+        
+        return $component;
+    }
+    
+    /**
+     * Fill a component with sub-components.
+     * 
+     * @param  Component\AbstractComponent $component
+     * @param  ComponentData               $data
+     * @return void
+     */
+    protected function fillComponentWithComponents(Component\AbstractComponent $component, ComponentData $data)
+    {
+        foreach ($data->getComponents() as $componentType => $subComponents) {
+            if ($componentType === Mapping::IANA) {
+                foreach ($subComponents as $subComponent) {
+                    $component->addIanaComponent($subComponent['component']);
+                }
+            } elseif ($componentType === Mapping::X) {
+                foreach ($subComponents as $subComponent) {
+                    $component->addVendorComponent($subComponent['component']);
+                }
+            } elseif ($componentType === 'Standard' || $componentType === 'Daylight') {
+                foreach ($subComponents as $subComponent) {
+                    $component->addOffset($subComponent['component']);
+                }
+            } else {
+                foreach ($subComponents as $subComponent) {
+                    $component->{'add' . $componentType}($subComponent['component']);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Fill a component with properties.
+     * 
+     * @param  Component\AbstractComponent $component
+     * @param  ComponentData               $data
+     * @return void
+     */
+    protected function fillComponentWithProperties(Component\AbstractComponent $component, ComponentData $data)
+    {   
+        $componentDefinitions = $this->mapping->getComponentDefinitions($data);
+        $properties           = $data->getProperties();
+        
+        foreach ($componentDefinitions['required-properties'] as $requiredProperty) {
+            if (!isset($properties[$requiredProperty])) {
+                throw new Exception\ParseException(sprintf('Property %s missing in %s', $propertyName, $data->getName()));
+            }
+        }
+        
+        foreach ($properties as $propertyName => $properties) {
+            $definitions = $this->mapping->getPropertyDefinitions($propertyName);
+            
+            if (!isset($componentDefinitions['properties'][$propertyName])) {
+                throw new Exception\ParseException(sprintf('Property %s is not allowed within %s', $propertyName, $data->getName()));
+            } elseif (!$componentDefinitions['properties'][$propertyName]['multiple'] && count($properties) > 1) {
+                throw new Exception\ParseException(sprintf('Property %s may not occur more than once in %s', $propertyName, $data->getName()));
+            }
+            /*
+            foreach ($properties as $property) {
+                switch ($propertyName) {
+                    case 'SUMMARY':
+                        $component->setSummary();
+                        break;
+                }
+            }
+             */
+        }
+    }
+    
+    /**
+     * Create a new property.
+     * 
+     * @param  array $definitions
+     * @return Property\PropertyAbstract
+     */
+    protected function createProperty($definitions)
+    {
+        
     }
 }

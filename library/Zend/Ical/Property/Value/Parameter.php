@@ -24,8 +24,10 @@
  */
 namespace Zend\Ical\Property;
 
+use Zend\Ical\Ical;
+
 /**
- * Property parameter
+ * Property parameter.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -36,7 +38,7 @@ namespace Zend\Ical\Property;
 class Parameter
 {
     /**
-     * Parameter map
+     * Parameter map.
      *
      * @var array
      */
@@ -127,14 +129,21 @@ class Parameter
     );
 
     /**
-     * Value of the parameter
+     * Type of the value.
+     * 
+     * @var string
+     */
+    protected $type;
+    
+    /**
+     * Value of the parameter.
      *
      * @var mixed
      */
     protected $value;
 
     /**
-     * Create a new parameter with a given name
+     * Create a new parameter with a given name.
      *
      * @param  string $name
      * @param  mixed  $value
@@ -144,10 +153,10 @@ class Parameter
     public function __construct($name, $value)
     {
         if (isset(self::$parameterMap[$name])) {
-            $this->type = $parameterMap[$name]['type'];
+            $this->type = self::$parameterMap[$name]['type'];
         } elseif (Ical::isXName($name)) {
             $this->type = 'TEXT';
-        } elseif (Ical::isIANAToken($name)) {
+        } elseif (Ical::isIanaToken($name)) {
             $this->type = 'TEXT';
         } else {
             throw new UnexpectedValueException(sprintf('The parameter name "%s" is not valid', $name));
@@ -159,16 +168,14 @@ class Parameter
     }
 
     /**
-     * Set the value of the parameter
+     * Set the value of the parameter.
      *
      * @param  mixed $value
      * @return void
      */
     public function setValue($value)
     {
-        $type = self::$parameterMap[$this->name]['type'];
-
-        switch ($type) {
+        switch ($this->type) {
             case 'TEXT':
                 $this->value = (string) $value;
                 break;
@@ -194,7 +201,7 @@ class Parameter
                     $this->value = (string) $value;
                 } elseif (in_array('x-name', $allowedValues) && Ical::isXName($value)) {
                     $this->value = (string) $value;
-                } elseif (in_array('iana-token', $allowedValues) && Ical::isIANAToken($value)) {
+                } elseif (in_array('iana-token', $allowedValues) && Ical::isIanaToken($value)) {
                     $this->value = (string) $value;
                 } else {
                     throw new UnexpectedValueException(sprintf('Enum value "%s" is not within allowed set', $value));

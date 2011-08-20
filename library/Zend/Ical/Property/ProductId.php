@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,37 +22,56 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Component;
-
-use Zend\Ical\Property;
+namespace Zend\Ical\Property;
 
 /**
- * Abstract component.
+ * Product ID property.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Component
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class AbstractComponent
-{   
+class ProductId extends AbstractProperty
+{
     /**
-     * Vendor properties.
+     * Product ID.
      * 
-     * @var array
+     * @var string
      */
-    protected $vendorProperties = array();
+    protected $productId;
     
     /**
-     * Add a vendor property.
+     * Create a new product ID property.
      * 
-     * @param  Property\Vendor $property
+     * @param  string $productId
+     * @return void
+     */
+    public function __construct($productId = '-//Zend//NONSGML Zend_Ical//EN')
+    {
+        $this->setProductId($productId);
+    }
+    
+    /**
+     * Set product ID.
+     * 
+     * @param  string $productId
      * @return self
      */
-    public function addVendorProperty(Property\Vendor $property)
+    public function setProductId($productId)
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        $this->productId = (string) $productId;
+        return $this;
+    }
+    
+    /**
+     * Get product ID.
+     * 
+     * @return string
+     */
+    public function getProductId()
+    {
+        return $this->productId;
     }
 }
