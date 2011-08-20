@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 20807 -->
-<!-- Reviewed: 20807 -->
-<sect2 id="zend.test.phpunit.assertions">
-    <title>Zusicherungen</title>
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.test.phpunit.assertions"><info><title>Zusicherungen</title></info>
+    
 
     <para>
         Zusicherungen sind das Herz der UnitTests; sie können verwendet werden um zu prüfen, ob
@@ -11,8 +11,8 @@
         das Testen eigener <acronym>MVC</acronym>-Anwendungen und Controller einfacher zu machen.
     </para>
 
-    <sect3 id="zend.test.phpunit.assertions.query">
-        <title>CSS-Selektor-Zusicherungen</title>
+    <section xml:id="zend.test.phpunit.assertions.query"><info><title>CSS-Selektor-Zusicherungen</title></info>
+        
 
         <para>
             <acronym>CSS</acronym>-Selektoren sind ein einfacher Weg um zu prüfen, dass bestimmte
@@ -36,7 +36,7 @@
         <itemizedlist>
             <listitem>
                 <para>
-                    <methodname>assertQuery($path, $message = '')</methodname>: Nimmt an, dass ein
+                    <methodname>assertQuery($path, $message)</methodname>: Nimmt an, dass ein
                     oder mehrere DOM Elemente, die dem gegebenen <acronym>CSS</acronym>-Selektor
                     entsprechen, vorhanden sind. Wenn eine <varname>$message</varname> vorhanden
                     ist, wird diese jeder fehlgeschlagenen Meldung einer Zusicherung vorangestellt.
@@ -45,9 +45,9 @@
 
             <listitem>
                 <para>
-                    <methodname>assertQueryContentContains($path, $match, $message =
-                        '')</methodname>: Nimmt an, dass ein oder mehrere DOM Elemente, die dem
-                    angegebenen <acronym>CSS</acronym>-Selektor entsprechen, vorhanden sind, und dass
+                    <methodname>assertQueryContentContains($path, $match, $message)</methodname>:
+                    Nimmt an, dass ein oder mehrere DOM Elemente, die dem angegebenen
+                    <acronym>CSS</acronym>-Selektor entsprechen, vorhanden sind, und dass
                     zumindest einer dem Inhalt entspricht, der in <varname>$match</varname> angegeben
                     wurde. Wenn eine <varname>$message</varname> vorhanden ist, wird diese
                     jeder fehlgeschlagenen Meldung einer Zusicherung vorangestellt.
@@ -56,8 +56,8 @@
 
             <listitem>
                 <para>
-                    <methodname>assertQueryContentRegex($path, $pattern, $message =
-                        '')</methodname>: Nimmt an, dass ein oder mehrere DOM-Elemente vorhanden sind,
+                    <methodname>assertQueryContentRegex($path, $pattern, $message)</methodname>:
+                    Nimmt an, dass ein oder mehrere DOM-Elemente vorhanden sind,
                     die dem angegebenen <acronym>CSS</acronym>-Selektor entsprechen und dass
                     zumindest einer dem Regulären Ausdruck entspricht, der in <varname>$pattern</varname>
                     angegeben wurde, Wenn eine <varname>$message</varname> vorhanden
@@ -67,7 +67,7 @@
 
             <listitem>
                 <para>
-                    <methodname>assertQueryCount($path, $count, $message = '')</methodname>: Nimmt
+                    <methodname>assertQueryCount($path, $count, $message)</methodname>: Nimmt
                     an, dass exakt <varname>$count</varname> DOM-Elemente dem angegebenen
                     <acronym>CSS</acronym> Selektor entsprechen. Wenn eine
                     <varname>$message</varname> vorhanden ist, wird diese jeder fehlgeschlagenen
@@ -77,7 +77,7 @@
 
             <listitem>
                 <para>
-                    <methodname>assertQueryCountMin($path, $count, $message = '')</methodname>:
+                    <methodname>assertQueryCountMin($path, $count, $message)</methodname>:
                     Nimmt an, dass zumindest <varname>$count</varname> DOM-Element dem angegebenen
                     <acronym>CSS</acronym> Selektor entsprechen. Wenn eine
                     <varname>$message</varname> vorhanden ist, wird diese jeder fehlgeschlagenen
@@ -89,7 +89,7 @@
 
             <listitem>
                 <para>
-                    <methodname>assertQueryCountMax($path, $count, $message = '')</methodname>:
+                    <methodname>assertQueryCountMax($path, $count, $message)</methodname>:
                     Nimmt an, dass es nicht mehr als <varname>$count</varname> DOM-Elemente gibt, die
                     dem angegebenen <acronym>CSS</acronym>-Selektor entsprechen. Wenn eine
                     <varname>$message</varname> vorhanden ist, wird diese jeder fehlgeschlagenen
@@ -108,10 +108,10 @@
             <methodname>assertNotQueryCount()</methodname>. (Es ist zu beachten, dass die min und max
             Zählen keine dieser Varianten haben, was aus logischen Gründen so ist.)
         </para>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.test.phpunit.assertions.xpath">
-        <title>XPath-Zusicherungen</title>
+    <section xml:id="zend.test.phpunit.assertions.xpath"><info><title>XPath-Zusicherungen</title></info>
+        
 
         <para>
             Einige Entwickler sind mit XPath vertrauter als mit <acronym>CSS</acronym>-Selektoren,
@@ -179,10 +179,10 @@
                 </para>
             </listitem>
         </itemizedlist>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.test.phpunit.assertions.redirect">
-        <title>Umleitungszusicherungen</title>
+    <section xml:id="zend.test.phpunit.assertions.redirect"><info><title>Umleitungszusicherungen</title></info>
+        
 
         <para>
             Oft wird eine Aktion umgeleitet. Statt der Umleitung zu folgen, erlaubt es
@@ -238,10 +238,10 @@
                 </para>
             </listitem>
         </itemizedlist>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.test.phpunit.assertions.header">
-        <title>Antwort-Header-Zusicherungen</title>
+    <section xml:id="zend.test.phpunit.assertions.header"><info><title>Antwort-Header-Zusicherungen</title></info>
+        
 
         <para>
             Zusätzlich zur Prüfung auf Umleitungs-Header, ist es oft notwendig auf spezielle
@@ -268,7 +268,7 @@
 
             <listitem>
                 <para>
-                    <methodname>assertHeaderContains($header, $match, $message = '')</methodname>:
+                    <methodname>assertHeaderContains($header, $match, $message)</methodname>:
                     Nimmt an, dass die Antwort den gegebenen Header enthält und dass sein Inhalt den
                     gegebenen String enthält.
                 </para>
@@ -276,7 +276,7 @@
 
             <listitem>
                 <para>
-                    <methodname>assertHeaderRegex($header, $pattern, $message = '')</methodname>:
+                    <methodname>assertHeaderRegex($header, $pattern, $message)</methodname>:
                     Nimmt an, dass die Antwort den gegebenen Header enthält und dass sein Inhalt der
                     gegebenen Regex entspricht.
                 </para>
@@ -287,10 +287,10 @@
             Zusätzlich hat jede der obigen Zusicherungen eine 'Not'-Variante für negative
             Zusicherungen.
         </para>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.test.phpunit.assertions.request">
-        <title>Anfragezusicherungen</title>
+    <section xml:id="zend.test.phpunit.assertions.request"><info><title>Anfragezusicherungen</title></info>
+        
 
         <para>
             Es ist oft sinnvoll gegen die letzte Aktion, den Controller und das Modul zu prüfen;
@@ -332,5 +332,5 @@
         <para>
             Jede hat auch eine 'Not'-Variante für negative Zusicherungen.
         </para>
-    </sect3>
-</sect2>
+    </section>
+</section>

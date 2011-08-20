@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Reviewed: no -->
-<sect3 id="zend.progressbar.adapter.jspull">
-    <title>Zend_ProgressBar_Adapter_JsPull</title>
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.progressbar.adapter.jspull"><info><title>Zend_ProgressBar_Adapter_JsPull</title></info>
+    
 
     <para>
         <classname>Zend_ProgressBar_Adapter_JsPull</classname> is the opposite of jsPush,
@@ -11,13 +12,13 @@
         the adapter sends a <acronym>JSON</acronym> string to the browser, which looks exactly
         like the <acronym>JSON</acronym> string which is send by the jsPush adapter. The only
         difference is, that it contains an additional parameter,
-        <code>finished</code>, which is either <constant>FALSE</constant> when
+        <property>finished</property>, which is either <constant>FALSE</constant> when
         <methodname>update()</methodname> is called or <constant>TRUE</constant>, when
         <methodname>finish()</methodname> is called.
     </para>
 
     <para>
-        You can set the adapter options either via the <code>set*</code> methods
+        You can set the adapter options either via the <methodname>set*()</methodname> methods
         or give an array or a <classname>Zend_Config</classname> instance with options as first
         parameter to the constructor. The available options are:
     </para>
@@ -25,12 +26,9 @@
     <itemizedlist>
         <listitem>
             <para>
-                <code>exitAfterSend</code>: Exits the current request after the
+                <property>exitAfterSend</property>: Exits the current request after the
                 data were send to the browser. Default is <constant>TRUE</constant>.
             </para>
         </listitem>
     </itemizedlist>
-</sect3>
-<!--
-vim:se ts=4 sw=4 et:
--->
+</section>

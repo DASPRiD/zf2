@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use ArrayObject;
  * @todo       Move strict variables into variables object
  * @category   Zend
  * @package    Zend_View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Variables extends ArrayObject
@@ -73,10 +73,16 @@ class Variables extends ArrayObject
     public function __construct(array $variables = array(), array $options = array()) 
     {
         parent::__construct(
-            $variables, 
+            array(), 
             ArrayObject::STD_PROP_LIST|ArrayObject::ARRAY_AS_PROPS, 
             'ArrayIterator'
         );
+        
+        // Load each variable into the object using offsetSet() so that they
+        // are escaped correctly.
+        foreach ($variables as $key => $value) {
+            $this->$key = $value;
+        }
         $this->setOptions($options);
     }
 

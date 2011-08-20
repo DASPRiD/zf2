@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_InfoCard
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,7 +34,7 @@ namespace Zend\InfoCard;
  * @uses       \Zend\InfoCard\XML\Security
  * @category   Zend
  * @package    Zend_InfoCard
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class InfoCard
@@ -357,13 +357,7 @@ class InfoCard
 
         $PKcipher = Cipher::getInstanceByURI($encryptedKey->getEncryptionMethod());
 
-        $base64DecodeSupportsStrictParam = version_compare(PHP_VERSION, '5.2.0', '>=');
-
-        if ($base64DecodeSupportsStrictParam) {
-            $keyCipherValueBase64Decoded = base64_decode($encryptedKey->getCipherValue(), true);
-        } else {
-            $keyCipherValueBase64Decoded = base64_decode($encryptedKey->getCipherValue());
-        }
+        $keyCipherValueBase64Decoded = base64_decode($encryptedKey->getCipherValue(), true);
 
         $symmetricKey = $PKcipher->decrypt(
             $keyCipherValueBase64Decoded,
@@ -373,11 +367,7 @@ class InfoCard
 
         $symCipher = Cipher::getInstanceByURI($encryptedData->getEncryptionMethod());
 
-        if ($base64DecodeSupportsStrictParam) {
-            $dataCipherValueBase64Decoded = base64_decode($encryptedData->getCipherValue(), true);
-        } else {
-            $dataCipherValueBase64Decoded = base64_decode($encryptedData->getCipherValue());
-        }
+        $dataCipherValueBase64Decoded = base64_decode($encryptedData->getCipherValue(), true);
 
         $signedToken = $symCipher->decrypt($dataCipherValueBase64Decoded, $symmetricKey);
 

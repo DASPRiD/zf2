@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Controller
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,8 +34,6 @@ namespace Zend\Controller\Request;
  * In each case, the URL to check against is found in REDIRECT_URL, not
  * REQUEST_URI.
  *
- * @uses       \Zend\Controller\Request\Http
- * @uses       \Zend\Uri\Uri
  * @package    Zend_Controller
  * @subpackage Request
  */

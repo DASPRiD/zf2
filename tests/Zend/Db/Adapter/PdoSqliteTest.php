@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +29,7 @@ use Zend\Db;
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -49,7 +49,7 @@ class PdoSqliteTest extends AbstractPdoTest
     {
         $this->markTestSkipped('This suite is skipped until Zend\Db can be refactored.');
     }
-    
+
     /**
      * Test AUTO_QUOTE_IDENTIFIERS option
      * Case: Zend_Db::AUTO_QUOTE_IDENTIFIERS = true
@@ -79,7 +79,7 @@ class PdoSqliteTest extends AbstractPdoTest
         try {
             $stmt = $this->_db->query($select);
             $result2 = $stmt->fetchAll();
-        } catch (\Zend\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertType('Zend_Db_Statement_Exception', $e,
                 'Expecting object of type Zend_Db_Statement_Exception, got '.get_class($e));
             $this->fail('Unexpected exception '.get_class($e).' received: '.$e->getMessage());
@@ -189,8 +189,7 @@ class PdoSqliteTest extends AbstractPdoTest
     }
 
     /**
-     * @return void
-     * @see    http://framework.zend.com/issues/browse/ZF-2293
+     * @group  ZF-2293
      */
     public function testAdapterSupportsLengthInTableMetadataForVarcharFields()
     {

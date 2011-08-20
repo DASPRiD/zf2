@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Reviewed: no -->
-<sect1 id="zend.infocard.basics">
-    <title>Introduction</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.infocard.basics"><info><title>Introduction</title></info>
+    
 
     <para>
         The <classname>Zend_InfoCard</classname> component implements relying-party
@@ -12,12 +11,11 @@
 
     <para>
         Detailed information about information cards and their importance to the
-        internet identity metasystem can be found on the <ulink
-            url="http://www.identityblog.com/">IdentityBlog</ulink>.
+        internet identity metasystem can be found on the <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.identityblog.com/">IdentityBlog</link>.
     </para>
 
-    <sect2 id="zend.infocard.basics.theory">
-        <title>Basic Theory of Usage</title>
+    <section xml:id="zend.infocard.basics.theory"><info><title>Basic Theory of Usage</title></info>
+        
 
         <para>
             Usage of <classname>Zend_InfoCard</classname> can be done one of two ways:
@@ -45,13 +43,13 @@
 ]]></programlisting>
 
         <para>
-            In the example above, the <code>requiredClaims</code>
-            <code>&lt;param&gt;</code> tag is used to identify pieces of
-            information known as claims (i.e. person's first name, last name)
-            which the web site (a.k.a "relying party") needs in order a user to
-            authenticate using an information card. For your reference, the full
-            <acronym>URI</acronym> (for instance the <code>givenname</code> claim) is as follows:
-            <code>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname</code>
+            In the example above, the <property>requiredClaims</property>
+            &lt;param&gt; tag is used to identify pieces of information known as claims (i.e.
+            person's first name, last name) which the web site (a.k.a "relying party") needs in
+            order a user to authenticate using an information card. For your reference, the full
+            <acronym>URI</acronym> (for instance the <emphasis>givenname</emphasis> claim) is as
+            follows:
+            <filename>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname</filename>
         </para>
 
         <para>
@@ -65,14 +63,14 @@
         </para>
 
         <para>
-            Note, Information cards can only be <code>HTTP POST</code>ed to
+            Note, Information cards can only be <acronym>HTTP</acronym> <acronym>POST</acronym>ed to
             <acronym>SSL</acronym>-encrypted <acronym>URL</acronym>s. Please consult your web
             server's documentation on how to set up <acronym>SSL</acronym> encryption.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.infocard.basics.auth">
-        <title>Using as part of Zend_Auth</title>
+    <section xml:id="zend.infocard.basics.auth"><info><title>Using as part of Zend_Auth</title></info>
+        
 
         <para>
             In order to use the component as part of the <classname>Zend_Auth</classname>
@@ -143,10 +141,9 @@ if (isset($_POST['xmlToken'])) {
             <classname>Zend_Auth_Adapter_InfoCard</classname> and pass the <acronym>XML</acronym>
             data posted by the card selector into it. Once an instance has been created you
             must then provide at least one <acronym>SSL</acronym> certificate public/private key
-            pair used by the web server that received the <code>HTTP
-            POST</code>. These files are used to validate the destination
-            of the information posted to the server and are a requirement when
-            using Information Cards.
+            pair used by the web server that received the <acronym>HTTP</acronym>
+            <acronym>POST</acronym>. These files are used to validate the destination of the
+            information posted to the server and are a requirement when using Information Cards.
         </para>
 
         <para>
@@ -155,10 +152,10 @@ if (isset($_POST['xmlToken'])) {
             information card token and authenticate the user by examining the
             identity provided by the <methodname>getIdentity()</methodname> method.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.infocard.basics.standalone">
-        <title>Using the Zend_InfoCard component standalone</title>
+    <section xml:id="zend.infocard.basics.standalone"><info><title>Using the Zend_InfoCard component standalone</title></info>
+        
 
         <para>
             It is also possible to use the <classname>Zend_InfoCard</classname> component as a
@@ -214,10 +211,10 @@ if (isset($_POST['xmlToken'])) {
             configured, we can use the <methodname>process()</methodname> method to process
             the information card and return the results.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.infocard.basics.claims">
-        <title>Working with a Claims object</title>
+    <section xml:id="zend.infocard.basics.claims"><info><title>Working with a Claims object</title></info>
+        
 
         <para>
             Regardless of whether the <classname>Zend_InfoCard</classname> component is used as
@@ -231,13 +228,13 @@ if (isset($_POST['xmlToken'])) {
             can be ascertained by calling the
             <methodname>Zend_InfoCard_Claims::isValid()</methodname> method. Claims
             themselves can either be retrieved by simply accessing the
-            identifier desired (i.e. <code>givenname</code>) as a property of
+            identifier desired (i.e. <property>givenname</property>) as a property of
             the object or through the <methodname>getClaim()</methodname> method.
         </para>
 
         <para>
             In most cases you will never need to use the <methodname>getClaim()</methodname>
-            method. However, if your <code>requiredClaims</code> mandate that
+            method. However, if your <property>requiredClaims</property> mandate that
             you request claims from multiple different sources/namespaces then
             you will need to extract them explicitly using this method (simply
             pass it the full <acronym>URI</acronym> of the claim to retrieve its value from within
@@ -255,18 +252,18 @@ if (isset($_POST['xmlToken'])) {
             provided within the <classname>Zend_InfoCard_Claims</classname> object which
             returns the <acronym>URI</acronym> of the issuer of the information card claims.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.infocard.basics.attaching">
-        <title>Attaching Information Cards to existing accounts</title>
+    <section xml:id="zend.infocard.basics.attaching"><info><title>Attaching Information Cards to existing accounts</title></info>
+        
 
         <para>
             It is possible to add support for information cards to an existing
             authentication system by storing the private personal identifier
             (PPI) to a previously traditionally-authenticated account and
             including at least the
-            <code>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier</code>
-            claim as part of the <code>requiredClaims</code> of the request. If
+            <filename>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier</filename>
+            claim as part of the <property>requiredClaims</property> of the request. If
             this claim is requested then the <classname>Zend_InfoCard_Claims</classname>
             object will provide a unique identifier for the specific card that
             was submitted by calling the <methodname>getCardID()</methodname> method.
@@ -322,10 +319,10 @@ public function submitinfocardAction()
     }
 }
 ]]></programlisting>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.infocard.basics.adapters">
-        <title>Creating Zend_InfoCard Adapters</title>
+    <section xml:id="zend.infocard.basics.adapters"><info><title>Creating Zend_InfoCard Adapters</title></info>
+        
 
         <para>
             The <classname>Zend_InfoCard</classname> component was designed to allow for
@@ -386,8 +383,5 @@ $infoCard->setAdapter($adapter);
 
 $claims = $infoCard->process($_POST['xmlToken']);
 ]]></programlisting>
-    </sect2>
-</sect1>
-<!--
-vim:se ts=4 sw=4 et:
--->
+    </section>
+</section>

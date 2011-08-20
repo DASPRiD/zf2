@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage PHP
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -28,7 +28,7 @@ namespace Zend\CodeGenerator\Php\Docblock\Tag;
  * @uses       \Zend\CodeGenerator\Php\PhpDocblockTag
  * @category   Zend
  * @package    Zend_CodeGenerator
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ReturnTag extends \Zend\CodeGenerator\Php\PhpDocblockTag
@@ -40,11 +40,6 @@ class ReturnTag extends \Zend\CodeGenerator\Php\PhpDocblockTag
     protected $_datatype = null;
 
     /**
-     * @var string
-     */
-    protected $_description = null;
-
-    /**
      * fromReflection()
      *
      * @param \Zend\Reflection\ReflectionDocblockTag $reflectionTagReturn
@@ -52,7 +47,7 @@ class ReturnTag extends \Zend\CodeGenerator\Php\PhpDocblockTag
      */
     public static function fromReflection(\Zend\Reflection\ReflectionDocblockTag $reflectionTagReturn)
     {
-        $returnTag = new \self();
+        $returnTag = new self();
 
         $returnTag->setName('return');
         $returnTag->setDatatype($reflectionTagReturn->getType()); // @todo rename

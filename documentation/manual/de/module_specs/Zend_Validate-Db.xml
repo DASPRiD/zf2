@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 21241 -->
-<!-- Reviewed: no -->
-<sect2 id="zend.validate.Db">
-    <title>Db_RecordExists und Db_NoRecordExists</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.validate.Db"><info><title>Db_RecordExists und Db_NoRecordExists</title></info>
+    
 
     <para>
         <classname>Zend_Validate_Db_RecordExists</classname> und
@@ -11,8 +9,8 @@
         existiert.
     </para>
 
-    <sect3 id="zend.validate.set.db.options">
-        <title>Unterstützte Optionen für Zend_Validate_Db_*</title>
+    <section xml:id="zend.validate.set.db.options"><info><title>Unterstützte Optionen für Zend_Validate_Db_*</title></info>
+        
 
         <para>
             Die folgenden Optionen werden für
@@ -56,10 +54,10 @@
                 </para>
             </listitem>
         </itemizedlist>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.validate.db.basic-usage">
-        <title>Grundsätzliche Verwendung</title>
+    <section xml:id="zend.validate.db.basic-usage"><info><title>Grundsätzliche Verwendung</title></info>
+        
 
         <para>
             Ein Beispiel der rundsätzlichen Verwendung der Validatoren:
@@ -116,10 +114,10 @@ if ($validator->isValid($username)) {
             <varname>$username</varname> in der spezifizierten Spalte enthält, dann wird eine
             Fehlermeldung angezeigt.
         </para>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.validate.db.excluding-records">
-        <title>Ausnehmen von Einträgen</title>
+    <section xml:id="zend.validate.db.excluding-records"><info><title>Ausnehmen von Einträgen</title></info>
+        
 
         <para>
             <classname>Zend_Validate_Db_RecordExists</classname> und
@@ -130,10 +128,10 @@ if ($validator->isValid($username)) {
         </para>
 
         <para>
-            Wenn ein Array für die Ausnahmeklausel angegeben wird, dann wird der <code>!=</code>
-            Operator verwenden. Damit kann der Rest einer Tabelle auf einen Wert geprüft werden
-            bevor ein Eintrag geändert wird (zum Beispiel in einem Formular für ein
-            Benutzerprofil).
+            Wenn ein Array für die Ausnahmeklausel angegeben wird, dann wird der
+            <emphasis>!=</emphasis> Operator verwenden. Damit kann der Rest einer Tabelle auf einen
+            Wert geprüft werden bevor ein Eintrag geändert wird (zum Beispiel in einem Formular für
+            ein Benutzerprofil).
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -163,13 +161,13 @@ if ($validator->isValid($username)) {
 
         <para>
             Das obige Beispiel prüft die Tabelle um sicherzustellen das keine anderen Einträge
-            existieren bei denen <code>id = $user_id</code> als Wert $username enthalten.
+            existieren bei denen <command>id = $user_id</command> als Wert $username enthalten.
         </para>
 
         <para>
             Man kann auch einen String an die Ausnahmeklausel angeben damit man einen anderen
-            Operator als <code>!=</code> verwenden kann. Das kann nützlich sein um bei geteilten
-            Schlüsseln zu testen.
+            Operator als <emphasis>!=</emphasis> verwenden kann. Das kann nützlich sein um bei
+            geteilten Schlüsseln zu testen.
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -194,14 +192,13 @@ if ($validator->isValid($username)) {
 ]]></programlisting>
 
         <para>
-            Das obige Beispiel prüft die Tabelle <code>posts_categories</code> und stellt sicher
-            das ein Eintrag der <code>post_id</code> einen Wert hat der
-            <varname>$category_id</varname> entspricht.
+            Das obige Beispiel prüft die Tabelle 'posts_categories' und stellt sicher das ein
+            Eintrag der 'post_id' einen Wert hat der <varname>$category_id</varname> entspricht.
         </para>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.validate.db.database-adapters">
-        <title>Datenbank Adapter</title>
+    <section xml:id="zend.validate.db.database-adapters"><info><title>Datenbank Adapter</title></info>
+        
 
         <para>
             Man kann auch einen Adapter spezifizieren wenn man die Prüfung
@@ -218,15 +215,15 @@ $validator = new Zend_Validate_Db_RecordExists(
     )
 );
 ]]></programlisting>
-    </sect3>
+    </section>
 
-    <sect3 id="zend.validate.db.database-schemas">
-        <title>Datenbank Schemas</title>
+    <section xml:id="zend.validate.db.database-schemas"><info><title>Datenbank Schemas</title></info>
+        
 
         <para>
             Man kann für die eigene Datenbank bei Adaptern wie PostgreSQL und DB/2 ein Schema
-            spezifizieren indem einfach ein Array mit den Schlüsseln <code>table</code> und
-            <code>schema</code> angegeben wird. Anbei ein Beispiel:
+            spezifizieren indem einfach ein Array mit den Schlüsseln <property>table</property> und
+            <property>schema</property> angegeben wird. Anbei ein Beispiel:
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -238,5 +235,5 @@ $validator = new Zend_Validate_Db_RecordExists(
     )
 );
 ]]></programlisting>
-    </sect3>
-</sect2>
+    </section>
+</section>

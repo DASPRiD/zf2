@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use Zend\Loader\ResourceAutoloader,
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -41,29 +41,12 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        // Store original autoloaders
-        $this->loaders = spl_autoload_functions();
-        if (!is_array($this->loaders)) {
-            // spl_autoload_functions does not return empty array when no
-            // autoloaders registered...
-            $this->loaders = array();
-        }
-
         $this->application = new Application\Application('testing');
         $this->error = false;
     }
 
     public function tearDown()
     {
-        // Restore original autoloaders
-        $loaders = spl_autoload_functions();
-        foreach ($loaders as $loader) {
-            spl_autoload_unregister($loader);
-        }
-
-        foreach ($this->loaders as $loader) {
-            spl_autoload_register($loader);
-        }
     }
 
     public function handleError($errno, $errstr)
@@ -398,7 +381,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         ));
         set_error_handler(array($this, 'handleError'), E_WARNING);
         $bootstrap = new Application\Bootstrap($this->application);
-        $this->assertTrue($bootstrap->hasPluginResource('View'), var_export(array_keys($bootstrap->getPluginResources()), 1));
+        $this->assertTrue($bootstrap->getPlugin()->hasPlugin('View'), var_export(array_keys($bootstrap->getBroker()->getRegisteredPlugins()), 1));
         restore_error_handler();
     }
 
@@ -415,7 +398,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         ));
         set_error_handler(array($this, 'handleError'));
         $bootstrap = new Application\Bootstrap($this->application);
-        $this->assertTrue($bootstrap->hasPluginResource('ZendTest\\Application\\TestAsset\\Resource\\View'));
+        $this->assertTrue($bootstrap->getPlugin()->hasPlugin('ZendTest\\Application\\TestAsset\\Resource\\View'));
         restore_error_handler();
     }
 
@@ -435,7 +418,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         $bootstrap->bootstrap('ZendTest\Application\TestAsset\Resource\View');
         $resource = $bootstrap->getResource('ZendTest\Application\TestAsset\Resource\View');
         $this->assertTrue($resource instanceof \ZendTest\Application\TestAsset\Resource\View,
-            var_export(array_keys($bootstrap->getPluginResources()), 1));
+            var_export(array_keys($bootstrap->getBroker()->getRegisteredPlugins()), 1));
         restore_error_handler();
     }
 
@@ -459,7 +442,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         $resource2 = $bootstrap->getResource('view');
         $this->assertNotSame($resource1, $resource2);
         $this->assertTrue($resource1 instanceof \ZendTest\Application\TestAsset\Resource\View,
-            var_export(array_keys($bootstrap->getPluginResources()), 1));
+            var_export(array_keys($bootstrap->getBroker()->getRegisteredPlugins()), 1));
         $this->assertTrue($resource2 instanceof \Zend\View\View);
         restore_error_handler();
     }
@@ -483,7 +466,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         $bootstrap->bootstrap('layout');
         $resource2 = $bootstrap->getResource('layout');
         $this->assertNotSame($resource1, $resource2);
-        $this->assertTrue($resource1 instanceof Layout, var_export(array_keys($bootstrap->getPluginResources()), 1));
+        $this->assertTrue($resource1 instanceof Layout, var_export(array_keys($bootstrap->getBroker()->getRegisteredPlugins()), 1));
         $this->assertTrue($resource2 instanceof \Zend\Layout\Layout);
         restore_error_handler();
     }
@@ -503,7 +486,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
             ),
         ));
         $bootstrap = new Application\Bootstrap($this->application);
-        $resource = $bootstrap->getPluginResource('foo');
+        $resource = $bootstrap->getBroker()->getPlugin('foo');
         $this->assertTrue($resource->bootstrapSetInConstructor, var_export(get_object_vars($resource), 1));
     }
 
@@ -522,7 +505,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         ));
         set_error_handler(array($this, 'handleError'));
         $bootstrap = new Application\Bootstrap($this->application);
-        $resource = $bootstrap->getPluginResource('FrontController');
+        $resource = $bootstrap->getBroker()->getPlugin('FrontController');
         restore_error_handler();
         $this->assertTrue(false === $this->error, $this->error);
     }
@@ -581,7 +564,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         $bootstrap = new Application\Bootstrap($this->application);
         $bootstrap->setApplication($bootstrap);
     }
-    
+
     /**
      * @group ZF-7696
      * @group disable
@@ -631,7 +614,7 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         ));
         $bootstrap = $application->getBootstrap();
         $broker    = $bootstrap->getBroker();
-        $this->assertType('ZendTest\Application\TestAsset\ResourceBroker', $broker);
+        $this->assertInstanceOf('ZendTest\Application\TestAsset\ResourceBroker', $broker);
     }
 
     public function testCanPassConcreteBrokerViaOptions()
@@ -656,8 +639,48 @@ class AbstractBootstrapTest extends \PHPUnit_Framework_TestCase
         ));
         $bootstrap = $application->getBootstrap();
         $broker    = $bootstrap->getBroker();
-        $this->assertType('ZendTest\Application\TestAsset\ResourceBroker', $broker);
+        $this->assertInstanceOf('ZendTest\Application\TestAsset\ResourceBroker', $broker);
         $this->assertEquals(array('foo' => 'bar'), $broker->options);
+    }
+    
+    /**
+     * @group ZF2-30
+     */
+    public function testMultipleApplicationResourcesInitialization()
+    {
+        define('APPLICATION_PATH_ZF2_30', __DIR__);
+        $application = new Application\Application('testing', __DIR__.'/TestAsset/Zf2-30.ini');        
+        $application->bootstrap();      
+        $loadedResource = $application->getBootstrap()->getBroker()->load('zf30');  
+        $this->assertFalse(($loadedResource->getInitCount() > 1), 'Resource Zf30 initilized '.$loadedResource->getInitCount().' times');
+    }
+    
+    /**
+     * @group ZF2-36
+     */
+    public function testMultipleBrokersInitialization()
+    {
+        $application = new Application\Application('testing', __DIR__ . '/TestAsset/Zf2-36.ini');        
+        $application->bootstrap();      
+        $broker1 = $application->getBootstrap()->getBroker();
+        $application->getBootstrap()
+                    ->setOptions(array('test' => true));
+        $broker2 = $application->getBootstrap()->getBroker();
+        $this->assertFalse(($broker1 !== $broker2), 'Application broker initialized second time');
+    }
+    
+    /**
+     * @group ZF2-38
+     */
+    public function testContinueResourceExecutingByModulesResource()
+    {
+        define('APPLICATION_PATH_ZF2_38', __DIR__);
+        $application = new Application\Application('testing', __DIR__ . '/TestAsset/Zf2-38.ini');        
+        $application->bootstrap();      
+        $broker = $application->getBootstrap()->getBroker();
+        $modulesInitTitme = $broker->load('zf38modules')->getInitTime();
+        $zf38InitTitme = $broker->load('zf38')->getInitTime();
+        $this->assertFalse(($modulesInitTitme > $zf38InitTitme), 'Modules execute resources before end of their bootstraps');
     }
 }
 

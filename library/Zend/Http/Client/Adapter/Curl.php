@@ -16,7 +16,7 @@
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,16 +32,10 @@ use Zend\Http\Client\Adapter as HttpAdapter,
  * An adapter class for Zend\Http\Client based on the curl extension.
  * Curl requires libcurl. See for full requirements the PHP manual: http://php.net/curl
  *
- * @uses       \Zend\Http\Client
- * @uses       \Zend\Http\Client\Exception
- * @uses       \Zend\Http\Client\Adapter\Exception
- * @uses       \Zend\Http\Client\Adapter
- * @uses       \Zend\Http\Client\Adapter\Stream
- * @uses       \Zend\Uri\Url
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Curl implements HttpAdapter, Stream
@@ -248,7 +242,7 @@ class Curl implements HttpAdapter, Stream
      * Send request to the remote server
      *
      * @param  string        $method
-     * @param  \Zend\Uri\Url $uri
+     * @param  \Zend\Uri\Uri $uri
      * @param  float         $http_ver
      * @param  array         $headers
      * @param  string        $body

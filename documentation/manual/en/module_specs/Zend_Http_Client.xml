@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Reviewed: no -->
-<sect1 id="zend.http.client">
-    <title>Introduction</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.http.client"><info><title>Introduction</title></info>
+    
 
     <para>
         <classname>Zend_Http_Client</classname> provides an easy interface for preforming Hyper-Text
@@ -10,11 +9,11 @@
         complex features such as <acronym>HTTP</acronym> authentication and file uploads. Successful
         requests (and most unsuccessful ones too) return a <classname>Zend_Http_Response</classname>
         object, which provides access to the response's headers and body (see
-        <xref linkend="zend.http.response" />).
+        <link linkend="zend.http.response">this section</link>).
     </para>
 
-    <sect2 id="zend.http.client.usage">
-        <title>Using Zend_Http_Client</title>
+    <section xml:id="zend.http.client.usage"><info><title>Using Zend_Http_Client</title></info>
+        
 
         <para>
             The class constructor optionally accepts a URL as its first parameter
@@ -22,8 +21,8 @@
             or <classname>Zend_Config</classname> object containing configuration options. Both can
             be left out, and set later using the setUri() and setConfig() methods.
 
-            <example id="zend.http.client.introduction.example-1">
-                <title>Instantiating a Zend_Http_Client Object</title>
+            <example xml:id="zend.http.client.introduction.example-1"><info><title>Instantiating a Zend_Http_Client Object</title></info>
+                
 
                 <programlisting language="php"><![CDATA[
 $client = new Zend_Http_Client('http://example.org', array(
@@ -50,23 +49,23 @@ $client->setConfig($config);
                     that some special characters like the pipe symbol ('|') or the
                     caret symbol ('^') will not be accepted in the URL by default.
                     This can be modified by setting the 'allow_unwise' option of
-                    <classname>Zend_Uri</classname> to '<constant>TRUE</constant>'. See <xref
-                        linkend="zend.uri.validation.allowunwise" /> for more information.
+                    <classname>Zend_Uri</classname> to '<constant>TRUE</constant>'. See <link linkend="zend.uri.validation.allowunwise">this section</link> for more
+                    information.
                 </para>
             </note>
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.http.client.configuration">
-        <title>Configuration Parameters</title>
+    <section xml:id="zend.http.client.configuration"><info><title>Configuration Parameters</title></info>
+        
 
         <para>
             The constructor and setConfig() method accept an associative array
             of configuration parameters, or a <classname>Zend_Config</classname> object. Setting
             these parameters is optional, as they all have default values.
 
-            <table id="zend.http.client.configuration.table">
-                <title>Zend_Http_Client configuration parameters</title>
+            <table xml:id="zend.http.client.configuration.table"><info><title>Zend_Http_Client configuration parameters</title></info>
+                
 
                 <tgroup cols="4">
                     <thead>
@@ -104,7 +103,7 @@ $client->setConfig($config);
 
                             <entry>
                                 Whether to strictly follow the <acronym>RFC</acronym> when
-                                redirecting (see <xref linkend="zend.http.client.redirections" />)
+                                redirecting (see <link linkend="zend.http.client.redirections">this section</link>)
                             </entry>
 
                             <entry>boolean</entry>
@@ -136,8 +135,7 @@ $client->setConfig($config);
                             <entry>adapter</entry>
 
                             <entry>
-                                Connection adapter class to use (see <xref
-                                    linkend="zend.http.client.adapters" />)
+                                Connection adapter class to use (see <link linkend="zend.http.client.adapters">this section</link>)
                             </entry>
 
                             <entry>mixed</entry>
@@ -187,17 +185,17 @@ $client->setConfig($config);
                 </tgroup>
             </table>
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.http.client.basic-requests">
-        <title>Performing Basic HTTP Requests</title>
+    <section xml:id="zend.http.client.basic-requests"><info><title>Performing Basic HTTP Requests</title></info>
+        
 
         <para>
             Performing simple <acronym>HTTP</acronym> requests is very easily done using the
             request() method, and rarely needs more than three lines of code:
 
-            <example id="zend.http.client.basic-requests.example-1">
-                <title>Performing a Simple GET Request</title>
+            <example xml:id="zend.http.client.basic-requests.example-1"><info><title>Performing a Simple GET Request</title></info>
+                
 
                 <programlisting language="php"><![CDATA[
 $client = new Zend_Http_Client('http://example.org');
@@ -206,12 +204,14 @@ $response = $client->request();
             </example>
 
             The request() method takes one optional parameter - the request method.
-            This can be either GET, POST, PUT, HEAD, DELETE, TRACE, OPTIONS or
-            CONNECT as defined by the <acronym>HTTP</acronym> protocol
+            This can be either <property>GET</property>, <property>POST</property>,
+            <property>PUT</property>, <property>HEAD</property>, <property>DELETE</property>,
+            <property>TRACE</property>, <property>OPTIONS</property> or <property>CONNECT</property>
+            as defined by the <acronym>HTTP</acronym> protocol
 
             <footnote>
               <para>
-                See RFC 2616 - <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616.html" />.
+                See RFC 2616 - <uri xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">http://www.w3.org/Protocols/rfc2616/rfc2616.html</uri>.
               </para>
             </footnote>.
 
@@ -220,12 +220,13 @@ $response = $client->request();
         </para>
 
         <para>
-            If no method is specified, the method set by the last setMethod()
-            call is used. If setMethod() was never called, the default request
-            method is GET (see the above example).
+            If no method is specified, the method set by the last
+            <methodname>setMethod()</methodname> call is used. If
+            <methodname>setMethod()</methodname> was never called, the default request
+            method is <constant>GET</constant> (see the above example).
 
-            <example id="zend.http.client.basic-requests.example-2">
-                <title>Using Request Methods Other Than GET</title>
+            <example xml:id="zend.http.client.basic-requests.example-2"><info><title>Using Request Methods Other Than GET</title></info>
+                
 
                 <programlisting language="php"><![CDATA[
 // Preforming a POST request
@@ -237,23 +238,23 @@ $response = $client->request();
 ]]></programlisting>
             </example>
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.http.client.parameters">
-        <title>Adding GET and POST parameters </title>
+    <section xml:id="zend.http.client.parameters"><info><title>Adding GET and POST parameters </title></info>
+        
 
         <para>
-            Adding GET parameters to an <acronym>HTTP</acronym> request is quite simple, and can
-            be done either by specifying them as part of the URL, or by using
+            Adding <constant>GET</constant> parameters to an <acronym>HTTP</acronym> request is
+            quite simple, and can be done either by specifying them as part of the URL, or by using
             the setParameterGet() method.
-            This method takes the GET parameter's name as its first parameter,
-            and the GET parameter's value as its second parameter.
+            This method takes the <constant>GET</constant> parameter's name as its first parameter,
+            and the <constant>GET</constant> parameter's value as its second parameter.
             For convenience, the setParameterGet() method can also accept a
-            single associative array of name => value GET variables - which may
-            be more comfortable when several GET parameters need to be set.
+            single associative array of name =&gt; value <constant>GET</constant> variables - which may
+            be more comfortable when several <constant>GET</constant> parameters need to be set.
 
-            <example id="zend.http.client.parameters.example-1">
-                <title>Setting GET Parameters</title>
+            <example xml:id="zend.http.client.parameters.example-1"><info><title>Setting GET Parameters</title></info>
+                
 
                 <programlisting language="php"><![CDATA[
 // Setting a get parameter using the setParameterGet method
@@ -273,14 +274,14 @@ $client->setParameterGet(array(
         </para>
 
         <para>
-            While GET parameters can be sent with every request method, POST
+            While <constant>GET</constant> parameters can be sent with every request method, POST
             parameters are only sent in the body of POST requests. Adding POST
-            parameters to a request is very similar to adding GET parameters,
+            parameters to a request is very similar to adding <constant>GET</constant> parameters,
             and can be done with the setParameterPost() method, which is
             similar to the setParameterGet() method in structure.
 
-            <example id="zend.http.client.parameters.example-2">
-                <title>Setting POST Parameters</title>
+            <example xml:id="zend.http.client.parameters.example-2"><info><title>Setting POST Parameters</title></info>
+                
 
                 <programlisting language="php"><![CDATA[
 // Setting a POST parameter
@@ -295,28 +296,25 @@ $client->setParameterPost(array(
 ]]></programlisting>
             </example>
 
-            Note that when sending POST requests, you can set both GET and
+            Note that when sending POST requests, you can set both <constant>GET</constant> and
             POST parameters. On the other hand, while setting POST parameters
             for a non-POST request will not trigger and error, it is useless.
             Unless the request is a POST request, POST parameters are simply
             ignored.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.http.client.accessing_last">
-        <title>Accessing Last Request and Response</title>
+    <section xml:id="zend.http.client.accessing_last"><info><title>Accessing Last Request and Response</title></info>
+        
 
         <para>
             <classname>Zend_Http_Client</classname> provides methods of accessing the last request
             sent and last response received by the client object.
-            <classname>Zend_Http_Client->getLastRequest()</classname> takes no parameters
+            <classname>Zend_Http_Client-&gt;getLastRequest()</classname> takes no parameters
             and returns the last <acronym>HTTP</acronym> request sent by the client as a string.
-            Similarly, <classname>Zend_Http_Client->getLastResponse()</classname> returns
+            Similarly, <classname>Zend_Http_Client-&gt;getLastResponse()</classname> returns
             the last <acronym>HTTP</acronym> response received by the client as a
             <link linkend="zend.http.response">Zend_Http_Response</link> object.
         </para>
-    </sect2>
-</sect1>
-<!--
-vim:se ts=4 sw=4 et:
--->
+    </section>
+</section>

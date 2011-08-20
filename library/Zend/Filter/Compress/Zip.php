@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,7 +32,7 @@ use Zend\Filter\Exception;
  * @uses       ZipArchive
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zip extends AbstractCompressionAlgorithm
@@ -214,7 +214,7 @@ class Zip extends AbstractCompressionAlgorithm
         if (!empty($target) && !is_dir($target)) {
             $target = dirname($target);
         }
-        
+
         if (!empty($target)) {
             $target = rtrim($target, '/\\') . DIRECTORY_SEPARATOR;
         }
@@ -227,23 +227,6 @@ class Zip extends AbstractCompressionAlgorithm
             throw new Exception\RuntimeException($this->_errorString($res));
         }
 
-        if (version_compare(PHP_VERSION, '5.2.8', '<')) {
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $statIndex = $zip->statIndex($i);
-                $currName = $statIndex['name'];
-                if (($currName{0} == '/') ||
-                    (substr($currName, 0, 2) == '..') ||
-                    (substr($currName, 0, 4) == './..')
-                    )
-                {
-                    throw new Exception\RuntimeException('Upward directory traversal was detected inside ' . $archive
-                        . ' please use PHP 5.2.8 or greater to take advantage of path resolution features of '
-                        . 'the zip extension in this decompress() method.'
-                        );
-                }
-            }
-        }    
-        
         $res = @$zip->extractTo($target);
         if ($res !== true) {
             throw new Exception\RuntimeException($this->_errorString($res));

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage PHP
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +29,7 @@ namespace Zend\CodeGenerator\Php;
  * @uses       Zend_CodeGenerator_Php_ParameterDefaultValue
  * @category   Zend
  * @package    Zend_CodeGenerator
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class PhpParameter extends \Zend\CodeGenerator\Php\AbstractPhp
@@ -58,6 +58,11 @@ class PhpParameter extends \Zend\CodeGenerator\Php\AbstractPhp
      * @var bool
      */
     protected $_passedByReference = false;
+
+    /**
+     * @var array
+     */
+    protected static $_simple = array('int', 'bool', 'string', 'float', 'resource', 'mixed', 'object');
 
     /**
      * fromReflection()
@@ -221,7 +226,7 @@ class PhpParameter extends \Zend\CodeGenerator\Php\AbstractPhp
     {
         $output = '';
 
-        if ($this->_type) {
+        if ($this->_type && !in_array($this->_type, self::$_simple)) {
             $output .= $this->_type . ' ';
         }
 
@@ -234,7 +239,7 @@ class PhpParameter extends \Zend\CodeGenerator\Php\AbstractPhp
         if ($this->_defaultValue !== null) {
             $output .= ' = ';
             if (is_string($this->_defaultValue)) {
-                $output .= '\'' . $this->_defaultValue . '\'';
+                $output .= PhpValue::escape($this->_defaultValue);
             } else if($this->_defaultValue instanceof \Zend\CodeGenerator\Php\PhpParameterDefaultValue) {
                 $output .= (string)$this->_defaultValue;
             } else {

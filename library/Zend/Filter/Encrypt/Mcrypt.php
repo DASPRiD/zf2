@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use Zend\Filter\Exception,
  * @uses       \Zend\Filter\Exception
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Mcrypt implements EncryptionAlgorithm
@@ -169,17 +169,14 @@ class Mcrypt implements EncryptionAlgorithm
         $cipher = $this->_openCipher();
         $size   = mcrypt_enc_get_iv_size($cipher);
         if (empty($vector)) {
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' && version_compare(PHP_VERSION, '5.3.0', '<')) {
-                $method = MCRYPT_RAND;
+            if (file_exists('/dev/urandom') || (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')) {
+                $method = MCRYPT_DEV_URANDOM;
+            } elseif (file_exists('/dev/random')) {
+                $method = MCRYPT_DEV_RANDOM;
             } else {
-                if (file_exists('/dev/urandom') || (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')) {
-                    $method = MCRYPT_DEV_URANDOM;
-                } elseif (file_exists('/dev/random')) {
-                    $method = MCRYPT_DEV_RANDOM;
-                } else {
-                    $method = MCRYPT_RAND;
-                }
+                $method = MCRYPT_RAND;
             }
+
             $vector = mcrypt_create_iv($size, $method);
         } else if (strlen($vector) != $size) {
             throw new Exception\InvalidArgumentException('The given vector has a wrong size for the set algorithm');

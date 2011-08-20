@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Reviewed: no -->
-<sect1 id="zend.feed.reader">
-    <title>Zend_Feed_Reader</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.feed.reader"><info><title>Zend_Feed_Reader</title></info>
+    
 
-    <sect2 id="zend.feed.reader.introduction">
-        <title>Introduction</title>
+    <section xml:id="zend.feed.reader.introduction"><info><title>Introduction</title></info>
+        
 
         <para>
             <classname>Zend_Feed_Reader</classname> is a component used to
@@ -44,7 +43,7 @@
             by an internal cache (non-persistant) so repeat <acronym>API</acronym> calls for the
             same feed will avoid additional <acronym>DOM</acronym> or XPath use. Thirdly, importing
             feeds from a <acronym>URI</acronym> can take advantage of
-            <acronym>HTTP</acronym> Conditional <acronym>GET</acronym> requests
+            <acronym>HTTP</acronym> Conditional <constant>GET</constant> requests
             which allow servers to issue an empty 304 response when the
             requested feed has not changed since the last time you requested it.
             In the final case, an instance of <classname>Zend_Cache</classname>
@@ -63,17 +62,17 @@
             not capable of constructing feeds and delegates this responsibility
             to <classname>Zend_Feed_Writer</classname>, its sibling in arms.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.feed.reader.import">
-        <title>Importing Feeds</title>
+    <section xml:id="zend.feed.reader.import"><info><title>Importing Feeds</title></info>
+        
 
         <para>
             Importing a feed with <classname>Zend_Feed_Reader</classname> is not
             that much different to <classname>Zend_Feed</classname>. Feeds can
             be imported from a string, file, <acronym>URI</acronym> or an instance of type
             <classname>Zend_Feed_Abstract</classname>. Importing from a <acronym>URI</acronym> can
-            additionally utilise a <acronym>HTTP</acronym> Conditional <acronym>GET</acronym>
+            additionally utilise a <acronym>HTTP</acronym> Conditional <constant>GET</constant>
             request. If importing fails, an exception will be raised. The end result will be an
             object of type <classname>Zend_Feed_Reader_FeedInterface</classname>, the
             core implementations of which are
@@ -150,10 +149,10 @@ $feed = Zend_Feed_Reader::importFile('./feed.xml');
 $zfeed = Zend_Feed::import('http://www.planet-php.net/atom/');
 $feed  = Zend_Feed_Reader::importFeed($zfeed);
 ]]></programlisting>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.feed.reader.sources">
-        <title>Retrieving Underlying Feed and Entry Sources</title>
+    <section xml:id="zend.feed.reader.sources"><info><title>Retrieving Underlying Feed and Entry Sources</title></info>
+        
 
         <para>
             <classname>Zend_Feed_Reader</classname> does its best not to stick
@@ -241,13 +240,13 @@ $reportErrorsTo = $xpath->evaluate('string('
                 internal operation of this component.
             </para>
         </warning>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.feed.reader.cache-request">
-        <title>Cache Support and Intelligent Requests</title>
+    <section xml:id="zend.feed.reader.cache-request"><info><title>Cache Support and Intelligent Requests</title></info>
+        
 
-        <sect3 id="zend.feed.reader.cache-request.cache">
-            <title>Adding Cache Support to Zend_Feed_Reader</title>
+        <section xml:id="zend.feed.reader.cache-request.cache"><info><title>Adding Cache Support to Zend_Feed_Reader</title></info>
+            
 
             <para>
                 <classname>Zend_Feed_Reader</classname> supports using an
@@ -282,15 +281,16 @@ Zend_Feed_Reader::setCache($cache);
                     Extensions.
                 </para>
             </note>
-        </sect3>
+        </section>
 
-        <sect3 id="zend.feed.reader.cache-request.http-conditional-get">
-            <title>HTTP Conditional GET Support</title>
+        <section xml:id="zend.feed.reader.cache-request.http-conditional-get"><info><title>HTTP Conditional GET Support</title></info>
+            
 
             <para>
                 The big question often asked when importing a feed frequently, is
                 if it has even changed. With a cache enabled, you can add <acronym>HTTP</acronym>
-                Conditional <acronym>GET</acronym> support to your arsenal to answer that question.
+                Conditional <constant>GET</constant> support to your arsenal to answer that
+                question.
             </para>
 
             <para>
@@ -333,7 +333,7 @@ $feed = Zend_Feed_Reader::import('http://www.planet-php.net/rdf/');
 
             <para>
                 In the example above, with <acronym>HTTP</acronym> Conditional
-                <acronym>GET</acronym> requests enabled, the response header values for ETag and
+                <constant>GET</constant> requests enabled, the response header values for ETag and
                 Last-Modified will be cached along with the feed. For the next 24hrs (the cache
                 lifetime), feeds will only be updated on the cache if a non-304 response is received
                 containing a valid <acronym>RSS</acronym> or Atom <acronym>XML</acronym> document.
@@ -353,11 +353,11 @@ $feed = Zend_Feed_Reader::import(
     $uri, $lastEtagReceived, $lastModifiedDateReceived
 );
 ]]></programlisting>
-        </sect3>
-    </sect2>
+        </section>
+    </section>
 
-    <sect2 id="zend.feed.reader.locate">
-        <title>Locating Feed URIs from Websites</title>
+    <section xml:id="zend.feed.reader.locate"><info><title>Locating Feed URIs from Websites</title></info>
+        
 
         <para>
             These days, many websites are aware that the location of their <acronym>XML</acronym>
@@ -423,10 +423,10 @@ foreach ($links as $link) {
     echo $link['uri'], "\n";
 }
 ]]></programlisting>
-  </sect2>
+  </section>
 
-  <sect2 id="zend.feed.reader.attribute-collections">
-        <title>Attribute Collections</title>
+  <section xml:id="zend.feed.reader.attribute-collections"><info><title>Attribute Collections</title></info>
+        
 
         <para>
             In an attempt to simplify return types, with Zend Framework 1.10 return
@@ -503,10 +503,10 @@ $labels = $categories->getValues();
             giving simple access to the category labels without any additional work to extract
             that data by itself.
         </para>
-  </sect2>
+  </section>
 
-  <sect2 id="zend.feed.reader.retrieve-info">
-        <title>Retrieving Feed Information</title>
+  <section xml:id="zend.feed.reader.retrieve-info"><info><title>Retrieving Feed Information</title></info>
+        
 
         <para>
             Retrieving information from a feed (we'll cover entries and items in the
@@ -563,8 +563,8 @@ $labels = $categories->getValues();
             you to retrieve any specific Extension object separately if required.
         </para>
 
-        <table>
-            <title>Feed Level API Methods</title>
+        <table><info><title>Feed Level API Methods</title></info>
+            
 
             <tgroup cols="2">
                 <tbody>
@@ -761,8 +761,8 @@ $labels = $categories->getValues();
             Countable interfaces. The extended <acronym>API</acronym> is summarised below.
         </para>
 
-        <table>
-            <title>Extended Feed Level API Methods</title>
+        <table><info><title>Extended Feed Level API Methods</title></info>
+            
 
             <tgroup cols="2">
                 <tbody>
@@ -903,10 +903,10 @@ $labels = $categories->getValues();
                 </tbody>
             </tgroup>
         </table>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.feed.reader.entry">
-        <title>Retrieving Entry/Item Information</title>
+    <section xml:id="zend.feed.reader.entry"><info><title>Retrieving Entry/Item Information</title></info>
+        
 
         <para>
             Retrieving information for specific entries or items (depending on
@@ -916,8 +916,8 @@ $labels = $categories->getValues();
             objects implement and calling the appropriate method on each.
         </para>
 
-        <table>
-            <title>Entry Level API Methods</title>
+        <table><info><title>Entry Level API Methods</title></info>
+            
 
             <tgroup cols="2">
                 <tbody>
@@ -1124,8 +1124,8 @@ $labels = $categories->getValues();
             </para>
         </warning>
 
-        <table>
-            <title>Extended Entry Level API Methods</title>
+        <table><info><title>Extended Entry Level API Methods</title></info>
+            
 
             <tgroup cols="2">
                 <tbody>
@@ -1212,10 +1212,10 @@ $labels = $categories->getValues();
                 </tbody>
             </tgroup>
         </table>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.feed.reader.extending">
-        <title>Extending Feed and Entry APIs</title>
+    <section xml:id="zend.feed.reader.extending"><info><title>Extending Feed and Entry APIs</title></info>
+        
 
         <para>
             Extending <classname>Zend_Feed_Reader</classname> allows you to add
@@ -1254,8 +1254,8 @@ $labels = $categories->getValues();
             bundled Extensions include:
         </para>
 
-        <table>
-            <title>Core Extensions (pre-registered)</title>
+        <table><info><title>Core Extensions (pre-registered)</title></info>
+            
 
             <tgroup cols="2">
                 <tbody>
@@ -1321,8 +1321,8 @@ $labels = $categories->getValues();
             common Extensions like Dublin Core.
         </para>
 
-        <table>
-            <title>Non-Core Extensions (must register manually)</title>
+        <table><info><title>Non-Core Extensions (must register manually)</title></info>
+            
 
             <tgroup cols="2">
                 <tbody>
@@ -1394,8 +1394,8 @@ $syndication = $feed->getExtension('Syndication');
 $updatePeriod = $syndication->getUpdatePeriod();
 ]]></programlisting>
 
-        <sect3 id="zend.feed.reader.extending.feed">
-            <title>Writing Zend_Feed_Reader Extensions</title>
+        <section xml:id="zend.feed.reader.extending.feed"><info><title>Writing Zend_Feed_Reader Extensions</title></info>
+            
 
             <para>
                 Inevitably, there will be times when the
@@ -1602,6 +1602,6 @@ $firstIsbn = $feed->current()->getIsbn();
                 Extensions now: <classname>JungleBooks_Feed</classname> and
                 <classname>JungleBooks_Entry</classname>.
             </para>
-        </sect3>
-    </sect2>
-</sect1>
+        </section>
+    </section>
+</section>

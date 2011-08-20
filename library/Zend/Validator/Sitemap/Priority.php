@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage Sitemap
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ namespace Zend\Validator\Sitemap;
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage Sitemap
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Priority extends \Zend\Validator\AbstractValidator
@@ -51,7 +51,7 @@ class Priority extends \Zend\Validator\AbstractValidator
      * @var array
      */
     protected $_messageTemplates = array(
-        self::NOT_VALID => "'%value%' is no valid sitemap priority",
+        self::NOT_VALID => "'%value%' is not a valid sitemap priority",
         self::INVALID   => "Invalid type given. Numeric string, integer or float expected",
     );
 

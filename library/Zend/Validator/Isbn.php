@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Validate
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -28,7 +28,7 @@ namespace Zend\Validator;
  * @uses       \Zend\Validator\Exception
  * @category   Zend
  * @package    Zend_Validate
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Isbn extends AbstractValidator
@@ -46,7 +46,7 @@ class Isbn extends AbstractValidator
      */
     protected $_messageTemplates = array(
         self::INVALID => "Invalid type given. String or integer expected",
-        self::NO_ISBN => "'%value%' is no valid ISBN number",
+        self::NO_ISBN => "'%value%' is not a valid ISBN number",
     );
 
     /**

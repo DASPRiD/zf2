@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use Zend\Json\Json;
  * @uses       \Zend\Json\Json
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ComboBox extends Dijit
@@ -106,7 +106,7 @@ class ComboBox extends Dijit
 
         // do as normal select
         $attribs = $this->_prepareDijit($attribs, $params, 'element');
-        return $this->view->formSelect($id, $value, $attribs, $options);
+        return $this->view->broker('formSelect')->direct($id, $value, $attribs, $options);
     }
 
     /**

@@ -1,14 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 22511 -->
-<!-- Reviewed: no -->
-<sect1 id="zend.gdata.introduction">
-    <title>Einführung</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.gdata.introduction"><info><title>Einführung</title></info>
+    
 
     <para>
         Die <acronym>API</acronym>s von Google Data bieten ein programmtechnisches Interface zu
         einigen von Google's Online Services. Das Google Data Protokoll basiert auf dem
-        <ulink url="http://ietfreport.isoc.org/idref/draft-ietf-atompub-protocol/">Atom Publishing
-            Protokoll</ulink> und erlaubt Client Anwendungen das Empfangen von passenden Anfragen zu
+        <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://ietfreport.isoc.org/idref/draft-ietf-atompub-protocol/">Atom Publishing
+            Protokoll</link> und erlaubt Client Anwendungen das Empfangen von passenden Anfragen zu
         Daten, senden von Daten, modifizieren von Daten und löschen von Daten wobei Standard
         <acronym>HTTP</acronym> und das Atom Syndication Format verwendet wird. Die
         <classname>Zend_Gdata</classname> Komponente ist ein <acronym>PHP</acronym> 5 Interface für
@@ -18,8 +16,7 @@
     </para>
 
     <para>
-        Siehe <ulink
-            url="http://code.google.com/apis/gdata/">http://code.google.com/apis/gdata/</ulink> für
+        Siehe <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://code.google.com/apis/gdata/">http://code.google.com/apis/gdata/</link> für
         mehr Informationen über die Google Data <acronym>API</acronym>.
     </para>
 
@@ -83,9 +80,8 @@
 
             <listitem>
                 <para>
-                    <ulink
-                        url="http://code.google.com/apis/blogger/developers_guide_php.html">Google
-                        Blogger</ulink> ist ein populärer Internet Provider von "push-button
+                    <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://code.google.com/apis/blogger/developers_guide_php.html">Google
+                        Blogger</link> ist ein populärer Internet Provider von "push-button
                     Veröffentlichung" und Verbreitung.
                 </para>
             </listitem>
@@ -105,8 +101,8 @@
         </itemizedlist>
     </para>
 
-    <note>
-        <title>Nicht unterstützte Services</title>
+    <note><info><title>Nicht unterstützte Services</title></info>
+        
 
         <para>
             <classname>Zend_Gdata</classname> bietet kein Interface zu irgendwelchen anderen Google
@@ -115,8 +111,8 @@
         </para>
     </note>
 
-    <sect2 id="zend.gdata.introduction.structure">
-        <title>Struktur von Zend_Gdata</title>
+    <section xml:id="zend.gdata.introduction.structure"><info><title>Struktur von Zend_Gdata</title></info>
+        
 
         <para>
             <classname>Zend_Gata</classname> besteht aus verschiedenen Typen von Klassen:
@@ -145,9 +141,10 @@
                         <methodname>setStartIndex()</methodname>, und
                         <methodname>getPublishedMin()</methodname>. Die Abfrage Klassen haben auch
                         eine Methode um eine <acronym>URL</acronym> zu erhalten welche die erstellte
-                        Abfrage repräsentieren. -- <code>getQueryUrl</code>. Alternativ kann man die
-                        Abfrage String Komponente der <acronym>URL</acronym> erhalten indem die
-                        <methodname>getQueryString()</methodname> Methode verwendet wird.
+                        Abfrage repräsentieren. -- <methodname>getQueryUrl()</methodname>.
+                        Alternativ kann man die Abfrage String Komponente der <acronym>URL</acronym>
+                        erhalten indem die <methodname>getQueryString()</methodname> Methode
+                        verwendet wird.
                     </para>
                 </listitem>
 
@@ -175,10 +172,11 @@
                         zur Möglichkeit die Eigenschaften eines Eintrages (wie den Zellen Wert der
                         Tabellenkalkulation) zu setzen, kann das Objekt des Eintrages verwendet
                         werden um Aktualisierungs- oder Löschanfragen an ein Service zu senden. Zum
-                        Beispiel kann <code>$entry->save()</code> aufgerufen werden um Änderungen
-                        die an einem Eintrage durchgeführt wurden zu einem Service zurück zu
-                        speichern von welche der Eintrag initiiert wurde, oder
-                        <code>$entry->delete()</code> um einen Eintrag von einem Server zu löschen.
+                        Beispiel kann <command>$entry-&gt;save()</command> aufgerufen werden um
+                        Änderungen die an einem Eintrage durchgeführt wurden zu einem Service zurück
+                        zu Speichern von welche der Eintrag initiiert wurde, oder
+                        <command>$entry-&gt;delete()</command> um einen Eintrag von einem Server zu
+                        Löschen.
                     </para>
                 </listitem>
 
@@ -207,10 +205,10 @@
                 </listitem>
             </itemizedlist>
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.services">
-        <title>Mit Google Services interagieren</title>
+    <section xml:id="zend.gdata.introduction.services"><info><title>Mit Google Services interagieren</title></info>
+        
 
         <para>
             Google Daten Services basieren auf dem Atom Publishing Protokoll (APP) und dem Atom
@@ -224,23 +222,23 @@
 
         <para>
             Achtung: Ein komplettes Beispiel davon wie mit <classname>Zend_Gdata</classname>
-            gearbeitet werden kann ist im <code>demos/Zend/Gdata</code> Verzeichnis vorhanden.
-            Dieses Beispiel läuft von der Kommandozeile aus, aber die enthaltenen Methoden sind
-            einfach in einem Web Anwendung zu portieren.
+            gearbeitet werden kann ist im <filename>demos/Zend/Gdata</filename> Verzeichnis
+            vorhanden. Dieses Beispiel läuft von der Kommandozeile aus, aber die enthaltenen
+            Methoden sind einfach in einem Web Anwendung zu portieren.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.magicfactory">
-        <title>Instanzen von Zend_Gdata Klassen erhalten</title>
+    <section xml:id="zend.gdata.introduction.magicfactory"><info><title>Instanzen von Zend_Gdata Klassen erhalten</title></info>
+        
 
         <para>
             Der Zend Framework Namensstandard erzwingt das alle Klassen nach der Verzeichnis
             Struktur benannt werden in welcher sie vorhanden sind. Zum Beispiel eine Erweiterung die
-            zu Tabellenkalkulation gehört und in <code>Zend/Gdata/Spreadsheets/Extension/...</code>
-            gespeichert ist, muß als Ergebnis
-            <classname>Zend_Gdata_Spreadsheets_Extension_...</classname> benannt werden. Das
-            verursacht eine Menge an Tipparbeit wenn versucht wird eine neue Instanz eines Zellen
-            Elements zu erstellen!
+            zu Tabellenkalkulation gehört und in
+            <filename>Zend/Gdata/Spreadsheets/Extension/...</filename> gespeichert ist, muß als
+            Ergebnis <classname>Zend_Gdata_Spreadsheets_Extension_...</classname> benannt werden.
+            Das verursacht eine Menge an Tipparbeit wenn versucht wird eine neue Instanz eines
+            Zellen Elements zu erstellen!
         </para>
 
         <para>
@@ -248,9 +246,9 @@
             <classname>Zend_Gdata_App</classname>, <classname>Zend_Gdata</classname>,
             <classname>Zend_Gdata_Spreadsheets</classname>) implementiert welche die Erstellung
             neuer Instanzen von Daten Modellen, Abfragen und anderen Klassen viel einfacher macht.
-            Diese magische Fabriksmethode ist durch die Verwendung der magischen <code>__call</code>
-            Methode implementiert um auf alle Versuche
-            <code>$service->newXXX(arg1, arg2, ...)</code> aufzurufen, angewendet zu werden.
+            Diese magische Fabriksmethode ist durch die Verwendung der magischen
+            <methodname>__call()</methodname> Methode implementiert um auf alle Versuche
+            <command>$service-&gt;newXXX(arg1, arg2, ...)</command> aufzurufen, angewendet zu werden.
             Basieren auf dem Wert von XXX, wird eine Suche in allen registrierten 'Paketen', für die
             gewünschte Klasse, durchgeführt. Hier sind einige Beispiele:
         </para>
@@ -277,17 +275,16 @@ $entry->cell = $cell;
             'Pakete' (Verzeichnisse) registriert werden, in welchen dann durch den Aufruf der
             matischen Fabriksmethode, gesucht wird.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.authentication">
-        <title>Google Data Client Authentifizierung</title>
+    <section xml:id="zend.gdata.introduction.authentication"><info><title>Google Data Client Authentifizierung</title></info>
+        
 
         <para>
             Die meisten Google Daten Services erfordern das sich die Client Anwendung auf dem Google
             Server authentifiziert bevor auf private Daten zugegriffen, oder Daten gespeichert oder
             gelöscht werden können. Es gibt zwei Implementationen der Authentifizierung für Google
-            Daten: <link linkend="zend.gdata.authsub">AuthSub</link> und <link
-                linkend="zend.gdata.clientlogin">ClientLogin</link>.
+            Daten: <link linkend="zend.gdata.authsub">AuthSub</link> und <link linkend="zend.gdata.clientlogin">ClientLogin</link>.
             <classname>Zend_Gdata</classname> bietet Klassen Interfaces für beide dieser Methoden.
         </para>
 
@@ -295,14 +292,13 @@ $entry->cell = $cell;
             Die meisten anderen Typen von Abfragen auf Google Daten Servicen benötigen keine
             Authentifizierung.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.dependencies">
-        <title>Abhängigkeiten</title>
+    <section xml:id="zend.gdata.introduction.dependencies"><info><title>Abhängigkeiten</title></info>
+        
 
         <para>
-            <classname>Zend_Gdata</classname> verwendet <link
-                linkend="zend.http.client">Zend_Http_Client</link> um Anfragen an
+            <classname>Zend_Gdata</classname> verwendet <link linkend="zend.http.client">Zend_Http_Client</link> um Anfragen an
             google.com zu senden und Ergebnisse zu erhalten. Die Antworter der meisten Google Data
             Anfragen werden als Subklasse von <classname>Zend_Gdata_App_Feed</classname> oder
             <classname>Zend_Gdata_App_Entry</classname> Klassen zurückgegeben.
@@ -314,10 +310,10 @@ $entry->cell = $cell;
             <classname>Zend_Gdata</classname> Client arbeitet indem er zu Google Daten Servern
             Kontakt aufnimmt.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.creation">
-        <title>Erstellen eines neuen Gdata Klienten</title>
+    <section xml:id="zend.gdata.introduction.creation"><info><title>Erstellen eines neuen Gdata Klienten</title></info>
+        
 
         <para>
             Man muß ein neues Objekt der Klasse <classname>Zend_Gdata_App</classname>,
@@ -366,10 +362,10 @@ $gdata->setMinorProtocolVersion(null);
             Siehe auch die Sektion über Authentifizierung für Methoden, um ein authentifiziertes
             <classname>Zend_Http_Client</classname> Objekt zu erstellen.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.parameters">
-        <title>Übliche Abfrage Parameter</title>
+    <section xml:id="zend.gdata.introduction.parameters"><info><title>Übliche Abfrage Parameter</title></info>
+        
 
         <para>
             Es können Parameter spezifiziert werden um Abfragen mit
@@ -388,8 +384,8 @@ $gdata->setMinorProtocolVersion(null);
         <itemizedlist>
             <listitem>
                 <para>
-                    Der <code>q</code> Parameter spezifiziert eine komplette Textabfrage. Der Wert
-                    dieses Parameters ist ein String.
+                    Der <property>q</property> Parameter spezifiziert eine komplette Textabfrage.
+                    Der Wert dieses Parameters ist ein String.
                 </para>
 
                 <para>
@@ -400,12 +396,12 @@ $gdata->setMinorProtocolVersion(null);
 
             <listitem>
                 <para>
-                    Der <code>alt</code> Parameter spezifiziert den Feed Typ. Der Wert dieses
-                    Parameters kann <code>atom</code>, <code>rss</code>, <code>json</code>, oder
-                    <code>json-in-script</code> sein. Wenn dieser Parameter nicht spezifiziert wird,
-                    ist der Standard Feedtyp <code>atom</code>.
-                    <classname>Zend_Http_Client</classname> könnte verwendet werden um Feeds in
-                    anderen Formaten zu empfangen, indem die von der
+                    Der <property>alt</property> Parameter spezifiziert den Feed Typ. Der Wert
+                    dieses Parameters kann <property>atom</property>, <property>rss</property>,
+                    <property>json</property>, oder <property>json-in-script</property> sein. Wenn
+                    dieser Parameter nicht spezifiziert wird, ist der Standard Feedtyp
+                    <property>atom</property>. <classname>Zend_Http_Client</classname> könnte
+                    verwendet werden um Feeds in anderen Formaten zu empfangen, indem die von der
                     <classname>Zend_Gdata_Query</classname> Klasse oder deren Subklassen erzeugten
                     Abfrage <acronym>URL</acronym>s verwendet werden.
                 </para>
@@ -418,9 +414,9 @@ $gdata->setMinorProtocolVersion(null);
 
             <listitem>
                 <para>
-                    Der <code>maxResults</code> Parameter begrenzt die Anzahl an Einträgen im Feed.
-                    Der Wert dieses Parameters ist ein Integer. Die zurückgegebene Anzahl an
-                    Einträgen im Feed wird diesen Wert nicht überschreiten.
+                    Der <property>maxResults</property> Parameter begrenzt die Anzahl an Einträgen
+                    im Feed. Der Wert dieses Parameters ist ein Integer. Die zurückgegebene Anzahl
+                    an Einträgen im Feed wird diesen Wert nicht überschreiten.
                 </para>
 
                 <para>
@@ -431,8 +427,8 @@ $gdata->setMinorProtocolVersion(null);
 
             <listitem>
                 <para>
-                    Der <code>startIndex</code> Parameter spezifiziert die ordinale Nummer des
-                    ersten Eintrags der im Feed zurückgegeben wird. Einträge vor dieser Nummer
+                    Der <property>startIndex</property> Parameter spezifiziert die ordinale Nummer
+                    des ersten Eintrags der im Feed zurückgegeben wird. Einträge vor dieser Nummer
                     werden übergangen.
                 </para>
 
@@ -444,12 +440,12 @@ $gdata->setMinorProtocolVersion(null);
 
             <listitem>
                 <para>
-                    Die Parameter <code>updatedMin</code> und <code>updatedMax</code> spezifizieren
-                    Grenzen für das Datum der Einträge. Wenn ein Wert für <code>updatedMin</code>
-                    spezifiziert wird, werden keine Einträge die vor dem spezifizierten Datum
-                    aktualisiert wurden, im Feed inkludiert. Genauso werden keine Einträge
-                    inkludiert die nach einem Datum aktualisiert wurden wenn
-                    <code>updatedMax</code> spezifiziert wird.
+                    Die Parameter <property>updatedMin</property> und
+                    <property>updatedMax</property> spezifizieren Grenzen für das Datum der
+                    Einträge. Wenn ein Wert für <property>updatedMin</property> spezifiziert wird,
+                    werden keine Einträge die vor dem spezifizierten Datum aktualisiert wurden, im
+                    Feed inkludiert. Genauso werden keine Einträge inkludiert die nach einem Datum
+                    aktualisiert wurden wenn <property>updatedMax</property> spezifiziert wird.
                 </para>
 
                 <para>
@@ -465,7 +461,8 @@ $gdata->setMinorProtocolVersion(null);
         </itemizedlist>
 
         <para>
-            Es gibt eine <code>get</code> Funktion für jede <code>set</code> Funktion.
+            Es gibt eine <methodname>get*()</methodname> Funktion für jede
+            <methodname>set*()</methodname> Funktion.
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -500,10 +497,10 @@ $query->maxResults = 10;
 $query->resetParameters();      // löscht alle Parameter
 // ...einen anderen Feed empfangen...
 ]]></programlisting>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.getfeed">
-        <title>Einen Feed empfangen</title>
+    <section xml:id="zend.gdata.introduction.getfeed"><info><title>Einen Feed empfangen</title></info>
+        
 
         <para>
             Die <methodname>getFeed()</methodname> Funktion kann verwendet werden um einen Feed von
@@ -525,10 +522,10 @@ $feed = $gdata->getFeed($query);
             Services. Diese Funktionen helfen Feeds von einer <acronym>URI</acronym> zu empfangen
             die für das angeforderte Service zuständig ist.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.paging">
-        <title>Mit Mehrfach-Seiten Feeds arbeiten</title>
+    <section xml:id="zend.gdata.introduction.paging"><info><title>Mit Mehrfach-Seiten Feeds arbeiten</title></info>
+        
 
         <para>
             Wenn man einen Feed empfängt der eine große Anzahl an Einträgen enthält, kann dieser
@@ -570,10 +567,10 @@ $feed = $gdata->retrieveAllEntriesForFeed($gdata->getFeed($query));
             <acronym>PHP</acronym>'s Limit der Ausführungszeit zu vergrößern mithilfe von
             <methodname>set_time_limit()</methodname> zu vergrößern.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.usefeedentry">
-        <title>Arbeiten mit Daten in Feeds und Einträgen</title>
+    <section xml:id="zend.gdata.introduction.usefeedentry"><info><title>Arbeiten mit Daten in Feeds und Einträgen</title></info>
+        
 
         <para>
             Nachdem ein Feed empfangen wurde, können die Daten von dem Feed oder den Einträgen die
@@ -596,10 +593,10 @@ foreach ($feed as $entry) {
     echo 'Inhalt: ' . $entry->getContent()->getText();
 }
 ]]></programlisting>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.updateentry">
-        <title>Einträge aktualisieren</title>
+    <section xml:id="zend.gdata.introduction.updateentry"><info><title>Einträge aktualisieren</title></info>
+        
 
         <para>
             Nachdem ein Eintrag empfangen wurde, kann dieser Eintrag aktualisiert und die Änderungen
@@ -623,10 +620,10 @@ foreach ($feed as $entry) {
     echo 'New Title: ' . $newEntry->title->text;
 }
 ]]></programlisting>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.post">
-        <title>Einträge an Google Server schicken</title>
+    <section xml:id="zend.gdata.introduction.post"><info><title>Einträge an Google Server schicken</title></info>
+        
 
         <para>
             Das <classname>Zend_Gdata</classname> Objekt hat eine
@@ -670,10 +667,10 @@ echo 'Die <id> des resultierenden Eintrages ist: ' . $entryResult->id->text;
             verwendet werden der mit Hilfe der <classname>Zend_Gdata_AuthSub</classname> oder
             <classname>Zend_Gdata_ClientLogin</classname> Klassen erstellt wurde.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.gdata.introduction.delete">
-        <title>Einträge auf einem Google Server löschen</title>
+    <section xml:id="zend.gdata.introduction.delete"><info><title>Einträge auf einem Google Server löschen</title></info>
+        
 
         <para>
             Option 1: Das <classname>Zend_Gdata</classname> Objekt hat eine
@@ -683,8 +680,8 @@ echo 'Die <id> des resultierenden Eintrages ist: ' . $entryResult->id->text;
         </para>
 
         <para>
-            Option 2: Alternativ kann <code>$entry->delete()</code> an einem Eintrag der von einem
-            Google Service empfangen wurde, aufgerufen werden.
+            Option 2: Alternativ kann <command>$entry-&gt;delete()</command> an einem Eintrag der von
+            einem Google Service empfangen wurde, aufgerufen werden.
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -707,5 +704,5 @@ foreach ($feed as $feedEntry) {
             <classname>Zend_Gdata_AuthSub</classname> oder
             <classname>Zend_Gdata_ClientLogin</classname> Klassen erstellt wurde.
         </para>
-    </sect2>
-</sect1>
+    </section>
+</section>

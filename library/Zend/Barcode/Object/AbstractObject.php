@@ -16,7 +16,7 @@
  * @category   Zend
  * @package    Zend_Barcode
  * @subpackage Object
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -31,14 +31,15 @@ use Zend\Barcode,
     Zend\Barcode\Object\Exception\RuntimeException,
     Zend\Barcode\Object\Exception\InvalidArgumentException,
     Zend\Barcode\Object\Exception\BarcodeValidationException,
-    Zend\Barcode\Object\Exception\OutOfRangeException;
+    Zend\Barcode\Object\Exception\OutOfRangeException,
+    Zend\Barcode\Object\Exception\ExtensionNotLoadedException;
 
 /**
  * Class for generate Barcode
  *
  * @category   Zend
  * @package    Zend_Barcode
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class AbstractObject implements Barcode\BarcodeObject

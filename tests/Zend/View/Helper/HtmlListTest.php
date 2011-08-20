@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +29,7 @@ use Zend\View\Helper;
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -118,7 +118,7 @@ class HtmlListTest extends \PHPUnit_Framework_TestCase
     }
 
     /*
-     * @see ZF-5018
+     * @group ZF-5018
      */
     public function testMakeNestedUnorderedList()
     {
@@ -134,7 +134,7 @@ class HtmlListTest extends \PHPUnit_Framework_TestCase
     }
 
     /*
-     * @see ZF-5018
+     * @group ZF-5018
      */
     public function testMakeNestedDeepUnorderedList()
     {
@@ -177,7 +177,7 @@ class HtmlListTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2527
+     * @group ZF-2527
      */
     public function testEscapeFlagHonoredForMultidimensionalLists()
     {
@@ -191,8 +191,8 @@ class HtmlListTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2527
-     * Added the s modifier to match newlines after @see ZF-5018
+     * @group ZF-2527
+     * Added the s modifier to match newlines after ZF-5018
      */
     public function testAttribsPassedIntoMultidimensionalLists()
     {
@@ -207,7 +207,7 @@ class HtmlListTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2870
+     * @group ZF-2870
      */
     public function testEscapeFlagShouldBePassedRecursively()
     {

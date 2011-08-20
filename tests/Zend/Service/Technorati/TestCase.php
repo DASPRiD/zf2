@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -30,7 +30,7 @@ if (!ini_get('date.timezone')) {
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Technorati
@@ -46,17 +46,6 @@ class Zend_Service_Technorati_TestCase extends PHPUnit_Framework_TestCase
         } catch (Zend_Service_Technorati_Exception $e) {
             $this->fail("Exception " . $e->getMessage() . " thrown");
         }
-    }
-
-    protected function _testConstructThrowsExceptionWithInvalidDom($className, $match)
-    {
-        if (self::skipInvalidArgumentTypeTests()) {
-            $this->markTestIncomplete('Failure to meet type hint results in fatal error in PHP < 5.2.0');
-            return;
-        }
-
-        // This test is unnecessary. PHP type hinting is well tested, and will throw
-        // catchable fatal errors on invalid argument types. Do nothing here.
     }
 
     protected function _testResultSetItemsInstanceOfResult($resultSetClassName, $args, $resultClassName)
@@ -137,13 +126,6 @@ class Zend_Service_Technorati_TestCase extends PHPUnit_Framework_TestCase
         $xpath = new DOMXPath($dom);
         $domElements = $xpath->query($exp);
         return $domElements->item($item);
-    }
-
-    public static function skipInvalidArgumentTypeTests()
-    {
-        // PHP < 5.2.0 returns a fatal error
-        // instead of a catchable Exception (ZF-2334)
-        return version_compare(phpversion(), "5.2.0", "<");
     }
 
 }

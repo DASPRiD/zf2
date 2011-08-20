@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_InfoCard
  * @subpackage Zend_InfoCard_Xml_Security
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -30,7 +30,7 @@ namespace Zend\InfoCard\XML;
  * @category   Zend
  * @package    Zend_InfoCard
  * @subpackage Zend_InfoCard_Xml_Security
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Security
@@ -141,19 +141,8 @@ class Security
                 break;
         }
 
-        $base64DecodeSupportsStrictParam = version_compare(PHP_VERSION, '5.2.0', '>=');
-
-        if ($base64DecodeSupportsStrictParam) {
-            $dValue = base64_decode((string)$sxe->Signature->SignedInfo->Reference->DigestValue, true);
-        } else {
-            $dValue = base64_decode((string)$sxe->Signature->SignedInfo->Reference->DigestValue);
-        }
-
-        if ($base64DecodeSupportsStrictParam) {
-            $signatureValue = base64_decode((string)$sxe->Signature->SignatureValue, true);
-        } else {
-            $signatureValue = base64_decode((string)$sxe->Signature->SignatureValue);
-        }
+        $dValue         = base64_decode((string)$sxe->Signature->SignedInfo->Reference->DigestValue, true);
+        $signatureValue = base64_decode((string)$sxe->Signature->SignatureValue, true);
 
         $transformer = new Security\Transform\TransformChain();
 

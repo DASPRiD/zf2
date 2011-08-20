@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use Zend\Controller,
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Front
@@ -536,8 +536,8 @@ class FrontTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('modules' . DIRECTORY_SEPARATOR . 'application', $controllerDirs['application']);
     }
 
-    /**#@+
-     * @see ZF-2910
+    /**
+     * @group ZF-2910
      */
     public function testShouldAllowRetrievingCurrentModuleDirectory()
     {
@@ -563,7 +563,6 @@ class FrontTest extends \PHPUnit_Framework_TestCase
         $this->testAddModuleDirectory();
         $this->assertNull($this->_controller->getModuleDirectory('bogus-foo-bar'));
     }
-    /**#@-*/
 
     /**
      * ZF-2435

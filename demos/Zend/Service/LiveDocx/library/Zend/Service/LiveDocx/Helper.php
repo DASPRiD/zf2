@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage LiveDocx
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +29,7 @@ use Zend\Date\Date;
  * @category   Demos
  * @package    Demos_Zend_Service
  * @subpackage LiveDocx
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Helper
@@ -205,13 +205,15 @@ class Helper
     }
 
     /**
-     * Print result line in check-environment.php script
+     * Print result line like in a table of contents i.e.:
+     *
+     * n: XXX YYY ZZZ....ZZZ
      *
      * @param $counter
      * @param $testString
      * @param $testResult
      */
-    public static function printCheckEnvironmentLine($counter, $testString, $testResult)
+    public static function printLineToc($counter, $testString, $testResult)
     {
         $lineLength = self::LINE_LENGTH;
 

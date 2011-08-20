@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Validator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -25,6 +25,7 @@
 namespace ZendTest\Validator\Db;
 
 use Zend\Db\Table\AbstractTable,
+    Zend\Validator\Db\RecordExists as RecordExistsValidator,
     Zend\Validator\Db\NoRecordExists as NoRecordExistsValidator;
 
 
@@ -32,7 +33,7 @@ use Zend\Db\Table\AbstractTable,
  * @category   Zend
  * @package    Zend_Validator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validator
  */
@@ -57,7 +58,7 @@ class NoRecordExistsTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_adapterHasResult = new TestAsset\MockHasResult();
-        $this->_adapterNoResult = new TestAsset\MockNoResult();
+        $this->_adapterNoResult  = new TestAsset\MockNoResult();
     }
 
     /**
@@ -201,5 +202,25 @@ class NoRecordExistsTest extends \PHPUnit_Framework_TestCase
         AbstractTable::setDefaultAdapter(null);
         $validator = new NoRecordExistsValidator('users', 'field1', null, $this->_adapterNoResult);
         $this->assertTrue($validator->isValid('value1'));
+    }
+
+    /**
+     *
+     * @group ZF-10705
+     */
+    public function testCreatesQueryBasedOnNamedOrPositionalAvailablity()
+    {
+        AbstractTable::setDefaultAdapter(null);
+        $this->_adapterHasResult->setSupportsParametersValues(array('named' => false, 'positional' => true));
+        $validator = new RecordExistsValidator('users', 'field1', null, $this->_adapterHasResult);
+        $validator->isValid('foo');
+        $wherePart = $validator->getSelect()->getPart('where');
+        $this->assertEquals('("field1" = ?)', $wherePart[0]);
+
+        $this->_adapterHasResult->setSupportsParametersValues(array('named' => true, 'positional' => true));
+        $validator = new RecordExistsValidator('users', 'field1', null, $this->_adapterHasResult);
+        $validator->isValid('foo');
+        $wherePart = $validator->getSelect()->getPart('where');
+        $this->assertEquals('("field1" = :value)', $wherePart[0]);
     }
 }

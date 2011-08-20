@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,7 +32,7 @@ namespace ZendTest\View\Helper;
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -46,7 +46,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
             $registry = \Zend\Registry::getInstance();
             unset($registry['Zend_View_Helper_Doctype']);
         }
-        $this->view   = new \Zend\View\View();
+        $this->view   = new \Zend\View\PhpRenderer();
         $this->helper = new \Zend\View\Helper\FormCheckbox();
         $this->helper->setView($this->view);
     }
@@ -128,7 +128,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2230
+     * @grooup ZF-2230
      */
     public function testDoesNotRenderHiddenElementsForCheckboxArray()
     {
@@ -140,7 +140,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3149
+     * @group ZF-3149
      */
     public function testShouldRenderHiddenElementShowingUncheckedOptionForNonArrayNames()
     {
@@ -197,7 +197,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3149
+     * @group ZF-3149
      */
     public function testCheckedAttributeNotRenderedIfItEvaluatesToFalse()
     {
@@ -212,7 +212,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3149
+     * @group ZF-3149
      */
     public function testShouldCheckValueIfValueMatchesCheckedOption()
     {
@@ -226,7 +226,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3149
+     * @group ZF-3149
      */
     public function testShouldOnlySetValueIfValueMatchesCheckedOption()
     {
@@ -235,7 +235,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3149
+     * @group ZF-3149
      */
     public function testShouldNotCheckValueIfValueDoesNotMatchCheckedOption()
     {
@@ -258,7 +258,7 @@ class FormCheckboxTest extends \PHPUnit_Framework_TestCase
     }
 
    /**
-    * @see ZF-6467
+    * @group ZF-6467
     */
    public function testShouldNotShowHiddenFieldIfDisableIsTrue()
    {

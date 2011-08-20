@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Service_Twitter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
  
@@ -32,7 +32,7 @@ use Zend\Service,
  * @category   Zend
  * @package    Zend_Service_Twitter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Twitter
@@ -599,6 +599,16 @@ class TwitterTest extends \PHPUnit_Framework_TestCase
         $twitter1 = new Service\Twitter(array('username'=>'zftestuser1'));
         $twitter2 = new Service\Twitter(array('username'=>'zftestuser2'));
         $this->assertFalse($twitter1->getLocalHttpClient() === $twitter2->getLocalHttpClient());
+    }
+
+    public function testYouCanRetrieveTheUsersWhoRetweetedATweet()
+    {
+        $twitter = new Service\Twitter();
+        $response = $twitter->statusRetweetedBy('85607267692584960');
+
+        $this->assertTrue($response instanceof Rest\Client\Result);
+        $this->assertTrue(is_array($response->name), var_export($response, 1));
+        $this->assertTrue(in_array('Alessandro Nadalin', $response->name));
     }
     
 }

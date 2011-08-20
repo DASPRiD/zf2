@@ -13,8 +13,9 @@ if (!strstr($incPath, $libPath)) {
 }
 
 // Setup autoloading
-$loader = new Zend\Loader\StandardAutoloader();
 require_once 'Zend/Loader/StandardAutoloader.php';
+
+$loader = new Zend\Loader\StandardAutoloader();
 $loader->register();
 
 $rules = array(
@@ -114,8 +115,8 @@ if (!$usingStdout) {
     echo "Creating class file map for library in '$path'..." . PHP_EOL;
 }
 
-// Get the ClassFileLocater, and pass it the library path
-$l = new \Zend\File\ClassFileLocater($path);
+// Get the ClassFileLocator, and pass it the library path
+$l = new \Zend\File\ClassFileLocator($path);
 
 // Iterate over each element in the path, and create a map of 
 // classname => filename, where the filename is relative to the library path

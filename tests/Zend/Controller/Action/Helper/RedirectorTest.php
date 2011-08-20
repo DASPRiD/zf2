@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,7 +34,7 @@ use Zend\Controller,
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -425,8 +425,8 @@ class RedirectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/', $this->redirector->getRedirectUrl());
     }
 
-    /**#@+
-     * @see ZF-1734
+    /**
+     * @group ZF-1734
      */
     public function testPassingNullActionAndNullControllerWithModuleShouldGoToDefaultControllerAndActions()
     {
@@ -478,8 +478,6 @@ class RedirectorTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains('https://', $test);
         $this->assertEquals('http://localhost/bar/baz', $test);
     }
-
-    /**#@-*/
 }
 
 /**

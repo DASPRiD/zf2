@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Amf
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -22,6 +22,13 @@
  * @namespace
  */
 namespace Zend\Amf\Adobe;
+
+use Zend\Amf\Exception,
+    Zend\Reflection\ReflectionClass,
+    Zend\Reflection\ReflectionProperty,
+    Zend\Server\Reflection,
+    Zend\Server\Reflection\ReflectionClass as ServerReflectionClass,
+    SplFileInfo;
 
 /**
  * This class implements a service for generating AMF service descriptions as XML.
@@ -32,7 +39,7 @@ namespace Zend\Amf\Adobe;
  * @uses       Zend\Server\Reflection
  * @package    Zend_Amf
  * @subpackage Adobe
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Introspector
@@ -91,7 +98,9 @@ class Introspector
 
         // Introspect!
         if (!class_exists($serviceClass)) {
-            \Zend\Loader::loadClass($serviceClass, $this->_getServicePath());
+            if (!$this->_loadClass($serviceClass)) {
+                return $this->_returnError('Invalid service name; class does not exist');
+            }
         }
 
         $serv = $this->_xml->createElement('service-description');
@@ -100,7 +109,7 @@ class Introspector
         $this->_types = $this->_xml->createElement('types');
         $this->_ops   = $this->_xml->createElement('operations');
 
-        $r = \Zend\Server\Reflection::reflectClass($serviceClass);
+        $r = Reflection::reflectClass($serviceClass);
         $this->_addService($r, $this->_ops);
 
         $serv->appendChild($this->_types);
@@ -136,7 +145,7 @@ class Introspector
             return;
         }
 
-        $rc = new \Zend\Reflection\ReflectionClass($typename);
+        $rc = new ReflectionClass($typename);
         foreach ($rc->getProperties() as $prop) {
             if (!$prop->isPublic()) {
                 continue;
@@ -159,7 +168,7 @@ class Introspector
      * @param  DOMElement $target target XML element
      * @return void
      */
-    protected function _addService(\Zend\Server\Reflection\ReflectionClass $refclass, \DOMElement $target)
+    protected function _addService(ServerReflectionClass $refclass, \DOMElement $target)
     {
         foreach ($refclass->getMethods() as $method) {
             if (!$method->isPublic()
@@ -206,7 +215,7 @@ class Introspector
      * @param  \Zend\Reflection\ReflectionProperty $prop reflection property object
      * @return string Property type
      */
-    protected function _getPropertyType(\Zend\Reflection\ReflectionProperty $prop)
+    protected function _getPropertyType(ReflectionProperty $prop)
     {
         $docBlock = $prop->getDocComment();
 
@@ -306,6 +315,25 @@ class Introspector
      */
     protected function _returnError($msg)
     {
-        return 'ERROR: $msg';
+        return "ERROR: $msg";
+    }
+
+    /**
+     * Load a service class from the service path
+     * 
+     * @param  string $class 
+     * @return bool
+     */
+    protected function _loadClass($class)
+    {
+        $file = str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class) . '.php';
+        foreach ($this->_getServicePath() as $path) {
+            $fileinfo = new SplFileInfo($path . DIRECTORY_SEPARATOR . $file);
+            if ($fileinfo->isReadable()) {
+                require_once $fileinfo->getRealPath();
+                return true;
+            }
+        }
+        return false;
     }
 }

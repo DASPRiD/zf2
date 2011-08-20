@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -35,7 +35,7 @@ use Zend\Filter\Exception;
  * @uses       \Zend\Loader
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Tar extends AbstractCompressionAlgorithm
@@ -63,11 +63,9 @@ class Tar extends AbstractCompressionAlgorithm
     public function __construct($options = null)
     {
         if (!class_exists('Archive_Tar')) {
-            try {
-                \Zend\Loader::loadClass('Archive_Tar');
-            } catch (\Zend\Exception $e) {
-                throw new Exception\ExtensionNotLoadedException('This filter needs PEARs Archive_Tar', 0, $e);
-            }
+            throw new Exception\ExtensionNotLoadedException(
+                'This filter needs PEARs Archive_Tar.'.
+                'Ensure loading Archive_Tar (registering autoload or require_once)');
         }
 
         parent::__construct($options);

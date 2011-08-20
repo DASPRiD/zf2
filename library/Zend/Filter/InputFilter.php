@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,7 +32,7 @@ use Zend\Loader\Broker,
 /**
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class InputFilter
@@ -605,7 +605,7 @@ class InputFilter
                     if (is_string($filter) || is_array($filter)) {
                         $filter = $this->_getFilter($filter);
                     }
-                    $filterRule[self::FILTER_CHAIN]->addFilter($filter);
+                    $filterRule[self::FILTER_CHAIN]->attach($filter);
                 }
             }
 
@@ -724,6 +724,9 @@ class InputFilter
             return;
         }
 
+        // remember the default not empty message in case we want to temporarily change it
+        $preserveDefaultNotEmptyMessage = $this->defaults[self::NOT_EMPTY_MESSAGE];
+
         foreach ($this->validatorRules as $ruleName => &$validatorRule) {
             /**
              * Make sure we have an array representing this validator chain.
@@ -766,6 +769,8 @@ class InputFilter
             } else if (!is_array($validatorRule[self::MESSAGES])) {
                 $validatorRule[self::MESSAGES] = array($validatorRule[self::MESSAGES]);
             } else if (array_intersect_key($validatorList, $validatorRule[self::MESSAGES])) {
+                // This seems pointless... it just re-adds what it already has...
+                // I can disable all this and not a single unit test fails...
                 // There are now corresponding numeric keys in the validation rule messages array
                 // Treat it as a named messages list for all rule validators
                 $unifiedMessages = $validatorRule[self::MESSAGES];
@@ -798,7 +803,18 @@ class InputFilter
                         }
 
                         if ($validator instanceof Validator\NotEmpty) {
-                            $this->defaults[self::NOT_EMPTY_MESSAGE] = $value;
+                            /**
+                             * We are changing the defaults here, this is alright if all subsequent validators are also a not empty
+                             * validator, but it goes wrong if one of them is not AND is required!!!
+                             * that is why we restore the default value at the end of this loop
+                             */
+                            if (is_array($value)) {
+                                $temp = $value; // keep the original value
+                                $this->defaults[self::NOT_EMPTY_MESSAGE] = array_pop($temp);
+                                unset($temp);
+                            } else {
+                                $this->defaults[self::NOT_EMPTY_MESSAGE] = $value;
+                            }
                         }
                     }
 
@@ -819,6 +835,9 @@ class InputFilter
             } else {
                 $this->_validateRule($validatorRule);
             }
+
+            // Reset the default not empty message
+            $this->defaults[self::NOT_EMPTY_MESSAGE] = $preserveDefaultNotEmptyMessage;
         }
 
         /**

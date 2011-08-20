@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,16 +31,10 @@ use Zend\Http\Client\Adapter as HttpAdapter,
  * A sockets based (stream\socket\client) adapter class for Zend\Http\Client. Can be used
  * on almost every PHP environment, and does not require any special extensions.
  *
- * @uses       Zend\Http\Client
- * @uses       Zend\Http\Client\Adapter\Exception
- * @uses       Zend\Http\Client\Adapter
- * @uses       Zend\Http\Client\Adapter\Stream
- * @uses       Zend\Http\Response
- * @uses       Zend\Uri\Url
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Socket implements HttpAdapter, Stream
@@ -245,7 +238,7 @@ class Socket implements HttpAdapter, Stream
      * Send request to the remote server
      *
      * @param string        $method
-     * @param \Zend\Uri\Url $uri
+     * @param \Zend\Uri\Uri $uri
      * @param string        $http_ver
      * @param array         $headers
      * @param string        $body

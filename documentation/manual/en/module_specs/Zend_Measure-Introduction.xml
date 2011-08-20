@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Reviewed: no -->
-<sect1 id="zend.measure.introduction">
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.measure.introduction"><info><title>Introduction</title></info>
 
-    <title>Introduction</title>
+    
 
     <para>
         <classname>Zend_Measure_*</classname> classes provide a generic and easy way for working
@@ -12,8 +11,8 @@
         of measurement can be automatically extracted. Numerous units of measurement are supported.
     </para>
 
-    <example id="zend.measure.introduction.example-1">
-        <title>Converting measurements</title>
+    <example xml:id="zend.measure.introduction.example-1"><info><title>Converting measurements</title></info>
+        
 
         <para>
             The following introductory example shows automatic conversion of units of measurement.
@@ -37,16 +36,17 @@ echo $unit->convertTo(Zend_Measure_Length::YARD);
         <classname>Zend_Measure_&lt;TYPE&gt;::NAME_OF_UNIT</classname>, where &lt;TYPE&gt;
         corresponds to a well-known physical or numerical property. . Every unit of measurement
         consists of a conversion factor and a display unit. A detailed list can be found in the
-        chapter <link linkend="zend.measure.types"><code>Types of measurements</code></link>.
+        chapter <link linkend="zend.measure.types">Types of measurements</link>.
     </para>
 
-    <example id="zend.measure.introduction.example-2">
-        <title>The meter measurement</title>
+    <example xml:id="zend.measure.introduction.example-2"><info><title>The meter measurement</title></info>
+        
 
         <para>
-            The <code>meter</code> is used for measuring lengths, so its type constant can be found
-            in the <code>Length</code> class. To refer to this unit of measurement, the notation
-            <constant>Length::METER</constant> must be used. The display unit is <code>m</code>.
+            The <emphasis>meter</emphasis> is used for measuring lengths, so its type constant can
+            be found in the <classname>Length</classname> class. To refer to this unit of
+            measurement, the notation <constant>Length::METER</constant> must be used. The display
+            unit is <emphasis>m</emphasis>.
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -58,7 +58,4 @@ echo $unit;
 // outputs '100 m'
 ]]></programlisting>
     </example>
-</sect1>
-<!--
-vim:se ts=4 sw=4 et:
--->
+</section>

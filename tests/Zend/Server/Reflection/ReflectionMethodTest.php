@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -23,6 +23,7 @@
  * @namespace
  */
 namespace ZendTest\Server\Reflection;
+
 use Zend\Server\Reflection;
 
 /**
@@ -31,7 +32,7 @@ use Zend\Server\Reflection;
  * @category   Zend
  * @package    Zend_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Server
  */
@@ -43,7 +44,7 @@ class ReflectionMethodTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->_classRaw = new \ReflectionClass('\Zend\Server\Reflection\Reflection');
+        $this->_classRaw = new \ReflectionClass('\Zend\Server\Reflection');
         $this->_method   = $this->_classRaw->getMethod('reflectClass');
         $this->_class    = new Reflection\ReflectionClass($this->_classRaw);
     }
@@ -106,6 +107,4 @@ class ReflectionMethodTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($r->getName(), $u->getName());
         $this->assertEquals($r->getDeclaringClass()->getName(), $u->getDeclaringClass()->getName());
     }
-
-
 }

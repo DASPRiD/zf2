@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use Zend\Dojo\View\Exception;
  * @uses       \Zend\Dojo\View\Helper\Dijit
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
   */
 abstract class Slider extends Dijit
@@ -248,6 +248,6 @@ abstract class Slider extends Dijit
         $dijit = 'dijit.form.' . ucfirst($this->_sliderType) . 'RuleLabels';
         $attribs = $this->_prepareDijit($attribs, $params, 'layout', $dijit);
 
-        return $this->view->htmlList($labels, true, $attribs);
+        return $this->view->broker('htmlList')->direct($labels, true, $attribs);
     }
 }

@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Controller
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -22,17 +22,15 @@
  * @namespace
  */
 namespace Zend\Controller\Request;
-use Zend\Uri;
-use Zend\Controller;
+
+use Zend\Controller,
+    Zend\Uri;
 
 /**
  * Zend_Controller_Request_Http
  *
  * HTTP request object for use with Zend_Controller family.
  *
- * @uses       \Zend\Controller\Request\AbstractRequest
- * @uses       \Zend\Controller\Request\Exception
- * @uses       \Zend\Uri\Uri
  * @package    Zend_Controller
  * @subpackage Request
  */
@@ -104,15 +102,15 @@ class Http extends AbstractRequest
      * If a $uri is passed, the object will attempt to populate itself using
      * that information.
      *
-     * @param string|\Zend\Uri\Uri $uri
+     * @param string|Uri\Uri $uri
      * @return void
      * @throws \Zend\Controller\Request\Exception when invalid URI passed
      */
     public function __construct($uri = null)
     {
         if (null !== $uri) {
-            if (!$uri instanceof Uri\Url) {
-                $uri = new Uri\Url($uri);
+            if (!$uri instanceof Uri\Uri) {
+                $uri = Uri\UriFactory::factory($uri);
             }
             if ($uri->isValid()) {
                 $path  = $uri->getPath();

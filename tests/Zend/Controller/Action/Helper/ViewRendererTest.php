@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -38,7 +38,7 @@ require_once __DIR__ . '/../../_files/modules/bar/controllers/IndexController.ph
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -775,7 +775,7 @@ class ViewRendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2443
+     * @group ZF-2443
      */
     public function testStockInflectorWorksWithViewBaseSpec()
     {
@@ -800,7 +800,7 @@ class ViewRendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2738
+     * @group ZF-2738
      */
     public function testStockInflectorWorksWithDottedRequestParts()
     {
@@ -846,7 +846,7 @@ class ViewRendererTest extends \PHPUnit_Framework_TestCase
         $body = $this->response->getBody();
         $this->assertContains('SampleZfHelper invoked', $body, 'Received ' . $body);
     }
-    
+
     protected function _normalizePath($path)
     {
         return str_replace(array('/', '\\'), '/', $path);

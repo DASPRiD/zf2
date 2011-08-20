@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_InfoCard
  * @subpackage Zend_InfoCard_Xml
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,7 +32,7 @@ namespace Zend\InfoCard\XML;
  * @category   Zend
  * @package    Zend_InfoCard
  * @subpackage Zend_InfoCard_Xml
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class SecurityTokenReference extends AbstractElement
@@ -150,13 +150,7 @@ class SecurityTokenReference extends AbstractElement
             $decoded = "";
             switch($this->getKeyThumbprintEncodingType()) {
                 case self::ENCODING_BASE64BIN:
-
-                    if(version_compare(PHP_VERSION, "5.2.0", ">=")) {
-                        $decoded = base64_decode($encoded, true);
-                    } else {
-                        $decoded = base64_decode($encoded);
-                    }
-
+                    $decoded = base64_decode($encoded, true);
                     break;
                 default:
                     throw new Exception\RuntimeException("Unknown Key Reference Encoding Type: {$this->getKeyThumbprintEncodingType()}");

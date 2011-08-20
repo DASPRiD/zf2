@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -38,7 +38,7 @@ use Zend\Db\Select;
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class AbstractPdoAdapter extends AbstractAdapter
@@ -49,7 +49,7 @@ abstract class AbstractPdoAdapter extends AbstractAdapter
      *
      * @var string
      */
-    protected $_defaultStmtClass = '\Zend\Db\Statement\Pdo';
+    protected $_defaultStmtClass = 'Zend\Db\Statement\Pdo';
 
     /**
      * Creates a Pdo DSN for the adapter from $this->_config settings.
@@ -164,9 +164,6 @@ abstract class AbstractPdoAdapter extends AbstractAdapter
     {
         $this->_connect();
         $stmtClass = $this->_defaultStmtClass;
-        if (!class_exists($stmtClass)) {
-            \Zend\Loader::loadClass($stmtClass);
-        }
         $stmt = new $stmtClass($this, $sql);
         $stmt->setFetchMode($this->_fetchMode);
         return $stmt;

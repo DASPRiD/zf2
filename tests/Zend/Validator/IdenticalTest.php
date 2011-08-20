@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,7 +34,7 @@ use Zend\Validator;
  * @package    Zend
  * @subpackage UnitTests
  * @uses       Zend_Validator_Identical
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validator
  */
@@ -95,7 +95,7 @@ class IdenticalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-6953
+     * @group ZF-6953
      */
     public function testValidatingAgainstEmptyToken()
     {
@@ -104,7 +104,7 @@ class IdenticalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-7128
+     * @group ZF-7128
      */
     public function testValidatingAgainstNonStrings()
     {

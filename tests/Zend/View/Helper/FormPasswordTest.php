@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,7 +32,7 @@ namespace ZendTest\View\Helper;
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -52,13 +52,13 @@ class FormPasswordTest extends \PHPUnit_Framework_TestCase
             $registry = \Zend\Registry::getInstance();
             unset($registry['Zend_View_Helper_Doctype']);
         }
-        $this->view = new \Zend\View\View();
+        $this->view = new \Zend\View\PhpRenderer();
         $this->helper = new \Zend\View\Helper\FormPassword();
         $this->helper->setView($this->view);
     }
 
     /**
-     * @see ZF-1666
+     * @group ZF-1666
      */
     public function testCanDisableElement()
     {
@@ -72,7 +72,7 @@ class FormPasswordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-1666
+     * @group ZF-1666
      */
     public function testDisablingElementDoesNotRenderHiddenElements()
     {
@@ -105,7 +105,7 @@ class FormPasswordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2860
+     * @group ZF-2860
      */
     public function testShouldRenderValueWhenRenderPasswordFlagPresentAndTrue()
     {
@@ -114,7 +114,7 @@ class FormPasswordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2860
+     * @group ZF-2860
      */
     public function testRenderPasswordAttribShouldNeverBeRendered()
     {

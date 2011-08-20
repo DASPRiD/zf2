@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -26,7 +26,7 @@ namespace Zend\Dojo\View\Helper;
 
 use Zend\Dojo\View\Exception,
     Zend\Registry,
-    Zend\View\ViewEngine as View,
+    Zend\View\Renderer as View,
     Zend\View\Helper\AbstractHelper as AbstractViewHelper;
 
 /**
@@ -40,7 +40,7 @@ use Zend\Dojo\View\Exception,
  * @uses       \Zend\Registry
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Dojo extends AbstractViewHelper
@@ -58,7 +58,7 @@ class Dojo extends AbstractViewHelper
     public $view;
 
     /**
-     * @var \Zend\Dojo\View\Helper\DojoContainer
+     * @var \Zend\Dojo\View\Helper\Dojo\Container
      */
     protected $_container;
 
@@ -101,7 +101,7 @@ class Dojo extends AbstractViewHelper
     /**
      * Return dojo container
      *
-     * @return \Zend\Dojo\View\Helper\DojoContainer
+     * @return \Zend\Dojo\View\Helper\Dojo\Container
      */
     public function direct()
     {

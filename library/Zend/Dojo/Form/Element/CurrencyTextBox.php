@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage Form_Element
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -24,6 +24,8 @@
  */
 namespace Zend\Dojo\Form\Element;
 
+use Zend\Form\Element\Exception;
+
 /**
  * CurrencyTextBox dijit
  *
@@ -31,7 +33,7 @@ namespace Zend\Dojo\Form\Element;
  * @uses       \Zend\Form\ElementException
  * @package    Zend_Dojo
  * @subpackage Form_Element
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class CurrencyTextBox extends NumberTextBox
@@ -77,7 +79,7 @@ class CurrencyTextBox extends NumberTextBox
         $symbol = strtoupper((string) $symbol);
         $length = strlen($symbol);
         if (3 > $length) {
-            throw new \Zend\Form\ElementException('Invalid symbol provided; please provide ISO 4217 alphabetic currency code');
+            throw new Exception\InvalidArgumentException('Invalid symbol provided; please provide ISO 4217 alphabetic currency code');
         }
         if (3 < $length) {
             $symbol = substr($symbol, 0, 3);

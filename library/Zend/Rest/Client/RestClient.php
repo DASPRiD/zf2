@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -27,15 +27,10 @@ namespace Zend\Rest\Client;
 use Zend\Uri;
 
 /**
- * @uses       Zend\Rest\Client\Exception\UnexpectedValueException
- * @uses       Zend\Rest\Client\Result
- * @uses       Zend\Service\AbstractService
- * @uses       Zend\Uri\Uri
- * @uses       Zend\Uri\Url
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class RestClient extends \Zend\Service\AbstractService
@@ -47,15 +42,15 @@ class RestClient extends \Zend\Service\AbstractService
     protected $_data = array();
 
      /**
-     * Zend_Uri of this web service
-     * @var \Zend\Uri\Http
+     * URI of this web service
+     * @var Uri\Uri
      */
     protected $_uri = null;
 
     /**
      * Constructor
      *
-     * @param string|\Zend\Uri\Http $uri URI for the web service
+     * @param string|Uri\Uri $uri URI for the web service
      * @return void
      */
     public function __construct($uri = null)
@@ -68,15 +63,15 @@ class RestClient extends \Zend\Service\AbstractService
     /**
      * Set the URI to use in the request
      *
-     * @param string|Zend\Uri\Uri $uri URI for the web service
-     * @return Zend\Rest\Client\RestClient
+     * @param  string|Uri\Uri $uri URI for the web service
+     * @return RestClient
      */
     public function setUri($uri)
     {
-        if ($uri instanceof URI\Uri) {
+        if ($uri instanceof Uri\Uri) {
             $this->_uri = $uri;
         } else {
-            $this->_uri = new Uri\Url($uri);
+            $this->_uri = Uri\UriFactory::factory($uri);
         }
 
         return $this;
@@ -85,7 +80,7 @@ class RestClient extends \Zend\Service\AbstractService
     /**
      * Retrieve the current request URI object
      *
-     * @return Zend\Uri\Uri
+     * @return Uri\Uri
      */
     public function getUri()
     {
@@ -102,11 +97,11 @@ class RestClient extends \Zend\Service\AbstractService
     final private function _prepareRest($path)
     {
         // Get the URI object and configure it
-        if (!$this->_uri instanceof URI\Uri) {
+        if (!$this->_uri instanceof Uri\Uri) {
             throw new Exception\UnexpectedValueException('URI object must be set before performing call');
         }
 
-        $uri = $this->_uri->generate();
+        $uri = $this->_uri->toString();
 
         if ($path[0] != '/' && $uri[strlen($uri)-1] != '/') {
             $path = '/' . $path;
@@ -237,7 +232,7 @@ class RestClient extends \Zend\Service\AbstractService
             return new Result($response->getBody());
         } else {
             // More than one arg means it's definitely a Zend_Rest_Server
-            if (sizeof($args) == 1) {
+            if (count($args) == 1) {
                 // Uses first called function name as method name
                 if (!isset($this->_data['method'])) {
                     $this->_data['method'] = $method;
@@ -246,7 +241,7 @@ class RestClient extends \Zend\Service\AbstractService
                 $this->_data[$method]  = $args[0];
             } else {
                 $this->_data['method'] = $method;
-                if (sizeof($args) > 0) {
+                if (count($args) > 0) {
                     foreach ($args as $key => $arg) {
                         $key = 'arg' . $key;
                         $this->_data[$key] = $arg;

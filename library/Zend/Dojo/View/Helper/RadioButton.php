@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,7 +33,7 @@ use Zend\Filter\Alnum as AlnumFilter;
  * @uses       \Zend\Filter\Alnum
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
   */
 class RadioButton extends Dijit
@@ -87,6 +87,6 @@ class RadioButton extends Dijit
             }
         }
 
-        return $this->view->formRadio($id, $value, $attribs, $options, $listsep);
+        return $this->view->broker('formRadio')->direct($id, $value, $attribs, $options, $listsep);
     }
 }

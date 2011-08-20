@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Reviewed: no -->
-<sect2 id="zend.oauth.introduction.getting-started">
-    <title>Getting Started</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.oauth.introduction.getting-started"><info><title>Getting Started</title></info>
+    
 
     <para>
         With the OAuth protocol explained, let's show a simple example of it with
@@ -59,8 +58,8 @@ $consumer = new Zend_Oauth_Consumer($config);
         In addition, you should note several other configuration values not
         explicitly used: requestMethod and requestScheme. By default,
         <classname>Zend_Oauth_Consumer</classname> sends requests as POST (except for a
-        redirect which uses GET). The customised client (see later) also includes its
-        authorization by way of a header. Some services may, at their discretion,
+        redirect which uses <constant>GET</constant>). The customised client (see later) also
+        includes its authorization by way of a header. Some services may, at their discretion,
         require alternatives. You can reset the requestMethod (which defaults
         to Zend_Oauth::POST) to Zend_Oauth::GET, for example, and reset the
         requestScheme from its default of Zend_Oauth::REQUEST_SCHEME_HEADER to one
@@ -217,4 +216,4 @@ echo $result;
         Zend Framework service or other classes using <classname>Zend_Http_Client
         </classname> displacing the default client they would otherwise use.
     </para>
-</sect2>
+</section>

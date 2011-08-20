@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -30,7 +30,7 @@ use Zend\Db;
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -86,7 +86,7 @@ class PdoMysqlTest extends AbstractPdoTest
         try {
             $stmt = $this->_db->query($select);
             $result2 = $stmt->fetchAll();
-        } catch (\Zend\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertType('Zend\Db\Statement\Exception', $e,
                 'Expecting object of type Zend_Db_Statement_Exception, got '.get_class($e));
             $this->fail('Unexpected exception '.get_class($e).' received: '.$e->getMessage());
@@ -98,7 +98,7 @@ class PdoMysqlTest extends AbstractPdoTest
     /**
      * Ensures that driver_options are properly passed along to PDO
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-285
+     * @group  ZF-285
      * @return void
      */
     public function testAdapterDriverOptions()

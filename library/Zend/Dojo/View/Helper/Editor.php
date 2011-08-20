@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -30,7 +30,7 @@ namespace Zend\Dojo\View\Helper;
  * @uses       \Zend\Dojo\View\Helper\Dijit
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Editor extends Dijit
@@ -120,7 +120,7 @@ class Editor extends Dijit
         // Embed a textarea in a <noscript> tag to allow for graceful 
         // degradation
         $html .= '<noscript>'
-               . $this->view->formTextarea($hiddenId, $value, $attribs)
+               . $this->view->broker('formTextarea')->direct($hiddenId, $value, $attribs)
                . '</noscript>';
 
         return $html;

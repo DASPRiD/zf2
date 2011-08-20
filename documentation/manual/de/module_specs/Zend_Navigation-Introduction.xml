@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 20827 -->
-<!-- Reviewed: no -->
-<sect1 id="zend.navigation.introduction">
-    <title>Einführung</title>
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.navigation.introduction"><info><title>Einführung</title></info>
+    
 
     <para>
         <classname>Zend_Navigation</classname> ist eine Komponente für das Verwalten von Pointern
@@ -11,38 +11,39 @@
         Vorhaben.
     </para>
 
-    <sect2 id="zend.navigation.introduction.concepts">
-        <title>Seiten und Container</title>
+    <section xml:id="zend.navigation.introduction.concepts"><info><title>Seiten und Container</title></info>
+        
 
         <para>
             Es gibt zwei grundsätzliche Konzepte in <classname>Zend_Navigation</classname>:
         </para>
 
-        <sect3 id="zend.navigation.introduction.pages">
-            <title>Seiten</title>
+        <section xml:id="zend.navigation.introduction.pages"><info><title>Seiten</title></info>
+            
 
             <para>
                 Eine Seite (<classname>Zend_Navigation_Page</classname>) ist in
                 <classname>Zend_Navigation</classname> - in seiner einfachsten Form - ein Objekt
                 das einen Pointer zu einer Webseite enthält. Zusätzlich zum Pointer selbst, enthält
                 das Seitenobjekt eine Anzahl von anderen Eigenschaften die typischerweise für die
-                Navigation relevant sind, wie z.B. <code>label</code>, <code>title</code> usw.
+                Navigation relevant sind, wie z.B. <property>label</property>,
+                <property>title</property> usw.
             </para>
 
             <para>
                 Lesen Sie mehr darüber im Kapitel
                 <link linkend="zend.navigation.pages">Seiten</link>.
             </para>
-        </sect3>
+        </section>
 
-        <sect3 id="zend.navigation.introduction.containers">
-            <title>Container</title>
+        <section xml:id="zend.navigation.introduction.containers"><info><title>Container</title></info>
+            
 
             <para>
                 Ein Navigations Container (<classname>Zend_Navigation_Container</classname>) ist
                 eine Containerklasse für Seiten. Sie hat Methoden für das hinzufügen, empfangen,
                 löschen und durchlaufen von Seiten. Sie implementiert die
-                <ulink url="http://php.net/spl">SPL</ulink> Interfaces
+                <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://php.net/spl">SPL</link> Interfaces
                 <classname>RecursiveIterator</classname> und <classname>Countable</classname>,
                 und kann deshalb mit SPL Iteratoren wie
                 <classname>RecursiveIteratorIterator</classname> durchsucht werden.
@@ -60,18 +61,19 @@
                     Unterseiten haben kann.
                 </para>
             </note>
-        </sect3>
-    </sect2>
+        </section>
+    </section>
 
-    <sect2 id="zend.navigation.introduction.separation">
-        <title>Trennung von Daten (Modell) und Darstellung (View)</title>
+    <section xml:id="zend.navigation.introduction.separation"><info><title>Trennung von Daten (Modell) und Darstellung (View)</title></info>
+        
 
         <para>
             Klassen im <classname>Zend_Navigation</classname> Namespace handhaben keine Darstellung
             von Navigationselementen. Die Darstellung wird von den Navigations View Helfern
             durchgeführt. Trotzdem enthalten Seiten Informationen die von den View Helfern bei der
             Darstellung verwendet wird wie z.B.: Label, <acronym>CSS</acronym> Klasse, Titel,
-            <code>lastmod</code> und <code>priority</code> Eigenschaften für Sitemaps, usw.
+            <property>lastmod</property> und <property>priority</property> Eigenschaften für
+            Sitemaps, usw.
         </para>
 
         <para>
@@ -79,5 +81,5 @@
             <link linkend="zend.view.helpers.initial.navigation">Navigations Helfer</link> des
             Handbuchs.
         </para>
-    </sect2>
-</sect1>
+    </section>
+</section>

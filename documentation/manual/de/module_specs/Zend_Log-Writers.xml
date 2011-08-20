@@ -1,26 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 21829 -->
-<!-- Reviewed: no -->
-<sect1 id="zend.log.writers" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <title>Writer</title>
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="zend.log.writers"><info><title>Writer</title></info>
+    
 
     <para>
         Ein Writer ist ein Objekt das von <classname>Zend_Log_Writer_Abstract</classname> abstammt.
         Die Aufgabe eines Writer's ist es Log Daten in ein Speicher-Backend aufzunehmen.
     </para>
 
-    <sect2 id="zend.log.writers.stream">
-        <title>In Streams schreiben</title>
+    <section xml:id="zend.log.writers.stream"><info><title>In Streams schreiben</title></info>
+        
 
         <para>
             <classname>Zend_Log_Writer_Stream</classname> sendet Log Daten in einen
-            <ulink url="http://www.php.net/stream">PHP Stream</ulink>.
+            <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.php.net/stream">PHP Stream</link>.
         </para>
 
         <para>
             Um Log Daten in den <acronym>PHP</acronym> Ausgabebuffer zu schreiben, muß die URL
-            <code>php://output</code> verwendet werden. Alternativ können Log Daten direkt an einen
-            Stream wie z.B. <constant>STDERR</constant> (<code>php://stderr</code>) gesendet werden.
+            <filename>php://output</filename> verwendet werden. Alternativ können Log Daten direkt
+            an einen Stream wie z.B. <constant>STDERR</constant> (<filename>php://stderr</filename>)
+            gesendet werden.
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -32,8 +31,8 @@ $logger->info('Informational message');
 
         <para>
             Um Daten in eine Datei zu schreiben, muß eine der
-            <ulink url="http://www.php.net/manual/de/wrappers.php#wrappers.file">Dateisystem
-            URLs</ulink> verwendet werden:
+            <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.php.net/manual/de/wrappers.php#wrappers.file">Dateisystem
+            URLs</link> verwendet werden:
         </para>
 
         <programlisting language="php"><![CDATA[
@@ -44,7 +43,7 @@ $logger->info('Informative Nachricht');
 ]]></programlisting>
 
         <para>
-            Standardmäßig wird der Stream im Anhänge-Modus geöffnet (<code>"a"</code>). Um Ihn in
+            Standardmäßig wird der Stream im Anhänge-Modus geöffnet ("a"). Um Ihn in
             einem anderen Modus zu öffnen, akzeptiert der
             <classname>Zend_Log_Writer_Stream</classname> Konstruktor einen optionalen zweiten
             Parameter für den Modus.
@@ -71,10 +70,10 @@ $logger->info('Informative Nachricht');
             Der Modus kann für existierende Stream Ressourcen nicht definiert werden. Wenn das
             gemacht versucht wird, wird eine <classname>Zend_Log_Exception</classname> geworfen.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.log.writers.database">
-        <title>In Datenbanken schreiben</title>
+    <section xml:id="zend.log.writers.database"><info><title>In Datenbanken schreiben</title></info>
+        
 
         <para>
             <classname>Zend_Log_Writer_Db</classname> schreibt Log Informationen in eine Datenbank
@@ -101,19 +100,19 @@ $logger->info('Informative Nachricht');
 
         <para>
             Das obige Beispiel schreibt eine einzelne Zeile von Log Daten in einem Datenbanktabelle
-            welche <code>log_table_name</code> Tabelle benannt wird. Die Datenbankspalte welche
-            <code>lvl</code> benannt ist empfängt die Nummer der Priorität und die Spalte welche
-            <code>msg</code> benannt ist empfängt die Log Nachricht.
+            welche 'log_table_name' Tabelle benannt wird. Die Datenbankspalte welche 'lvl' benannt
+            ist empfängt die Nummer der Priorität und die Spalte welche 'msg' benannt ist empfängt
+            die Log Nachricht.
         </para>
-    </sect2>
+    </section>
 
-    <xi:include href="Zend_Log-Writers-Firebug.xml" />
-    <xi:include href="Zend_Log-Writers-Mail.xml" />
-    <xi:include href="Zend_Log-Writers-Syslog.xml" />
-    <xi:include href="Zend_Log-Writers-ZendMonitor.xml" />
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Zend_Log-Writers-Firebug.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Zend_Log-Writers-Mail.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Zend_Log-Writers-Syslog.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Zend_Log-Writers-ZendMonitor.xml"/>
 
-    <sect2 id="zend.log.writers.null">
-        <title>Einen Writer abstumpfen</title>
+    <section xml:id="zend.log.writers.null"><info><title>Einen Writer abstumpfen</title></info>
+        
 
         <para>
             <classname>Zend_Log_Writer_Null</classname> ist ein Stumpf der keine Log Daten
@@ -128,10 +127,10 @@ $logger = new Zend_Log($writer);
 // geht nirgendwohin
 $logger->info('Informative Nachricht');
 ]]></programlisting>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.log.writers.mock">
-        <title>Mit der Attrappe testen</title>
+    <section xml:id="zend.log.writers.mock"><info><title>Mit der Attrappe testen</title></info>
+        
 
         <para>
             <classname>Zend_Log_Writer_Mock</classname> ist ein sehr einfacher Writer der die rohen
@@ -158,12 +157,12 @@ var_dump($mock->events[0]);
 
         <para>
             Um die Events die von der Attrappe protokolliert wurden zu entfernen, muß einfach
-            <code>$mock->events = array()</code> gesetzt werden.
+            <command>$mock-&gt;events = array()</command> gesetzt werden.
         </para>
-    </sect2>
+    </section>
 
-    <sect2 id="zend.log.writers.compositing">
-        <title>Gemischte Writer</title>
+    <section xml:id="zend.log.writers.compositing"><info><title>Gemischte Writer</title></info>
+        
 
         <para>
             Es gibt kein gemischtes Writer Objekt. Trotzdem kann eine Log Instanz in jede beliebige
@@ -182,5 +181,5 @@ $logger->addWriter($writer2);
 // Geht zu beiden Writern
 $logger->info('Informative Nachricht');
 ]]></programlisting>
-    </sect2>
-</sect1>
+    </section>
+</section>

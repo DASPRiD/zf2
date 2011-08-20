@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -37,7 +37,7 @@ use Zend\Application\ResourceException,
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Session extends AbstractResource
@@ -57,7 +57,7 @@ class Session extends AbstractResource
 
     /**
      * Retrieve session manager
-     * 
+     *
      * @return Zend\Session\Manager|null
      */
     public function getManager()
@@ -70,7 +70,7 @@ class Session extends AbstractResource
      *
      * @param  array|string|\Zend\Session\SaveHandler $saveHandler
      * @return \Zend\Application\Resource\Session
-     * @throws \Zend\Application\ResourceException When $saveHandler is no valid save handler
+     * @throws \Zend\Application\ResourceException When $saveHandler is not a valid save handler
      */
     public function setSaveHandler($saveHandler)
     {

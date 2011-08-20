@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Module
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,7 +34,7 @@ use Zend\Application\Bootstrap as ApplicationBootstrap;
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Module
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Bootstrap
@@ -79,13 +79,6 @@ abstract class Bootstrap
         // ZF-6545: ensure front controller resource is loaded
         if (!$broker->hasPlugin('frontcontroller')) {
             $broker->registerSpec('frontcontroller');
-        }
-
-        // ZF-6545: prevent recursive registration of modules
-        if ($broker->hasPlugin('modules')) {
-            // Both unregister the resource and spec
-            $broker->unregister('modules');
-            $broker->unregisterSpec('modules');
         }
     }
 

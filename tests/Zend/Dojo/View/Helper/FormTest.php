@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -24,7 +24,7 @@ namespace ZendTest\Dojo\View\Helper;
 use Zend\Dojo\View\Helper\Form as FormHelper,
     Zend\Dojo\View\Helper\Dojo as DojoHelper,
     Zend\Registry,
-    Zend\View\View;
+    Zend\View;
 
 /**
  * Test class for Zend_Dojo_View_Helper_Form.
@@ -32,7 +32,7 @@ use Zend\Dojo\View\Helper\Form as FormHelper,
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
@@ -57,7 +57,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
     public function getView()
     {
-        $view = new View();
+        $view = new View\PhpRenderer();
         \Zend\Dojo\Dojo::enableView($view);
         return $view;
     }
@@ -78,13 +78,13 @@ class FormTest extends \PHPUnit_Framework_TestCase
         DojoHelper::setUseProgrammatic();
         $html = $this->getForm();
         $this->assertNotRegexp('/<form[^>]*(dojoType="dijit.form.Form")/', $html);
-        $this->assertNotNull($this->view->dojo()->getDijit('myForm'));
+        $this->assertNotNull($this->view->broker('dojo')->getDijit('myForm'));
     }
 
     public function testOnlyIdShouldBeNecessary()
     {
         DojoHelper::setUseDeclarative();
-        $html = $this->view->form('foo');
+        $html = $this->view->broker('form')->direct('foo');
         $this->assertRegexp('/<form[^>]*(dojoType="dijit.form.Form")/', $html, $html);
         $this->assertRegexp('/<form[^>]*(id="foo")/', $html, $html);
     }
