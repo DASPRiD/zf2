@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property_Value
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,59 +22,56 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Property\Value;
+namespace Zend\Ical\Component;
 
-use Zend\Ical\Ical;
+use Zend\Ical\Property\PropertyList;
 
 /**
- * Abstract value.
+ * Abstract custom container component.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property_Value
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class AbstractValue
+abstract class AbstractCustomContainerComponent extends AbstractComponent
 {
     /**
-     * Get the value.
+     * Experimental components.
      * 
-     * @var mixed
+     * @var array
      */
-    protected $value;
+    protected $experimentalComponents = array();
     
     /**
-     * Create a new value.
+     * IANA components
      * 
-     * @param  mixed $value 
-     * @return void
+     * @var array
      */
-    public function __construct($value)
+    protected $ianaComponents = array();
+    
+    /**
+     * Add an experimental component.
+     * 
+     * @param  Experimental $component
+     * @return self 
+     */
+    public function addExperimentalComponent(Experimental $component)
     {
-        $this->setValue($value);
+        $this->experimentalComponents[] = $component;
+        return $this;
     }
     
     /**
-     * Set the value.
+     * Add an IANA component.
      * 
-     * @param  string $value
-     * @return void
+     * @param  Iana $component
+     * @return self 
      */
-    public function setValue($value)
+    public function addIanaComponent(Iana $component)
     {
-        if (null === ($value = $this->validateValue($value))) {
-            throw new InvalidArgumentException(sprintf('"%s" is not valid', $value));
-        }
-        
-        $this->value = $value;
+        $this->ianaComponents[] = $component;
+        return $this;
     }
-    
-    /**
-     * Validate a value and convert it if required.
-     * 
-     * @param  mixed $value
-     * @return mixed
-     */
-    abstract protected function validateValue($value);
 }

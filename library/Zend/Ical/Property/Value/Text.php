@@ -22,13 +22,10 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Property;
-
-use Zend\Ical,
-    Zend\Ical\Exception;
+namespace Zend\Ical\Property\Value;
 
 /**
- * Method property.
+ * Text value.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -36,45 +33,57 @@ use Zend\Ical,
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Url extends AbstractProperty
+class Text implements Value
 {
     /**
-     * URL.
+     * Text.
      * 
      * @var string
      */
-    protected $url;
+    protected $text;
     
     /**
-     * Create a new URL property.
+     * Create a new text property.
      * 
-     * @param  mixed $url
+     * @param  string $text
      * @return void
      */
-    public function __construct($url)
+    public function __construct($text)
     {
-        $this->setUrl($url);
+        $this->setText($text);
     }
     
     /**
-     * Set URL.
+     * Set text.
      * 
-     * @param  mixed $url
+     * @param  string $text
      * @return self
      */
-    public function setUrl($url)
-    {
-        $this->url = ValueHelper::getUrl($url);
+    public function setText($text)
+    {                
+        $this->text = (string) $text;
         return $this;
     }
     
     /**
-     * Get URL.
+     * Get text.
      * 
      * @return string
      */
-    public function getUrl()
+    public function getText()
     {
-        return $this->url;
+        return $this->text;
+    }
+    
+    /**
+     * fromString(): defined by Value interface.
+     * 
+     * @see    Value::fromString()
+     * @param  string $string
+     * @return Value
+     */
+    public static function fromString($string)
+    {
+        return new self($string);
     }
 }

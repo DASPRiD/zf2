@@ -35,63 +35,18 @@ use Zend\Ical\Property;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Calendar extends AbstractComponent
-{
+class Calendar extends AbstractCustomContainerComponent
+{   
     /**
-     * Calendar version.
+     * getName(): defined by AbstractComponent.
      * 
-     * @var Property\Version
+     * @see    AbstractComponent::getName()
+     * @return string
      */
-    protected $version;
-    
-    /**
-     * Product ID.
-     * 
-     * @var Property\ProdId
-     */
-    protected $productId;
-    
-    /**
-     * Calendar scale.
-     * 
-     * @var Property\CalScale
-     */
-    protected $calendarScale;
-    
-    /**
-     * Method.
-     * 
-     * @var Property\Method
-     */
-    protected $method;
-    
-    /**
-     * Timezones.
-     * 
-     * @var array
-     */
-    protected $timezones = array();
-    
-    /**
-     * Events.
-     * 
-     * @var array
-     */
-    protected $events = array();
-    
-    /**
-     * IANA components.
-     * 
-     * @var array
-     */
-    protected $ianaComponents = array();
-    
-    /**
-     * Vendor components.
-     * 
-     * @var array
-     */
-    protected $vendorComponents = array();
+    public function getName()
+    {
+        return 'VCALENDAR';
+    }
     
     /**
      * Set calendar version.
@@ -213,9 +168,9 @@ class Calendar extends AbstractComponent
      */
     public function addEvent(Event $event)
     {
-        $uid = $event->getUid()->getUid();
-        $this->events[$uid] = $event;
-        return $uid;
+        //$uid = $event->getUid()->getUid();
+        $this->events[] = $event;
+        //return $uid;
     }
     
     /**
@@ -245,39 +200,5 @@ class Calendar extends AbstractComponent
         
         unset($this->timezones[$timezoneId]);
         return $this;
-    }
-       
-    /**
-     * Add an IANA component.
-     * 
-     * @param  Iana $component
-     * @return self
-     */
-    public function addIanaComponent(Iana $component)
-    {
-        $this->ianaComponents[] = $component;
-        return $this;        
-    }
-    
-    /**
-     * Add a vendor component.
-     * 
-     * @param  Vendor $component
-     * @return self
-     */
-    public function addVendorComponent(Vendor $component)
-    {
-        $this->vendorComponents[] = $component;
-        return $this;        
-    }
-    
-    /**
-     * Generate a globablly unique identifier.
-     * 
-     * @return string
-     */
-    protected function generateUid()
-    {
-        return gmdate('Ymd') . 'T' . gmdate('His') . 'Z-' . uniqid('', true) . '@' . gethostname();
     }
 }

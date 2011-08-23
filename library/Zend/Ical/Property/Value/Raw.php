@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property_Value
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -25,11 +25,53 @@
 namespace Zend\Ical\Property\Value;
 
 /**
+ * Raw value.
+ *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property_Value
+ * @subpackage Zend_Ical_Property
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class InvalidArgumentException extends \InvalidArgumentException implements Exception
-{}
+class Raw implements Value
+{
+    /**
+     * String.
+     * 
+     * @var string
+     */
+    protected $string;
+    
+    /**
+     * Create a new raw property.
+     * 
+     * @param  string $string
+     * @return void
+     */
+    public function __construct($string)
+    {
+        $this->setRaw($string);
+    }
+    
+    /**
+     * Set raw.
+     * 
+     * @param  string $string
+     * @return self
+     */
+    public function setRaw($string)
+    {                
+        $this->string = (string) $string;
+        return $this;
+    }
+    
+    /**
+     * Get raw.
+     * 
+     * @return string
+     */
+    public function getRaw()
+    {
+        return $this->string;
+    }
+}

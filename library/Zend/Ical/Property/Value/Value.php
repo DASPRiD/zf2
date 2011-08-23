@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property
+ * @subpackage Zend_Ical_Property_Value
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,60 +22,26 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Property;
+namespace Zend\Ical\Property\Value;
+
+use Zend\Ical\Ical;
 
 /**
- * UID property.
+ * Value interface.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property
+ * @subpackage Zend_Ical_Property_Value
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Uid extends AbstractProperty
+interface Value
 {
     /**
-     * UID.
+     * Create a new value from a string.
      * 
-     * @var string
+     * @param  string $string
+     * @return Value
      */
-    protected $uid;
-    
-    /**
-     * Create a new UID property.
-     * 
-     * @param  string $uid
-     * @return void
-     */
-    public function __construct($uid = null)
-    {
-        $this->setUid($uid);
-    }
-    
-    /**
-     * Set UID.
-     * 
-     * @param  string $uid
-     * @return self
-     */
-    public function setUid($uid)
-    {
-        if ($uid === null) {
-            $uid = gmdate('Ymd') . 'T' . gmdate('His') . 'Z-' . uniqid('', true) . '@' . gethostname();
-        }
-                
-        $this->uid = (string) $uid;
-        return $this;
-    }
-    
-    /**
-     * Get UID.
-     * 
-     * @return string
-     */
-    public function getUid()
-    {
-        return $this->uid;
-    }
+    public static function fromString($string);
 }

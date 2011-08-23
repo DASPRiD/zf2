@@ -22,10 +22,10 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Property;
+namespace Zend\Ical\Property\Value;
 
 /**
- * Date/Time stamp property.
+ * UID value.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -33,53 +33,60 @@ namespace Zend\Ical\Property;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class DateTimeStamp extends AbstractProperty
+class Uid implements Value
 {
     /**
-     * DateTime stamp.
+     * UID.
      * 
-     * @var integer
+     * @var string
      */
-    protected $dateTimeStamp;
+    protected $uid;
     
     /**
-     * Create a new Date/Time stamp property.
+     * Create a new UID property.
      * 
-     * @param  mixed $lastModified
+     * @param  string $uid
      * @return void
      */
-    public function __construct($dateTimeStamp)
+    public function __construct($uid = null)
     {
-        $this->setDateTimeStamp($dateTimeStamp);
+        if ($uid === null) {
+            $this->generateNewUid();
+        } else {
+            $this->setUid($uid);
+        }
     }
     
     /**
-     * Set Date/Time stamp.
+     * Set UID.
      * 
-     * @param  mixed $dateTimeStamp
+     * @param  string $uid
      * @return self
      */
-    public function setDateTimeStamp($dateTimeStamp)
-    {
-        if ($dateTimeStamp instanceof \Zend\Date\Date) {
-            $dateTimeStamp = $dateTimeStamp->getUnixTimestamp();
-        } elseif ($dateTimeStamp instanceof \DateTime) {
-            $dateTimeStamp = $dateTimeStamp->getTimestamp();
-        } else {
-            $dateTimeStamp = (int) $dateTimeStamp;
-        }
-        
-        $this->dateTimeStamp = $dateTimeStamp;
+    public function setUid($uid)
+    {                
+        $this->uid = (string) $uid;
         return $this;
     }
     
     /**
-     * Get last modified.
+     * Generate a new UID.
      * 
-     * @return integer
+     * @return self
      */
-    public function DateTimeStamp()
+    public function generateNewUid()
     {
-        return $this->dateTimeStamp;
+        $this->uid = gmdate('Ymd') . 'T' . gmdate('His') . 'Z-' . uniqid('', true) . '@' . gethostname();
+        return $this;
+    }
+    
+    /**
+     * Get UID.
+     * 
+     * @return string
+     */
+    public function getUid()
+    {
+        return $this->uid;
     }
 }

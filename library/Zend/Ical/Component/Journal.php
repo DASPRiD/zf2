@@ -35,5 +35,14 @@ namespace Zend\Ical\Component;
  */
 class Journal extends AbstractComponent
 {
-
+    /**
+     * getName(): defined by AbstractComponent.
+     * 
+     * @see    AbstractComponent::getName()
+     * @return string
+     */
+    public function getName()
+    {
+        return 'VJOURNAL';
+    }
 }

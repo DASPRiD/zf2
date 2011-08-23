@@ -24,7 +24,7 @@
  */
 namespace Zend\Ical\Component;
 
-use Zend\Ical\Property;
+use Zend\Ical\Property\PropertyList;
 
 /**
  * Abstract component.
@@ -36,23 +36,84 @@ use Zend\Ical\Property;
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class AbstractComponent
-{   
+{
     /**
-     * Vendor properties.
+     * Component types.
+     */
+    const COMPONENT_NONE         = 0;
+    const COMPONENT_EXPERIMENTAL = 1;
+    const COMPONENT_IANA         = 2;
+    
+    /**
+     * Map of component names to componen types.
      * 
      * @var array
      */
-    protected $vendorProperties = array();
+    protected static $nameToTypeMap = array(
+        'VCALENDAR' => 'Calendar',
+        'VALARM'    => 'Alarm',
+        'VTIMEZONE' => 'Timezone',
+        'STANDARD'  => 'OffsetStandard',
+        'DAYLIGHT'  => 'OffsetDaylight',
+        'VEVENT'    => 'Event',
+        'VTODO'     => 'Todo',
+        'VJOURNAL'  => 'JournalEntry',
+        'VFREEBUSY' => 'FreeBusyTime'
+    );
     
     /**
-     * Add a vendor property.
+     * Properties.
      * 
-     * @param  Property\Vendor $property
-     * @return self
+     * @var PropertyList
      */
-    public function addVendorProperty(Property\Vendor $property)
+    protected $properties;
+        
+    /**
+     * Create a new component.
+     * 
+     * @return void
+     */
+    public function __construct()
     {
-        $this->vendorProperties[] = $property;
-        return $this;        
+        $this->properties = new PropertyList();
+    }
+    
+    /**
+     * Get all properties.
+     * 
+     * @return PropertyList
+     */
+    public function properties()
+    {
+        return $this->properties;
+    }
+    
+    /**
+     * Get the iCalendar conforming component name.
+     * 
+     * It is important that the returned name is uppercased.
+     * 
+     * @return string
+     */
+    abstract public function getName();
+    
+    /**
+     * Get component type from name.
+     * 
+     * @param string $name
+     */
+    public static function getTypeFromName($name)
+    {
+        if (!isset(self::$nameToTypeMap[$name])) {
+            if (Ical::isXName($name)) {
+                return self::COMPONENT_EXPERIMENTAL;
+            } elseif (Ical::isIanaToken($name)) {
+                return self::COMPONENT_IANA;
+            } else {
+                return self::COMPONENT_NONE;
+            }
+        }
+
+        return self::$nameToTypeMap[$name];
     }
 }

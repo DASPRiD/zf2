@@ -90,6 +90,6 @@ class Ical
      */
     public static function isXName($string)
     {
-        return (bool) preg_match('(^[Xx]-[A-Za-z\d]{3,}-[A-Za-z\d\-]+$)S', $string);
+        return (bool) preg_match('(^[Xx]-[A-Za-z\d\-]+$)S', $string);
     }
 }

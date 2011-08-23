@@ -22,10 +22,10 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Property;
+namespace Zend\Ical\Property\Value;
 
 /**
- * Version property.
+ * DateTime value.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -33,79 +33,57 @@ namespace Zend\Ical\Property;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Version extends AbstractProperty
+class DateTime implements Value
 {
     /**
-     * Highest version.
+     * Text.
      * 
      * @var string
      */
-    protected $maxVersion;
+    protected $text;
     
     /**
-     * Lowest version.
+     * Create a new text property.
      * 
-     * @var string
-     */
-    protected $minVersion;
-    
-    /**
-     * Create a new version property.
-     * 
-     * @param  string $maxVersion
-     * @param  string $minVersion
+     * @param  string $text
      * @return void
      */
-    public function __construct($maxVersion = '2.0', $minVersion = null)
+    public function __construct($text)
     {
-        $this->setMaxVersion($maxVersion);
-        
-        if ($minVersion !== null) {
-            $this->setMinVersion($minVersion);
-        }
+        $this->setText($text);
     }
     
     /**
-     * Set highest version.
+     * Set text.
      * 
-     * @param  string $version
+     * @param  string $text
      * @return self
      */
-    public function setMaxVersion($version)
-    {
-        $this->maxVersion = (string) $version;
+    public function setText($text)
+    {                
+        $this->text = (string) $text;
         return $this;
     }
     
     /**
-     * Get highest version.
+     * Get text.
      * 
      * @return string
      */
-    public function getMaxVersion()
+    public function getText()
     {
-        return $this->maxVersion;
+        return $this->text;
     }
     
     /**
-     * Set lowest version.
+     * fromString(): defined by Value interface.
      * 
-     * @param  string $version
-     * @return self
+     * @see    Value::fromString()
+     * @param  string $string
+     * @return Value
      */
-    public function setMinVersion($version)
+    public static function fromString($string)
     {
-        $this->minVersion = (string) $version;
-        return $this;
-    }
-    
-    /**
-     * Get lowest version.
-     * 
-     * @return string
-     */
-    public function getMinVersion()
-    {
-        return $this->minVersion;
+        return new self($string);
     }
 }

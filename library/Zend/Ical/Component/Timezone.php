@@ -52,6 +52,17 @@ class Timezone extends AbstractComponent
     protected $offsets;
     
     /**
+     * getName(): defined by AbstractComponent.
+     * 
+     * @see    AbstractComponent::getName()
+     * @return string
+     */
+    public function getName()
+    {
+        return 'VTIMEZONE';
+    }
+    
+    /**
      * Createa a new timezone component.
      * 
      * @param  mixed $offsets

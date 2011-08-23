@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -22,53 +22,55 @@
 /**
  * @namespace
  */
-namespace Zend\Ical\Property;
+namespace Zend\Ical\Component;
 
-use Zend\Ical,
+use Zend\Ical\Ical,
     Zend\Ical\Exception;
 
 /**
- * Value helper.
+ * Experimental component.
  *
  * @category   Zend
  * @package    Zend_Ical
- * @subpackage Zend_Ical_Property
+ * @subpackage Zend_Ical_Component
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class ValueHelper
+class Experimental extends AbstractCustomContainerComponent
 {
     /**
-     * Get language.
+     * Component name.
      * 
-     * @param  mixed $language
-     * @return string
+     * @var string
      */
-    public static function getLanguage($language)
+    protected $name;
+    
+    /**
+     * __construct(): defined by AbstractComponent.
+     * 
+     * @see    AbstractComponent::__construct()
+     * @param  string $name
+     * @return void
+     */
+    public function __construct($name)
     {
-        if (!preg_match('(^[A-Za-z]+(?:-[A-Za-z]+)*$)S', $language)) {
-            throw new Exception\InvalidArgumentException(sprintf('"%s" is not a valid language according to RFC 1766', $language));
+        if (!Ical::isXName($name)) {
+            throw new Exception\InvalidArgumentException(sprintf('"%s" is not a valid x-name'));
         }
         
-        return $language;
+        $this->name = strtoupper($name);
+        
+        parent::__construct();
     }
     
     /**
-     * Get URL.
+     * getName(): defined by AbstractComponent.
      * 
-     * @param  mixed $url
-     * @return self
+     * @see    AbstractComponent::getName()
+     * @return string
      */
-    public static function getUrl($url)
+    public function getName()
     {
-        if (!$url instanceof \Zend\Uri\Uri) {
-            $uri = new \Zend\Uri\Uri($url);
-        }
-               
-        if (!$uri->isValid() || !$uri->isAbsolute()) {
-            throw new Exception\InvalidArgumentException('Supplied URI is not valid or not absolute');
-        }
-        
-        return $uri->toString();
+        return $this->name;
     }
 }

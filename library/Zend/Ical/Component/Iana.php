@@ -24,6 +24,9 @@
  */
 namespace Zend\Ical\Component;
 
+use Zend\Ical\Ical,
+    Zend\Ical\Exception;
+
 /**
  * IANA component.
  *
@@ -33,7 +36,41 @@ namespace Zend\Ical\Component;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Iana extends AbstractComponent
+class Iana extends AbstractCustomContainerComponent
 {
-
+    /**
+     * Component name.
+     * 
+     * @var string
+     */
+    protected $name;
+    
+    /**
+     * __construct(): defined by AbstractComponent.
+     * 
+     * @see    AbstractComponent::__construct()
+     * @param  string $name
+     * @return void
+     */
+    public function __construct($name)
+    {
+        if (!Ical::isIanaToken($name)) {
+            throw new Exception\InvalidArgumentException(sprintf('"%s" is not a valid IANA token'));
+        }
+        
+        $this->name = strtoupper($name);
+        
+        parent::__construct();
+    }
+    
+    /**
+     * getName(): defined by AbstractComponent.
+     * 
+     * @see    AbstractComponent::getName()
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 }
