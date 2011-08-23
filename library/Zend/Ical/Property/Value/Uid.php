@@ -43,7 +43,7 @@ class Uid implements Value
     protected $uid;
     
     /**
-     * Create a new UID property.
+     * Create a new UID value.
      * 
      * @param  string $uid
      * @return void

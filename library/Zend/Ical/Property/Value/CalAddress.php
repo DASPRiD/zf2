@@ -43,7 +43,7 @@ class CalAddress implements Value
     protected $text;
     
     /**
-     * Create a new text property.
+     * Create a new caladdress value.
      * 
      * @param  string $text
      * @return void

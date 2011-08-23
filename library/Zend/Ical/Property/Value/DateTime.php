@@ -36,43 +36,147 @@ namespace Zend\Ical\Property\Value;
 class DateTime implements Value
 {
     /**
-     * Text.
+     * Year.
      * 
-     * @var string
+     * @var integer
      */
-    protected $text;
+    protected $year;
+
+    /**
+     * Month.
+     * 
+     * @var integer
+     */
+    protected $month;
     
     /**
-     * Create a new text property.
+     * Day.
      * 
-     * @param  string $text
+     * @var integer
+     */
+    protected $day;
+    
+    /**
+     * Hour.
+     * 
+     * @var integer
+     */
+    protected $hour;
+    
+    /**
+     * Minute.
+     * 
+     * @var integer
+     */
+    protected $minute;
+    
+    /**
+     * Second.
+     * 
+     * @var integer
+     */
+    protected $second;
+    
+    /**
+     * Whether this DateTime is in UTC.
+     * 
+     * @var boolean
+     */
+    protected $isUtc;
+    
+    /**
+     * Create a new datetime value.
+     * 
+     * @param  mixed   $dateTime
+     * @param  boolean $isUtc
      * @return void
      */
-    public function __construct($text)
+    public function __construct($dateTime = null, $isUtc = true)
     {
-        $this->setText($text);
+        if ($dateTime === null) {
+            $dateTime = time();
+        }
+        
+        $this->setDateTime($dateTime);
     }
     
     /**
-     * Set text.
+     * Set datetime.
      * 
-     * @param  string $text
+     * @param  mixed   $dateTime
+     * @param  boolean $isUtc
      * @return self
      */
-    public function setText($text)
-    {                
-        $this->text = (string) $text;
+    public function setDateTime($dateTime, $isUtc = true)
+    {
+        if (is_numeric($dateTime)) {
+            if ($isUtc) {
+                $timestamp = (int) $dateTime;
+            } else {
+                $dateTimeString = date('YmdHis', $dateTime);
+            }
+        } elseif (is_array($dateTime)) {
+            $values   = array();
+            $required = array(
+                'year'   => array(0, null),
+                'month'  => array(1, 12),
+                'day'    => array(1, 31),
+                'hour'   => array(0, 23),
+                'minute' => array(0, 59),
+                'second' => array(0, 59),
+            );
+            
+            foreach ($values as $key => $restrictions) {
+                if (!isset($dateTime[$key]) || !is_numeric($dateTime[$key])) {
+                    throw new Exception\InvalidArgumentException(sprintf('Supplied datetime array is missing %s element', $key));
+                } elseif ($dateTime[$key] < $restrictions[0]) {
+                    throw new Exception\InvalidArgumentException(sprintf('%s element is lower than %d', $key, $restrictions[0]));
+                } elseif ($restrictions[1] !== null && $dateTime[$key] > $restrictions[1]) {
+                    throw new Exception\InvalidArgumentException(sprintf('%s element is greater than %d', $key, $restrictions[1]));
+                }
+                
+                $values[] = (int) $dateTime[$key];
+            }
+            
+            $dateTimeString = vsprintf('%04d%02d%02d%02d%02d%02d', $values);
+        } elseif ($dateTime instanceof \DateTime) {
+            if ($isUtc) {
+                $timestamp = $dateTime->getTimestamp();
+            } else {
+                $dateTimeString = $dateTime->format('YmdHis');
+            }
+        } elseif ($dateTime instanceof \Zend\Date\DateObject) {
+            if ($isUtc) {
+                $timestamp = $dateTime->getTimestamp();
+            } else {
+                $dateTimeString = $dateTime->toString('yyyyMMddHHmmss');
+            }
+        } else {
+            throw new Exception\InvalidArgumentException('Supplied datetime is neither a unix timestamp, an array nor an instance of \DateTime or \Zend\Date\Date');
+        }
+        
+        if (isset($timestamp)) {
+            $dateTimeString = gmdate('YmdHis', $timestamp);
+        }
+        
+        sscanf(
+            $dateTimeString, '%04d%02d%02d%02d%02d%02d',
+            $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->second
+        );
+        
+        $this->isUtc = (bool) $isUtc;
+        
         return $this;
     }
-    
+   
     /**
-     * Get text.
+     * Check if the datetime is in UTC.
      * 
-     * @return string
+     * @return boolean
      */
-    public function getText()
+    public function isUtc()
     {
-        return $this->text;
+        return $this->isUtc;
     }
     
     /**
@@ -84,6 +188,12 @@ class DateTime implements Value
      */
     public static function fromString($string)
     {
-        return new self($string);
+        if (!preg_match('(^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})T(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?<UTC>Z)?$)S', $string, $match)) {
+            return null;
+        }
+
+        $timestamp = gmmktime($match['hour'], $match['minute'], $match['second'], $match['month'], $match['day'], $match['year']);
+        
+        return new self($timestamp);
     }
 }

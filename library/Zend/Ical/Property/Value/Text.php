@@ -43,7 +43,7 @@ class Text implements Value
     protected $text;
     
     /**
-     * Create a new text property.
+     * Create a new text value.
      * 
      * @param  string $text
      * @return void

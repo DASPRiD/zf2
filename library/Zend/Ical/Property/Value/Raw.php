@@ -43,7 +43,7 @@ class Raw implements Value
     protected $string;
     
     /**
-     * Create a new raw property.
+     * Create a new raw value.
      * 
      * @param  string $string
      * @return void
