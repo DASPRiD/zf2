@@ -126,7 +126,7 @@ class DateTime implements Value
                 'second' => array(0, 59),
             );
             
-            foreach ($values as $key => $restrictions) {
+            foreach ($required as $key => $restrictions) {
                 if (!isset($dateTime[$key]) || !is_numeric($dateTime[$key])) {
                     throw new Exception\InvalidArgumentException(sprintf('Supplied datetime array is missing %s element', $key));
                 } elseif ($dateTime[$key] < $restrictions[0]) {
@@ -191,9 +191,7 @@ class DateTime implements Value
         if (!preg_match('(^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})T(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?<UTC>Z)?$)S', $string, $match)) {
             return null;
         }
-
-        $timestamp = gmmktime($match['hour'], $match['minute'], $match['second'], $match['month'], $match['day'], $match['year']);
         
-        return new self($timestamp);
+        return new self($match, isset($match['UTC']));
     }
 }
