@@ -190,15 +190,28 @@ class Parser
         while ($this->rawData[$this->currentPos - 1] !== ':') {
             $parameterName  = $this->getNextParameterName();
             $parameterValue = $this->getNextParameterValue();
-
-            //$property['parameters'][$parameterName] = $parameterValue;
+            
+            $property->setParameter($parameterName, new Value\Text($parameterValue));
         }
-        
+                
         // Handle property values
         if ($valueTypes === null) {
             // Contents of experimental and IANA components are treated as raw values.
             $value = new Value\Raw($this->getValue());
         } else {
+            // Check if an alternate value type is specified
+            $valueType = $property->getParameter('VALUE');
+
+            if ($valueType !== null) {
+                $valueType = strtoupper($valueType->getText());
+                
+                if (!in_array($valueType, $valueTypes)) {
+                    throw new Exception\ParseException(sprintf('A disallowed value type "%s" was specified for property %', $valueType, $propertyName));
+                }
+            } else {
+                $valueType = $valueTypes[0];
+            }
+            
             switch ($propertyName) {
                 case 'CATEGORIES':
                 case 'RESOURCES':
@@ -207,12 +220,12 @@ class Parser
                     $value = new Value\Multi();
                 
                     do {
-                        $value->add($this->getPropertyValue($propertyName, $this->getNextValue(), $valueTypes));
+                        $value->add($this->getPropertyValue($propertyName, $this->getNextValue(), $valueType));
                     } while ($this->rawData[$this->currentPos - 1] === ',');
                     break;
                 
                 default:
-                    $value = $this->createPropertyValue($propertyName, $this->getValue(), $valueTypes);
+                    $value = $this->createPropertyValue($propertyName, $this->getValue(), $valueType);
                     break;
             }
         }
@@ -475,23 +488,16 @@ class Parser
      * 
      * @param  string $propertyName
      * @param  string $string
-     * @param  array  $valueTypes
+     * @param  string $valueType
      * @return Value\AbstractValue
      */
-    protected function createPropertyValue($propertyName, $string, $valueTypes)
+    protected function createPropertyValue($propertyName, $string, $valueType)
     {
-        $value = null;
+        $value     = null;
+        $className = 'Zend\Ical\Property\Value\\' . $valueType;
 
-        foreach ($valueTypes as $valueType) {                
-            $className = 'Zend\Ical\Property\Value\\' . $valueType;
-
-            if (null !== ($value = $className::fromString($string))) {
-                break;
-            }
-        }
-
-        if ($value === null) {
-            throw new Exception\ParseException(sprintf('Value of property %s doesn\'t match any allowed type', $propertyName));
+        if (null !== ($value = $className::fromString($string))) {
+            throw new Exception\ParseException(sprintf('Value of property %s doesn\'t match %s type', $propertyName, $valueType));
         }
         
         return $value;

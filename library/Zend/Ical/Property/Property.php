@@ -40,6 +40,8 @@ class Property
 {
     /**
      * Property value types.
+     * 
+     * If a property supports multiple value types, the first one is the default.
      *
      * @var array
      */
@@ -119,9 +121,16 @@ class Property
     /**
      * Property value.
      * 
-     * @var Value\AbstractValue
+     * @var Value
      */
     protected $value;
+    
+    /**
+     * Property parameters.
+     * 
+     * @var array
+     */
+    protected $parameters = array();
     
     /**
      * Create a new property.
@@ -154,6 +163,65 @@ class Property
     {
         $this->value = $value;
         return $this;
+    }
+    
+    /**
+     * Get property value.
+     * 
+     * @return Value
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
+    /**
+     * Set a parameter.
+     * 
+     * @param  string $name
+     * @param  Value  $value 
+     * @return self
+     */
+    public function setParameter($name, Value $value)
+    {
+        $name = strtoupper($name);
+        
+        $this->parameters[$name] = $value;
+        
+        return $this;
+    }
+    
+    /**
+     * Remove a parameter.
+     * 
+     * @param  string $name
+     * @return self
+     */
+    public function removeParameter($name)
+    {
+        $name = strtoupper($name);
+        
+        if (isset($this->parameters[$name])) {
+            unset($this->parameters[$name]);
+        }
+
+        return $this;
+    }
+    
+    /**
+     * Get a parameter.
+     * 
+     * @param  string $name 
+     * @return Value
+     */
+    public function getParameter($name) {
+        $name = strtoupper($name);
+        
+        if (isset($this->parameters[$name])) {
+            return $this->parameters[$name];
+        }
+
+        return null;
     }
     
     /**
