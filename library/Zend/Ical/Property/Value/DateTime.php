@@ -118,7 +118,7 @@ class DateTime implements Value
         } elseif (is_array($dateTime)) {
             $values   = array();
             $required = array(
-                'year'   => array(0, null),
+                'year'   => array(0, 9999),
                 'month'  => array(1, 12),
                 'day'    => array(1, 31),
                 'hour'   => array(0, 23),
@@ -131,7 +131,7 @@ class DateTime implements Value
                     throw new Exception\InvalidArgumentException(sprintf('Supplied datetime array is missing %s element', $key));
                 } elseif ($dateTime[$key] < $restrictions[0]) {
                     throw new Exception\InvalidArgumentException(sprintf('%s element is lower than %d', $key, $restrictions[0]));
-                } elseif ($restrictions[1] !== null && $dateTime[$key] > $restrictions[1]) {
+                } elseif ($dateTime[$key] > $restrictions[1]) {
                     throw new Exception\InvalidArgumentException(sprintf('%s element is greater than %d', $key, $restrictions[1]));
                 }
                 
