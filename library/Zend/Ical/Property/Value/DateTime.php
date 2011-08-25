@@ -24,6 +24,8 @@
  */
 namespace Zend\Ical\Property\Value;
 
+use Zend\Ical\Component\Timezone;
+
 /**
  * DateTime value.
  *
@@ -95,9 +97,10 @@ class DateTime implements Value
     {
         if ($dateTime === null) {
             $dateTime = time();
+            $isUtc    = true;
         }
         
-        $this->setDateTime($dateTime);
+        $this->setDateTime($dateTime, $isUtc);
     }
     
     /**
@@ -177,6 +180,27 @@ class DateTime implements Value
     public function isUtc()
     {
         return $this->isUtc;
+    }
+    
+    /**
+     * Get unix timestamp representation.
+     * 
+     * @param  Timezone $timezone
+     * @return integer
+     */
+    public function getTimestamp(Timezone $timezone = null)
+    {
+        if ($timezone === null) {
+            if ($this->isUtc()) {
+                // Fixed time
+                return gmmktime($this->hour, $this->minute, $this->second, $this->month, $this->day, $this->year);
+            } else {
+                // Floating time (relative to the user)
+                return mktime($this->hour, $this->minute, $this->second, $this->month, $this->day, $this->year);
+            }
+        } else {
+            
+        }
     }
     
     /**

@@ -24,7 +24,8 @@
  */
 namespace Zend\Ical\Component;
 
-use Zend\Ical\Exception;
+use Zend\Ical\Exception,
+    Zend\Ical\Property\Value;
 
 /**
  * Timezone component.
@@ -38,18 +39,11 @@ use Zend\Ical\Exception;
 class Timezone extends AbstractComponent
 {
     /**
-     * Timezone ID.
-     * 
-     * @var Property\TimezoneId
-     */
-    protected $timezoneId;
-    
-    /**
      * Offsets.
      * 
      * @var array
      */
-    protected $offsets;
+    protected $offsets = array();
     
     /**
      * getName(): defined by AbstractComponent.
@@ -63,33 +57,12 @@ class Timezone extends AbstractComponent
     }
     
     /**
-     * Createa a new timezone component.
-     * 
-     * @param  mixed $offsets
-     * @param  mixed $url
-     * @param  mixed $lastModified
-     * @return void
-     */
-    public function __construct($offsets, $url = null, $lastModified = null)
-    {
-        $this->setOffsets($offsets);
-        
-        if ($url !== null) {
-            $this->setUrl($url);
-        }
-        
-        if ($lastModified !== null) {
-            $this->setLastModified($lastModified);
-        }
-    }
-    
-    /**
      * Add an offset to the timezone.
      * 
-     * @param  AbstractOffset $offset
+     * @param  AbstractOffsetComponent $offset
      * @return self
      */
-    public function addOffset(AbstractOffset $offset)
+    public function addOffset(AbstractOffsetComponent $offset)
     {
         $this->offsets[] = $offset;
         return $this;
@@ -106,17 +79,17 @@ class Timezone extends AbstractComponent
      */
     public function setOffsets($offsets)
     {
-        if ($offsets instanceof AbstractOffset) {
+        if ($offsets instanceof AbstractOffsetComponent) {
             $offsets = array($offsets);
         } elseif (!is_array($offsets)) {
-            throw new Exception\InvalidArgumentException('Offset is no instance of AbstractOffset, nor an array');
+            throw new Exception\InvalidArgumentException('Offset is no instance of AbstractOffsetComponent, nor an array');
         }
         
         $this->offsets = array();
         
         foreach ($offsets as $offset) {
-            if (!$offsets instanceof AbstractOffset) {
-                throw new Exception\UnexpectedValueException('Offset is no instance of Standard or Daylight');
+            if (!$offsets instanceof AbstractOffsetComponent) {
+                throw new Exception\InvalidArgumentException('Offset is no instance of AbstractOffsetComponent');
             }
             
             $this->offsets[] = $offset;
@@ -136,54 +109,34 @@ class Timezone extends AbstractComponent
     }
     
     /**
-     * Set URL.
+     * Get timezone ID.
      * 
-     * @param  mixed $url
-     * @return self
+     * @return string
      */
-    public function setUrl($url)
+    public function getTimezoneId()
     {
-        if (!$url instanceof Property\Url) {
-            $url = new Property\Url($url);
+        $id = $this->properties()->get('TZID');
+        
+        if ($id !== null && $id instanceof Value\Text) {
+            return $id->getText();
         }
         
-        $this->url = $url;
-        return $this;
+        return null;
     }
     
     /**
-     * Get URL.
+     * Get timezone name.
      * 
-     * @return Property\Url
+     * @return string
      */
-    public function getUrl()
+    public function getTimezoneName()
     {
-        return $this->url;
-    }
-    
-    /**
-     * Set last modified.
-     * 
-     * @param  mixed $lastModified
-     * @return self
-     */
-    public function setLastModified($lastModified)
-    {
-        if (!$lastModified instanceof Property\LastModified) {
-            $lastModified = new Property\LastModified($lastModified);
+        $name = $this->properties()->get('TZNAME');
+        
+        if ($name !== null && $name instanceof Value\Text) {
+            return $name->getText();
         }
         
-        $this->lastModified = $lastModified;
-        return $this;
-    }
-    
-    /**
-     * Get last modified.
-     * 
-     * @return Property\LastModified 
-     */
-    public function getLastModified()
-    {
-        return $this->lastModified;
+        return null;
     }
 }

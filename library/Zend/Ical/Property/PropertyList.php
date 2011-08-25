@@ -63,6 +63,17 @@ class PropertyList
     }
     
     /**
+     * Set a property.
+     * 
+     * @param  Property $property
+     * @return self
+     */
+    public function set(Property $property)
+    {
+        return $this->removeAll($property->getName())->add($property);
+    }
+    
+    /**
      * Remove a single property.
      * 
      * @param  Property $property
