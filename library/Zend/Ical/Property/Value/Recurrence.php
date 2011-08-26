@@ -25,7 +25,7 @@
 namespace Zend\Ical\Property\Value;
 
 /**
- * Recurence value.
+ * Recurrence value.
  *
  * @category   Zend
  * @package    Zend_Ical
@@ -33,7 +33,7 @@ namespace Zend\Ical\Property\Value;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Recurence implements Value
+class Recurrence implements Value
 {
     /**
      * Allowed frequencies.
@@ -82,63 +82,63 @@ class Recurence implements Value
      * 
      * @var array
      */
-    protected $bySecond;
+    protected $bySecond = array();
     
     /**
      * By minute.
      * 
      * @var array
      */
-    protected $byMinute;
+    protected $byMinute = array();
     
     /**
      * By hour.
      * 
      * @var array
      */
-    protected $byHour;
+    protected $byHour = array();
     
     /**
      * By day.
      * 
      * @var array
      */
-    protected $byDay;
+    protected $byDay = array();
     
     /**
      * By month day.
      * 
      * @var array
      */
-    protected $byMonthDay;
+    protected $byMonthDay = array();
     
     /**
      * By year day.
      * 
      * @var array
      */
-    protected $byYearDay;
+    protected $byYearDay = array();
     
     /**
      * By week no.
      * 
      * @var array
      */
-    protected $byWeekNo;
+    protected $byWeekNo = array();
     
     /**
      * By month.
      * 
      * @var array 
      */
-    protected $byMonth;
+    protected $byMonth = array();
     
     /**
      * By set pos.
      * 
      * @var array
      */
-    protected $bySetPos;
+    protected $bySetPos = array();
     
     /**
      * Weekday.
@@ -148,7 +148,7 @@ class Recurence implements Value
     protected $weekday;
     
     /**
-     * Create a new recurence value.
+     * Create a new recurrence value.
      * 
      * @param  string $frequency
      * @return void
@@ -302,7 +302,7 @@ class Recurence implements Value
     public function setBySecond(array $bySecond = null)
     {
         if ($bySecond === null) {
-            $this->bySecond = null;
+            $this->bySecond = array();
         } else {
             $values = array();
             
@@ -347,7 +347,7 @@ class Recurence implements Value
     public function setByMinute(array $byMinute = null)
     {
         if ($byMinute === null) {
-            $this->byMinute = null;
+            $this->byMinute = array();
         } else {
             $values = array();
             
@@ -392,7 +392,7 @@ class Recurence implements Value
     public function setByHour(array $byHour = null)
     {
         if ($byHour === null) {
-            $this->byHour = null;
+            $this->byHour = array();
         } else {
             $values = array();
             
@@ -437,7 +437,7 @@ class Recurence implements Value
     public function setByDay(array $byDay = null)
     {
         if ($byDay === null) {
-            $this->byDay = null;
+            $this->byDay = array();
         } else {
             $values = array();
             
@@ -492,7 +492,7 @@ class Recurence implements Value
     public function setByMonthDay(array $byMonthDay = null)
     {
         if ($byMonthDay === null) {
-            $this->byMonthDay = null;
+            $this->byMonthDay = array();
         } else {
             $values = array();
             
@@ -537,7 +537,7 @@ class Recurence implements Value
     public function setByYearDay(array $byYearDay = null)
     {
         if ($byYearDay === null) {
-            $this->byYearDay = null;
+            $this->byYearDay = array();
         } else {
             $values = array();
             
@@ -584,7 +584,7 @@ class Recurence implements Value
     public function setByWeekNo(array $byWeekNo = null)
     {
         if ($byWeekNo === null) {
-            $this->byWeekNo = null;
+            $this->byWeekNo = array();
         } else {
             $values = array();
             
@@ -631,7 +631,7 @@ class Recurence implements Value
     public function setByMonth(array $byMonth = null)
     {
         if ($byMonth === null) {
-            $this->byMonth = null;
+            $this->byMonth = array();
         } else {
             $values = array();
             
@@ -676,7 +676,7 @@ class Recurence implements Value
     public function setBySetPos(array $bySetPos = null)
     {
         if ($bySetPos === null) {
-            $this->bySetPos = null;
+            $this->bySetPos = array();
         } else {
             $values = array();
             
@@ -712,6 +712,17 @@ class Recurence implements Value
     public function getBySetPos()
     {
         return $this->bySetPos;
+    }
+    
+    /**
+     * Get a recurrence iterator.
+     * 
+     * @param  mixed $dateTimeStart
+     * @return RecurrenceIterator
+     */
+    public function getIterator($dateTimeStart)
+    {
+        return new RecurrenceIterator($this, $dateTimeStart);
     }
     
     /**

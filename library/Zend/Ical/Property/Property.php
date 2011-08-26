@@ -94,7 +94,7 @@ class Property
         // Recurrence properties
         'EXDATE' => array('DateTime', 'Date'),
         'RDATE'  => array('DateTime', 'Date', 'Period'),
-        'RRULE'  => array('Recurence'),
+        'RRULE'  => array('Recurrence'),
 
         // Alarm properties
         'ACTION'  => array('Text'),
