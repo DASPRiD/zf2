@@ -36,7 +36,7 @@ use Zend\Ical\Property\Value;
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class DateTest extends \PHPUnit_Framework_TestCase
-{/*
+{
     public function testWeekdayCalculation()
     {
         $date = new Value\DateTime(2011, 8, 26);
@@ -62,11 +62,11 @@ class DateTest extends \PHPUnit_Framework_TestCase
         
         $date = new Value\DateTime(2011, 1, 1);
         $this->assertEquals(1, $date->getDayOfYear());
-    }*/
+    }
     
     public function testWeekNoCalculation()
     {
-        /*
+
         // Weeks starting with Sunday
         $date = new Value\DateTime(2011, 1, 1);
         $this->assertEquals(0, $date->getWeekNo());
@@ -83,7 +83,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
         
         $date = new Value\DateTime(2011, 1, 2);
         $this->assertEquals(0, $date->getWeekNo(2));
-        */
+
         $date = new Value\DateTime(2011, 1, 3);
         $this->assertEquals(1, $date->getWeekNo(2));
         

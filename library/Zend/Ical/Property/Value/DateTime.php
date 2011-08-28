@@ -43,7 +43,19 @@ class DateTime implements Value
      * @var array
      */
     protected static $daysInMonths = array(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-    
+
+    /**
+     * Days in year passed per month.
+     * 
+     * The first array is for non-leap years, the second for leap years.
+     * 
+     * @var array
+     */
+    protected static $daysInYearPassedPerMonth = array(
+        array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365),
+        array(0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366),
+    );
+
     /**
      * Year.
      * 
@@ -136,8 +148,8 @@ class DateTime implements Value
             throw new Exception\InvalidArgumentException(sprintf('Year "%s" is not a number', $year));
         } elseif ($year < 0) {
             throw new Exception\InvalidArgumentException(sprintf('Year "%s" is lower than 0', $year));
-        } elseif ($year > 9999) {
-            throw new Exception\InvalidArgumentException(sprintf('Year "%s" is greater than 9999', $year));
+        } elseif ($year > 3000) {
+            throw new Exception\InvalidArgumentException(sprintf('Year "%s" is greater than 3000', $year));
         }
         
         $this->year = (int) $year;
@@ -360,57 +372,50 @@ class DateTime implements Value
     }
     
     /**
+     * Get the number of days in date's year.
+     * 
+     * @return integer
+     */
+    public function getDaysInYear()
+    {
+        if ($this->isLeapYear()) {
+            return 366;
+        } else {
+            return 365;
+        }
+    }
+    
+    /**
+     * Set the day of the year.
+     * 
+     * @param  integer $doy
+     * @return void
+     */
+    public function setDayOfYear($doy)
+    {
+        if ($doy < 1 && $doy > $this->getDaysInYear()) {
+            return;
+        }
+        
+        $isLeap = $this->isLeapYear() ? 1 : 0;
+        
+        for ($month = 11; $month >= 0; $month--) {
+            if ($doy > self::$daysInYearPassedPerMonth[$isLeap][$month]) {
+                $this->month = $month + 1;
+                $this->day   = $doy - self::$daysInYearPassedPerMonth[$isLeap][$month];
+                break;
+            }
+        }
+    }
+    
+    /**
      * Get the day of year of of this date.
      * 
      * @return integer
      */
     public function getDayOfYear()
     {
-        $julianDate = $this->getJulianDate() + 0.5;
-        $fraction   = $julianDate - ($julianDate - 0.5) + 1.0e-10;
-        $ka         = $julianDate;
-        
-        if ($julianDate >= 2299161) {
-            $ialp = (int) ((($julianDate) - 1867216.25) / 36524.25);
-            $ka   = $julianDate + 1 + $ialp - ($ialp >> 2);
-        }
-        
-        $kb = $ka + 1524;
-        $kc = (int) (($kb - 122.1) / 365.25);
-        $kd = (int) ($kc * 365.25);
-        $ke = (int) (($kb - $kd) / 30.6001);
-        
-        $day = $kb - $kd - (int) ($ke * 30.6001);
-        
-        if ($ke > 13) {
-            $month = $ke - 13;
-        } else {
-            $month = $ke - 1;
-        }
-        
-        if ($month === 2 && $day > 28) {
-            $day = 29;
-        }
-        
-        if ($month === 2 && $day === 29 && $ke === 3) {
-            $year = $kc - 4716;
-        } elseif ($month > 2) {
-            $year = $kc - 4716;
-        } else {
-            $year = $kc - 4715;
-        }
-        
-        if ($year === (($year >> 2) << 2)) {
-            $dayOfYear = ((275 * $month) / 9)
-                       - (($month + 9) / 12)
-                       + $day - 30;
-        } else {
-            $dayOfYear = ((275 * $month) / 9)
-                       - ((($month + 9) / 12) << 1)
-                       + $day - 30;
-        }
-        
-        return (int) $dayOfYear;
+        return self::$daysInYearPassedPerMonth[$this->isLeapYear() ? 1 : 0][$this->month - 1] + $this->day;
     }
     
     /**
@@ -457,16 +462,16 @@ class DateTime implements Value
     /**
      * Get the week number of this date.
      * 
-     * @param  integer $firstDay
+     * @param  integer $firstWeekDay
      * @return integer
      */
-    public function getWeekNo($firstDay = 1)
+    public function getWeekNo($firstWeekDay = 1)
     {
         $dayOfYear = $this->getDayOfYear();
         $weekday   = $this->getWeekday();
 
-        if ($firstDay > 1 && $firstDay < 8) {
-            $weekday -= $firstDay - 1;
+        if ($firstWeekDay > 1 && $firstWeekDay < 8) {
+            $weekday -= $firstWeekDay - 1;
             
             if ($weekday < 1) {
                 $weekday = 7 + $weekday;
@@ -506,6 +511,10 @@ class DateTime implements Value
                 $this->hour   = null;
                 $this->minute = null;
                 $this->second = null;
+            } else {
+                $this->hour   = 0;
+                $this->minute = 0;
+                $this->second = 0;
             }
         }
         

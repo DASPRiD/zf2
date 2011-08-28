@@ -40,14 +40,24 @@ class Recurrence implements Value
      * 
      * @var array
      */
-    protected static $frequencies = array('SECONDLY', 'MINUTELY', 'HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY');
+    protected static $frequencies = array(
+        'SECONDLY', 'MINUTELY', 'HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'
+    );
     
     /**
      * Allowed weekdays.
      * 
      * @var array
      */
-    protected static $frequencies = array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA');
+    protected static $weekdays = array(
+        'SU' => 1,
+        'MO' => 2,
+        'TU' => 3,
+        'WE' => 4,
+        'TH' => 5,
+        'FR' => 6,
+        'SA' => 7
+    );
     
     /**
      * Frequency.
@@ -59,7 +69,7 @@ class Recurrence implements Value
     /**
      * Until.
      * 
-     * @var mixed
+     * @var DateTime
      */
     protected $until;
     
@@ -75,7 +85,7 @@ class Recurrence implements Value
      * 
      * @var integer 
      */
-    protected $interval;
+    protected $interval = 1;
     
     /**
      * By second.
@@ -141,11 +151,11 @@ class Recurrence implements Value
     protected $bySetPos = array();
     
     /**
-     * Weekday.
+     * Week start.
      * 
      * @var string
      */
-    protected $weekday;
+    protected $weekStart = 'MO';
     
     /**
      * Create a new recurrence value.
@@ -185,6 +195,37 @@ class Recurrence implements Value
     {
         return $this->frequency;
     }
+    
+    /**
+     * Set interval.
+     * 
+     * @param  integer $interval
+     * @return self
+     */
+    public function setInterval($interval = null)
+    {
+        if ($interval === null) {
+            $this->interval = 1;
+        } else {
+            if (!is_numeric($interval)) {
+                throw new Exception\InvalidArgumentException(sprintf('Interval must be an integer, "%s" received', $interval));
+            }
+
+            $this->interval = max(1, (int) $interval);
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Get interval.
+     * 
+     * @return integer
+     */
+    public function getInterval()
+    {
+        return $this->interval;
+    }
 
     /**
      * Set until.
@@ -199,15 +240,11 @@ class Recurrence implements Value
         } elseif ($this->count !== null) {
             throw new Exception\RuntimeException('Until cannot be set while Count is set');
         } else {
-            if (!$until instanceof DateTime && !$until instanceof Date) {
-                try {
-                    $until = DateTime::fromString($until);
-                } catch (Exception $e) {
-                    try {
-                        $until = Date::fromString($until);
-                    } catch (Exception $e) {
-                        throw new Exception\InvalidArgumentException('Until does neither match DateTime nor Date');
-                    }
+            if (!$until instanceof DateTime) {
+                $until = DateTime::fromString($until);
+                
+                if ($until === null) {
+                    throw new Exception\InvalidArgumentException('Until does not match a DateTime value');
                 }
             }
 
@@ -220,7 +257,7 @@ class Recurrence implements Value
     /**
      * Get until.
      * 
-     * @return integer
+     * @return DateTime
      */
     public function getUntil()
     {
@@ -244,7 +281,7 @@ class Recurrence implements Value
                 throw new Exception\InvalidArgumentException(sprintf('Count must be an integer, "%s" received', $count));
             }
 
-            $this->count = (int) $count;
+            $this->count = max(1, (int) $count);
         }
         
         return $this;
@@ -261,36 +298,41 @@ class Recurrence implements Value
     }
     
     /**
-     * Set weekday.
+     * Set week start.
      * 
-     * @param  string $weekday
+     * @param  string $weekStart
      * @return self
      */
-    public function setWeekday($weekday = null)
+    public function setWeekStart($weekStart = null)
     {
-        if ($weekday === null) {
-            $this->weekday = null;
+        if ($weekStart === null) {
+            $this->weekStart = null;
         } else {
-            $weekday = strtoupper($weekday);
+            $weekStart = strtoupper($weekStart);
 
-            if (!in_array($weekday, self::$weekdays)) {
-                throw new Exception\InvalidArgumentException(sprintf('Weekday value "%s" is not valid', $weekday));
+            if (!in_array($weekStart, self::$weekdays)) {
+                throw new Exception\InvalidArgumentException(sprintf('Weekday value "%s" is not valid', $weekStart));
             }
 
-            $this->weekday = $weekday;
+            $this->weekStart = $weekStart;
         }
         
         return $this;
     }
     
     /**
-     * Get weekday.
+     * Get week end.
      * 
+     * @param  boolean $numeric
      * @return string
      */
-    public function getWeekday()
+    public function getWeekStart($numeric = false)
     {
-        return $this->weekday;
+        if ($numeric) {
+            return self::$weekdays[$this->weekStart];
+        } else {
+            return $this->weekStart;
+        }
     }
     
     /**
@@ -321,6 +363,8 @@ class Recurrence implements Value
             if (count($values) === 0) {
                 throw new Exception\InvalidArgumentException('BySecond values must contain at least one element');
             }
+            
+            sort($values, SORT_NUMERIC);
             
             $this->bySecond = $values;
         }
@@ -359,13 +403,15 @@ class Recurrence implements Value
                 } elseif ($value > 59) {
                     throw new Exception\InvalidArgumentException(sprintf('ByMinute value "%s" is greater than 59', $value));
                 }
-                            
+
                 $values[] = (int) $value;
             }
             
             if (count($values) === 0) {
                 throw new Exception\InvalidArgumentException('ByMinute values must contain at least one element');
             }
+            
+            sort($values, SORT_NUMERIC);
             
             $this->byMinute = $values;
         }
@@ -412,6 +458,8 @@ class Recurrence implements Value
                 throw new Exception\InvalidArgumentException('ByHour values must contain at least one element');
             }
             
+            sort($values, SORT_NUMERIC);
+            
             $this->byHour = $values;
         }
         
@@ -454,8 +502,6 @@ class Recurrence implements Value
                     throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is lower than -53', $value));
                 } elseif ($value[0] > 53) {
                     throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is greater than 53', $value));
-                } elseif ($value[0] == 0) {
-                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is 0', $value));
                 } elseif (!in_array($value[1], self::$weekdays)) {
                     throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is not valid', $value));
                 }
@@ -476,11 +522,22 @@ class Recurrence implements Value
     /**
      * Get by day.
      * 
+     * @param  integer $numeric
      * @return array
      */
-    public function getByDay()
+    public function getByDay($numeric = false)
     {
-        return $this->byDay;
+        if ($numeric) {
+            $values = array();
+            
+            foreach ($this->byDay as $byDay) {
+                $values[] = array($byDay[0], self::$weekdays[$byDay[1]]);
+            }
+            
+            return $values;
+        } else {
+            return $this->byDay;
+        }
     }
     
     /**
@@ -499,10 +556,12 @@ class Recurrence implements Value
             foreach ($byMonthDay as $value) {
                 if (!is_numeric($value)) {
                     throw new Exception\InvalidArgumentException(sprintf('ByMonthDay values must be integers, "%s" received', $value));
-                } elseif ($value < 1) {
-                    throw new Exception\InvalidArgumentException(sprintf('ByMonthDay value "%s" is lower than 1', $value));
+                } elseif ($value < -31) {
+                    throw new Exception\InvalidArgumentException(sprintf('ByMonthDay value "%s" is lower than -31', $value));
                 } elseif ($value > 31) {
                     throw new Exception\InvalidArgumentException(sprintf('ByMonthDay value "%s" is greater than 31', $value));
+                } elseif ($value == 0) {
+                    throw new Exception\InvalidArgumentException(sprintf('ByMonthDay value "%s" is 0', $value));
                 }
                             
                 $values[] = (int) $value;
@@ -511,6 +570,8 @@ class Recurrence implements Value
             if (count($values) === 0) {
                 throw new Exception\InvalidArgumentException('ByMonthDay values must contain at least one element');
             }
+            
+            sort($values, SORT_NUMERIC);
             
             $this->byMonthDay = $values;
         }
@@ -559,6 +620,8 @@ class Recurrence implements Value
                 throw new Exception\InvalidArgumentException('ByYearDay values must contain at least one element');
             }
             
+            sort($values, SORT_NUMERIC);
+            
             $this->byYearDay = $values;
         }
         
@@ -606,6 +669,8 @@ class Recurrence implements Value
                 throw new Exception\InvalidArgumentException('ByWeekNo values must contain at least one element');
             }
             
+            sort($values, SORT_NUMERIC);
+            
             $this->byWeekNo = $values;
         }
         
@@ -650,6 +715,8 @@ class Recurrence implements Value
             if (count($values) === 0) {
                 throw new Exception\InvalidArgumentException('ByMonth values must contain at least one element');
             }
+            
+            sort($values, SORT_NUMERIC);
             
             $this->byYearDay = $values;
         }
@@ -697,6 +764,8 @@ class Recurrence implements Value
             if (count($values) === 0) {
                 throw new Exception\InvalidArgumentException('BySetPos values must contain at least one element');
             }
+            
+            sort($values, SORT_NUMERIC);
             
             $this->bySetPos = $values;
         }
@@ -795,7 +864,7 @@ class Recurrence implements Value
                         break;
                     
                     case 'WKST':
-                        $self->setWeekday($value);
+                        $self->setWeekStart($value);
                         break;
                     
                     case 'BYSECOND':

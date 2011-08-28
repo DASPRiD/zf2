@@ -35,88 +35,49 @@ use Zend\Ical\Exception;
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class RecurrenceIterator
+class RecurrenceIterator implements Iterator
 {
     /**
-     * BY* rule mapping.
+     * Start date.
      * 
-     * @var array
-     */
-    protected static $byRules = array(
-        'NOCONTRACTION' => -1,
-        'BYSECOND'      => 0,
-        'BYMINUTE'      => 1,
-        'BYHOUR'        => 2,
-        'BYDAY'         => 3,
-        'BYMONTHDAY'    => 4,
-        'BYYEARDAY'     => 5,
-        'BYWEEKNO'      => 6,
-        'BYMONTH'       => 7,
-        'BYSETPOS'      => 8,
-    );
-    
-    /**
-     * Expand table.
-     * 
-     * @var array
-     */
-    protected static $expandTable = array(
-        'UNKNOWN'  => 0,
-        'CONTRACT' => 1,
-        'EXPAND'   => 2,
-        'ILLEGAL'  => 3,
-    );
-    
-    /**
-     * Expand map.
-     * 
-     * @var array
-     */
-    protected static $expandMap = array(
-        'SECONDLY' => array(1, 1, 1, 1, 1, 1, 1, 1),
-        'MINUTELY' => array(2, 1, 1, 1, 1, 1, 1, 1),
-        'HOURLY'   => array(2, 2, 1, 1, 1, 1, 1, 1),
-        'DAILY'    => array(2, 2, 2, 1, 1, 1, 1, 1),
-        'WEEKLY'   => array(2, 2, 2, 2, 3, 3, 1, 1),
-        'MONTHLY'  => array(2, 2, 2, 2, 2, 3, 3, 1),
-        'YEARLY'   => array(2, 2, 2, 2, 2, 2, 2, 2),
-        'NO'       => array(0, 0, 0, 0, 0, 0, 0, 0),
-    );
-    
-    /**
-     * Recurrence instance.
-     * 
-     * @var Recurrence
-     */
-    protected $recurrence;
-    
-    /**
-     * Last.
-     * 
-     * @var Date
-     */
-    protected $endDate;
-    
-    /**
-     * Date time start.
-     * 
-     * @var Date
+     * @var DateTime
      */
     protected $startDate;
     
     /**
-     * Days index.
+     * Current date.
      * 
-     * @var integer
+     * @var DateTime
      */
-    protected $daysIndex;
+    protected $currentDate;
     
     /**
-     * Occutrence number.
+     * End date.
+     * 
+     * @var DateTime
+     */
+    protected $endDate;
+    
+    /**
+     * Interval.
      * 
      * @var integer
      */
-    protected $occurenceNo;
+    protected $interval;
+    
+    /**
+     * Limit.
+     * 
+     * @var integer
+     */
+    protected $limit;
+
+    /**
+     * Occrurence counter.
+     * 
+     * @var integer
+     */
+    protected $count;
     
     /**
      * Recurrence frequency.
@@ -126,43 +87,46 @@ class RecurrenceIterator
     protected $frequency;
     
     /**
-     * BY* rules.
+     * Rules.
      * 
      * @var array
      */
     protected $rules;
     
     /**
-     * BY* rules which had data.
+     * Rule pointers.
      * 
      * @var array
      */
-    protected $rulesHadData;
+    protected $rulePointers = array();
+    
+    /**
+     * Valid days in current year for YEARLY recurrence.
+     * 
+     * @var array
+     */
+    protected $days;
     
     /**
      * Create a new recurrence iterator.
      * 
      * @param  Recurrence $recurrence
-     * @param  Date       $dateTimeStart
+     * @param  DateTime   $dateTimeStart
      * @return void
      */
-    public function __construct(Recurrence $recurrence, Date $starDate)
+    public function __construct(Recurrence $recurrence, DateTime $starDate)
     {
-        if (!$startDate instanceof Date) {
-            throw new Exception\InvalidArgumentException('DateTime start must be an instance of Date');
-        }
-        
-        $this->recurrence    = $recurrence;
-        $this->startDate     = $startDate;
-        $this->endDate       = clone $startDate;
-        $this->daysIndex     = 0;
-        $this->occurenceNo   = 0;
-        $this->frequency     = $recurrence->getFrequency();
-        $this->rules         = array(
+        // Import recurrence and datetime data.
+        $this->startDate  = clone $startDate;
+        $this->frequency  = $recurrence->getFrequency();
+        $this->interval   = $recurrence->getInterval();
+        $this->endDate    = $recurrence->getUntil();
+        $this->limit      = $recurrence->getCount();
+        $this->rules      = array(
             'BYSECOND'   => $recurrence->getBySecond(),
             'BYMINUTE'   => $recurrence->getByMinute(),
             'BYHOUR'     => $recurrence->getByHour(),
-            'BYDAY'      => $recurrence->getByDay(),
+            'BYDAY'      => $recurrence->getByDay(true),
             'BYMONTHDAY' => $recurrence->getByMonthDay(),
             'BYYEARDAY'  => $recurrence->getByYearDay(),
             'BYWEEKNO'   => $recurrence->getByWeekNo(),
@@ -170,142 +134,392 @@ class RecurrenceIterator
             'BYSETPOS'   => $recurrence->getBySetPos(),
         );
         
-        // Store which rules had date in them when the iterator was created. We
-        // can't use the actual arrays, because the empty ones will be filled
-        // with default values later in this method.
+        if ($startDate->isDate()) {
+            $this->rules['BYSECOND'] = array();
+            $this->rules['BYMINUTE'] = array();
+            $this->rules['BYHOUR']   = array();
+        }
+    }
+        
+    /**
+     * rewind(): defined by \Iterator interface.
+     * 
+     * @see    \Iterator::rewind()
+     * @return void
+     */
+    public function rewind()
+    {
+        $this->currentDate = clone $this->startDate;
+        $this->count       = 0;
+        
         foreach ($this->rules as $key => $value) {
-            $this->rulesHadData[$key] = (count($value) > 0);
+            $this->rulePointers[$key] = 0;
         }
         
-        // Rewrite some of the rules and set up defaults to make later
-        // processing easier. Primarily, it involves copying an element from
-        // the start time into the corresponding BY* array when the BY* array
-        // is empty.
-        $this->setupDefaults('BYSECOND', 'SECONDLY', $this->startDate->getSeconds());
-        $this->setupDefaults('BYMINUTE', 'MINUTELY', $this->startDate->getMinute());
-        $this->setupDefaults('BYHOUR', 'HOURLY', $this->startDate->getHour());
-        $this->setupDefaults('BYMONTHDAY', 'DAILY', $this->startDate->getDay());
-        $this->setupDefaults('BYMONTH', 'MONTHLY', $this->startDate->getMonth());
-        
-        if ($this->frequency === 'WEEKLY') {
-            if (count($this->rules['BYDAY']) === 0) {
-                // Weekly recurrences with no BYDAY data should occur on the
-                // same day of the week as the start time.
-                $this->rules['BYDAY'][] = $this->dateTimeStart->getWeekday();
-            } else {
-                // If there is BYDAY data, then we need to move the initial time
-                // to the start of the BYDAY data. That is if the start time is
-                // on a wednesday, and the rule has BYDAY=MO,WE,FR, move the
-                // initial time back to monday. Otherwise, jumping to the next
-                // week (jumping 7 days ahead) will skip over some occurences in
-                // the second week.
-                $dow = $this->rules['BYDAY'][0] - $this->dateTimeStart->getWeekday();
-                
-                if (($this->last->getWeekDay() < $byDay[0] && $dow >= 0) || $dow < 0) {
-                    // Initial time is after first day of BYDAY data
-                    $this->endDate->addDays($dow);
-                }
-            }
-        } elseif ($this->frequency === 'YEARLY') {
-            // For yearly reccurences, begin by setting up the year days array.
-            // The YEARLY rules work by expanding one year at a time.
-            while (true) {
-                
-            }
-        } elseif ($this->frequency === 'MONTHLY' && $this->rulesHadData['BYDAY']) {
-            
-        } elseif ($this->rulesHadData['BYMONTHDAY']) {
-            
+        if ($this->frequency === 'YEARLY') {
+            $this->expandYearDays();
         }
     }
     
     /**
-     * Setup default values.
+     * current(): defined by \Iterator interface.
      * 
-     * @param string  $rule
-     * @param string  $frequency
-     * @param integer $value 
+     * @see    \Iterator::current()
+     * @return mixed
      */
-    protected function setupDefaults($rule, $frequency, $value)
+    public function current()
     {
-        if ($this->rules[$rule] === null && self::$expandMap[$frequency][self::$byRules[$rule]] !== self::$expandTable['CONTRACT']) {
-            $this->rules[$rule] = array($value);
-        }
-        
-        if ($this->frequency !== $frequency && self::$expandMap[$frequency][self::$byRules[$rule]] !== self::$expandTable['CONTRACT']) {
-            switch ($rule) {
-                case 'BYSECOND':
-                    $this->endDate->setSecond($this->rules[$rule][0]);
-                    break;
-
-                case 'BYMINUTE':
-                    $this->endDate->setMinute($this->rules[$rule][0]);
-                    break;
-
-                case 'BYHOUR':
-                    $this->endDate->setHour($this->rules[$rule][0]);
-                    break;
-
-                case 'BYMONTHDAY':
-                    $this->endDate->setDay($this->rules[$rule][0]);
-                    break;
-
-                case 'BYMONTH':
-                    $this->endDate->setMonth($this->rules[$rule][0]);
+        return $this->currentDate;
+    }
+    
+    /**
+     * key(): defined by \Iterator interface.
+     * 
+     * @see    \Iterator::key()
+     * @return scalar
+     */
+    public function key()
+    {
+        return $this->count;
+    }
+    
+    /**
+     * next(): defined by \Iterator interface.
+     * 
+     * @see    \Iterator::next()
+     * @return void
+     */
+    public function next()
+    {
+        do {
+            switch ($this->frequency) {
+                case 'SECONDLY':
+                    $this->nextSecond();
                     break;
             }
+        } while(!$this->currentDateMatchesRules());
+    }
+    
+    /**
+     * Next second.
+     * 
+     * @return void
+     */
+    protected function nextSecond()
+    {
+        $second    = $this->currentDate->getSecond();
+        $endOfData = false;
+        
+        if ($this->rules['BYSECOND']) {
+            $this->rulePointers['BYSECOND']++;
+            
+            if (!isset($this->rules[$this->rulePointers['BYSECOND']])) {
+                $this->rulePointers['BYSECOND'] = 0;
+                $endOfData                      = true;
+            }
+            
+            $this->currentDate->setSecond($this->rules[$this->rulePointers['BYSECOND']]);
+        } elseif (!$this->rules['BYSECOND'] && $this->frequency === 'SECONDLY') {
+            $this->incrementSecond();
         }
+        
+        if ($this->rules['BYSECOND'] && $endOfData && $this->frequency === 'SECONDLY') {
+            $this->incrementMinute(true);
+        }
+        
+        return $endOfData;
     }
     
     /**
      * Expand year days.
+     * 
+     * For YEARLY frequency, set up the days-array to list all of the days of
+     * the current year that are specified in the rules.
      * 
      * @param  integer $year
      * @return void
      */
     protected function expandYearDays($year)
     {
-        $date = new DateTime(0, 0, 0);
+        $this->days = array();
         
-        $flags = ($this->rulesHadData['BYDAY'] ? 1 << self::$byRules['BYDAY'] : 0)
-               + ($this->rulesHadData['BYWEEKNO'] ? 1 << self::$byRules['BYWEEKNO'] : 0)
-               + ($this->rulesHadData['BYMONTHDAY'] ? 1 << self::$byRules['BYMONTHDAY'] : 0)
-               + ($this->rulesHadData['BYWBYMONTHEKNO'] ? 1 << self::$byRules['BYMONTH'] : 0)
-               + ($this->rulesHadData['BYYEARDAY'] ? 1 << self::$byRules['BYYEARDAY'] : 0);
+        $flags = ($this->rules['BYDAY']      ? 0x01 : 0)
+               + ($this->rules['BYWEEKNO']   ? 0x02 : 0)
+               + ($this->rules['BYMONTHDAY'] ? 0x04 : 0)
+               + ($this->rules['BYMONTH']    ? 0x08 : 0)
+               + ($this->rules['BYYEARDAY']  ? 0x10 : 0);
         
-        // BYWEEKNO together with BYMONTH may conflict, in this case BYMONTH wins.
-        if (($flags & 1 << self::$byRules['BYMONTH']) && ($flags & 1 << self::$byRules['BYWEEKNO'])) {
-            $date->setYear($year);
+        switch ($flags) {
+            // FREQ=YEARLY;
+            case 0:
+                $date = clone $this->startDate;
+                $date->setYear($this->currentDate->getYear());
+                
+                // Make sure that we didn't hit February 29th when it doesn't exist.
+                if ($date->getDay() === $this->startDate->getDay()) {
+                    $this->days[] = $date->getDayOfYear();
+                }
+                break;
             
-            // Calculate valid week numbers.
+            // FREQ=YEARLY;BYMONTH=3,11
+            case 0x08:
+                $date = clone $this->startDate;
+                $date->setYear($year);
+                
+                foreach ($this->rules['BYMONTH'] as $month) {
+                    $date->setMonth($month);
+                
+                    // Make sure that we didn't hit February 29th when it doesn't exist.
+                    if ($date->getDay() === $this->startDate->getDay()) {
+                        $this->days[] = $date->getDayOfYear();
+                    }
+                }
+                break;
+                
+            // FREQ=YEARLY;BYMONTHDAY=1,15
+            case 0x04:
+                $date = clone $this->startDate;
+                $date->setYear($year);
+                
+                $daysInMonth = $date->getDaysInMonth();
+                
+                foreach ($this->rules['BYMONTHDAY'] as $monthDay) {
+                    if ($monthDay < 0) {
+                        $monthDay = $daysInMonth + ($monthDay + 1);
+                    }
+                    
+                    if ($monthDay <= $daysInMonth && $monthDay > 0) {
+                        $date->setDay($monthDay);
+                    
+                        // Make sure that we didn't hit February 29th when it doesn't exist.
+                        if ($date->getDay() === $monthDay) {
+                            $this->days[] = $date->getDayOfYear();
+                        }
+                    }
+                }
+                break;
+                
+            // FREQ=YEARLY;BYDAY=TH,20MO,-10FR
+            case 0x01:
+                $this->days = $this->expandByDay($year);
+                break;
+            
+            // FREQ=YEARLY;BYDAY=TH,20MO,-10FR;BYMONTH=12
+            case 0x01 + 0x08:
+                $this->days = $this->expandByDay($year);
+                break;
+            
+            // FREQ=YEARLY;BYDAY=TH,20MO,-10FR;BYMONTHDAY=1,15
+            case 0x01 + 0x04:
+                $date = new DateTime($year, 1, 1);
+                $days = $this->expandByDay($year);
+                
+                foreach ($days as $day) {
+                    $date->setDayOfYear($day);
+                    
+                    $daysInMonth = $date->getDaysInMonth();
+                    
+                    foreach ($this->rules['BYMONTHDAY'] as $monthDay) {
+                        if ($monthDay < 0) {
+                            $monthDay = $daysInMonth + ($monthDay + 1);
+                        }
+                        
+                        if ($date->getDay() === $monthDay) {
+                            $days[] = $day;
+                            break;
+                        }
+                    }
+                }
+                break;
+            
+            // FREQ=YEARLY;BYDAY=TH,20MO,-10FR;BYMONTHDAY=10;MYMONTH=6,11
+            case 0x01 + 0x04 + 0x08:
+                $date = new DateTime($year, 1, 1);
+                $days = $this->expandByDay($year);
+                
+                foreach ($days as $day) {
+                    $date->setDayOfYear($day);
+                    
+                    $daysInMonth = $date->getDaysInMonth();
+                    
+                    if (in_array($date->getMonth(), $this->rules['BYMONTH'])) {
+                        foreach ($this->rules['BYMONTHDAY'] as $monthDay) {
+                            if ($monthDay < 0) {
+                                $monthDay = $daysInMonth + ($monthDay + 1);
+                            }
+
+                            if ($date->getDay() === $monthDay) {
+                                $days[] = $day;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+                
+            // FREQ=YEARLY;BYMONTHDAY=1,15;BYMONTH=10
+            case 0x04 + 0x08:
+                $date = clone $this->startDate;
+                $date->setYear($year);
+                
+                foreach ($this->rules['BYMONTH'] as $month) {
+                    $date->setMonth($month);
+                    
+                    $daysInMonth = $date->getDaysInMonth();
+                    
+                    foreach ($this->rules['BYMONTHDAY'] as $monthDay) {
+                        if ($monthDay < 0) {
+                            $monthDay = $daysInMonth + ($monthDay + 1);
+                        }
+
+                        if ($monthDay <= $daysInMonth && $monthDay > 0) {
+                            $date->setDay($monthDay);
+
+                            // Make sure that we didn't hit February 29th when it doesn't exist.
+                            if ($date->getDay() === $monthDay) {
+                                $this->days[] = $date->getDayOfYear();
+                            }
+                        }
+                    }
+                }
+                break;
+                
+            // FREQ=YEARLY;BYYEARDAY=20,50
+            case 0x10:
+                $daysInYear = $this->currentDate->getDaysInYear();
+                
+                foreach ($this->rules['BYYEARDAY'] as $yearDay) {
+                    if ($yearDay < 0) {
+                        $yearDay = $daysInYear + ($yearDay + 1);
+                    }
+                    
+                    if ($yearDay <= $daysInYear && $yearDay > 0) {
+                        $this->days[] = $yearDay;
+                    }
+                }
+                break;
+                
+            // Catch not implemented combinations. Mainly, this includes
+            // every combination with BYWEEKNO. This one can be ignored for now,
+            // as none of the major implementations supports it as well.
+            default:
+                throw new Exception\NotImplementedException('The given BY* rule combination is not implemented');
+                break;
+        }
+        
+        sort($this->days, SORT_NUMERIC);
+    }
+    
+    /**
+     * Expand the BYDAY rule part and return a list of days.
+     * 
+     * This method will take care of BYMONTH rules, as this changes the
+     * behaviour of BYDAY offsets.
+     * 
+     * @param  integer $year
+     * @return array
+     */
+    protected function expandByDay($year)
+    {
+        $days = array();
+        
+        if ($this->rules['BYMONTH']) {
+            // Offsets within a month.
+            $date = new DateTime($year, 1, 1);
+            
             foreach ($this->rules['BYMONTH'] as $month) {
-                $date->setMonth($month);
-                $date->setDay(1);
-                $firstWeek = $date->getWeekNo();
+                $date->setDay(1)
+                     ->setMonth($month);
                 
-                $date->setDay($date->getDaysInMonth());
-                $lastWeek  = $date->getWeekNo;
+                $startDow    = $date->getWeekday();
+                $doyOffset   = $date->getDayOfYear() - 1;
+                $daysInMonth = $date->getDaysInMonth();
                 
-                for ($week = $firstWeek; $week < $lastWeek; $week++) {
-                    $validWeeks[$week] = true;
+                $date->setDay($daysInMonth);
+                
+                $endDow = $date->getWeekday();
+                
+                foreach ($this->rules['BYDAY'] as $byDay) {
+                    $firstMatchingDay = (($byDay + 7 - $firstDow) % 7) + 1;
+                    $lastMatchingDay  = $daysInMonth - (($lastDow + 7 - $byDay) % 7);
+                    
+                    if ($pos === 0) {
+                        for ($day = $firstMatchingDay; $day <= $daysInMonth; $day += 7) {
+                            $days[] = $doyOffset + $day;
+                        }
+                    } elseif ($pos > 0) {
+                        $monthDay = $firstMatchingDay + ($pos - 1) * 7;
+                        
+                        if ($monthDay <= $daysInMonth) {
+                            $days[] = $doyOffset + $monthDay;
+                        }
+                    } else {
+                        $monthDay = $lastMatchingDay + ($pos + 1) * 7;
+                        
+                        if ($monthDay > 0) {
+                            $days[] = $doyOffset + $monthDay;
+                        }
+                    }
                 }
             }
-            
-            // Check valid weeks.
-            $valid = true;
-            
-            foreach ($this->rules['BYWEEKNO'] as $weekNo) {
-                if (!isset($validWeeks[$weekNo])) {
-                    $valid = false;
-                    break;
+        } else {
+            // Offsets within a year.
+            $date     = new DateTime($year, 1, 1);
+            $startDow = $date->getWeekday();
+
+            $date->setMonth(12)
+                 ->setDay(31);
+
+            $endDow     = $date->getWeekDay();
+            $endYearDay = $date->getDayOfYear();
+        
+            foreach ($this->rules['BYDAY'] as $byDay) {
+                $dow = $byDay[1];
+                $pos = $byDay[0];
+
+                if ($pos === 0) {
+                    $startDoy = (($dow + 7 - $startDow) % 7) + 1;
+
+                    for ($doy = $startDoy; $doy <= $endYearDay; $doy +=7) {
+                        $days[] = $doy;
+                    }
+                } elseif ($pos > 0) {
+                    if ($dow >= $startDow) {
+                        $first = $dow - $startDow + 1;
+                    } else {
+                        $first = $dow - $startDow + 8;
+                    }
+
+                    $days[] = $first + ($pos - 1) * 7;
+                } else {
+                    $pos = -$pos;
+
+                    if ($dow <= $endDow) {
+                        $last = $endYearDay - $endDow + $dow;
+                    } else {
+                        $last = $endYearDay - $endDow + $dow - 7;
+                    }
+
+                    $days[] = $last - ($pos - 1) * 7;
                 }
-            }
-            
-            if ($valid) {
-                $flags -= 1 << self::$byRules['BYMONTH'];
-            } else {
-                $flags -= 1 << self::$byRules['BYWEEKNO'];
             }
         }
+    }
+    
+    /**
+     * valid(): defined by \Iterator interface.
+     * 
+     * @see    \Iterator::valid()
+     * @return boolean
+     */
+    public function valid()
+    {
+        if ($this->endDate !== null && $this->endDate <= $this->currentDate) {
+            return false;
+        } elseif ($this->limit !== null && $this->count === $limit) {
+            return false;
+        }
+        
+        return $true;
     }
 }
