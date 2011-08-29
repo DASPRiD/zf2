@@ -108,6 +108,13 @@ class RecurrenceIterator implements Iterator
     protected $days;
     
     /**
+     * Day pointer.
+     * 
+     * @var integer
+     */
+    protected $dayPointer;
+    
+    /**
      * Create a new recurrence iterator.
      * 
      * @param  Recurrence $recurrence
@@ -191,13 +198,24 @@ class RecurrenceIterator implements Iterator
      */
     public function next()
     {
-        do {
-            switch ($this->frequency) {
-                case 'SECONDLY':
-                    $this->nextSecond();
-                    break;
-            }
-        } while(!$this->currentDateMatchesRules());
+        $this->nextSecond();
+    }
+    
+    /**
+     * valid(): defined by \Iterator interface.
+     * 
+     * @see    \Iterator::valid()
+     * @return boolean
+     */
+    public function valid()
+    {
+        if ($this->endDate !== null && $this->endDate <= $this->currentDate) {
+            return false;
+        } elseif ($this->limit !== null && $this->count === $limit) {
+            return false;
+        }
+        
+        return $true;
     }
     
     /**
@@ -207,27 +225,197 @@ class RecurrenceIterator implements Iterator
      */
     protected function nextSecond()
     {
-        $second    = $this->currentDate->getSecond();
-        $endOfData = false;
+        $second  = $this->currentDate->getSecond();
+        $minutes = null;
         
-        if ($this->rules['BYSECOND']) {
+        if ($this->frequency === 'SECONDLY') {
+            do {
+                $second += $this->interval;
+
+                if ($second > 59) {
+                    $minutes += round($second / 60);
+                    $second   = $second % 60;
+                }
+            } while(!$this->rules['BYSECOND'] || in_array($second, $this->rules['BYSECOND']));
+            
+            $this->currentDate->setSecond($second);
+        } elseif ($this->rules['BYSECOND']) {
             $this->rulePointers['BYSECOND']++;
             
-            if (!isset($this->rules[$this->rulePointers['BYSECOND']])) {
+            if (!isset($this->rules['BYSECOND'][$this->rulePointers['BYSECOND']])) {
                 $this->rulePointers['BYSECOND'] = 0;
-                $endOfData                      = true;
+                $minutes                        = 0;
             }
             
-            $this->currentDate->setSecond($this->rules[$this->rulePointers['BYSECOND']]);
-        } elseif (!$this->rules['BYSECOND'] && $this->frequency === 'SECONDLY') {
-            $this->incrementSecond();
+            $this->currentDate->setSecond($this->rules['BYSECOND'][$this->rulePointers['BYSECOND']]);
+        } else {
+            $minutes = 0;
         }
         
-        if ($this->rules['BYSECOND'] && $endOfData && $this->frequency === 'SECONDLY') {
-            $this->incrementMinute(true);
+        if ($minutes !== null) {
+            $this->nextMinute($minutes);
+        }
+    }
+    
+    /**
+     * Next minute.
+     * 
+     * @param  integer $increment
+     * @return void
+     */
+    protected function nextMinute($increment)
+    {
+        $minute = $this->currentDate->getMinute();
+        $hours  = null;
+        
+        if ($increment > 0) {
+            $minute += $increment;
+            
+            if ($minute > 59) {
+                $hours  = round($minute / 60);
+                $minute = $minute % 60;
+            }
+        }
+
+        if ($this->frequency === 'MINUTELY') {
+            do {
+                $minute += $this->interval;
+
+                if ($minute > 59) {
+                    $hours  += round($minute / 60);
+                    $minute  = $minute % 60;
+                }
+            } while(!$this->rules['BYMINUTE'] || in_array($minute, $this->rules['BYMINUTE']));
+            
+            $this->currentDate->setMinute($minute);
+        } elseif ($this->rules['BYMINUTE']) {
+            if ($hours > 0) {
+                $this->rulePointers['BYMINUTE'] = 0;
+            } elseif ($this->rules['BYMINUTE'][$this->rulePointers['BYMINUTE']] < $minute) {
+                while ($this->rules['BYMINUTE'][$this->rulePointers['BYMINUTE']] <= $minute) {
+                    $this->rulePointers['BYMINUTE']++;
+            
+                    if (!isset($this->rules['BYMINUTE'][$this->rulePointers['BYMINUTE']])) {
+                        $this->rulePointers['BYMINUTE'] = 0;
+                        $hours                          = 1;
+                        break;
+                    }
+                }
+            } else {
+                $this->rulePointers['BYMINUTE']++;
+                
+                if (!isset($this->rules['BYMINUTE'][$this->rulePointers['BYMINUTE']])) {
+                    $this->rulePointers['BYMINUTE'] = 0;
+                    $hours                          = 1;
+                }
+            }
+
+            $this->currentDate->setMinute($this->rules['BYMINUTE'][$this->rulePointers['BYMINUTE']]);           
+        } else {
+            $hours = 0;
         }
         
-        return $endOfData;
+        if ($hours !== null) {
+            $this->nextHour($hours);
+        }
+    }
+    
+    /**
+     * Next hour.
+     * 
+     * @param  integer $increment
+     * @return void
+     */
+    protected function nextHour($increment)
+    {
+        $hour  = $this->currentDate->getHour();
+        $days  = null;
+        
+        if ($increment > 0) {
+            $hour += $increment;
+            
+            if ($hour > 23) {
+                $days = round($hour / 24);
+                $hour = $hour % 24;
+            }
+        }
+
+        if ($this->frequency === 'HOURLY') {
+            do {
+                $hour += $this->interval;
+
+                if ($hour > 23) {
+                    $days  += round($hour / 24);
+                    $hour   = $hour % 24;
+                }
+            } while(!$this->rules['BYHOUR'] || in_array($hour, $this->rules['BYHOUR']));
+            
+            $this->currentDate->setHour($hour);
+        } elseif ($this->rules['BYHOUR']) {
+            if ($days > 0) {
+                $this->rulePointers['BYHOUR'] = 0;
+            } elseif ($this->rules['BYHOUR'][$this->rulePointers['BYHOUR']] < $hour) {
+                while ($this->rules['BYHOUR'][$this->rulePointers['BYHOUR']] <= $hour) {
+                    $this->rulePointers['BYHOUR']++;
+            
+                    if (!isset($this->rules['BYHOUR'][$this->rulePointers['BYHOUR']])) {
+                        $this->rulePointers['BYHOUR'] = 0;
+                        $days                         = 1;
+                        break;
+                    }
+                }
+            } else {
+                $this->rulePointers['BYHOUR']++;
+                
+                if (!isset($this->rules['BYHOUR'][$this->rulePointers['BYHOUR']])) {
+                    $this->rulePointers['BYHOUR'] = 0;
+                    $days                         = 1;
+                }
+            }
+
+            $this->currentDate->setHour($this->rules['BYHOUR'][$this->rulePointers['BYHOUR']]);           
+        } else {
+            $days = 0;
+        }
+        
+        if ($days !== null) {
+            $this->nextDay($days);
+        }
+    }
+    
+    /**
+     * Next day.
+     * 
+     * @param  integer $increment
+     * @return void
+     */
+    protected function nextDay($increment)
+    {
+        if ($this->frequency === 'YEARLY') {
+            $this->dayPointer++;
+            
+            if (!isset($this->days[$this->dayPointer])) {
+                $this->nextYear();
+            } else {
+                $this->currentDate->setDay($this->days[$this->dayPointer]);
+            }
+            
+            return;
+        }
+    }
+    
+    /**
+     * Next year.
+     * 
+     * @return void
+     */
+    protected function nextYear()
+    {
+        $year = $this->currentDate->getYear();
+        
+        if ($this->frequency === 'YEARLY') {
+            
+        }
     }
     
     /**
@@ -504,22 +692,5 @@ class RecurrenceIterator implements Iterator
                 }
             }
         }
-    }
-    
-    /**
-     * valid(): defined by \Iterator interface.
-     * 
-     * @see    \Iterator::valid()
-     * @return boolean
-     */
-    public function valid()
-    {
-        if ($this->endDate !== null && $this->endDate <= $this->currentDate) {
-            return false;
-        } elseif ($this->limit !== null && $this->count === $limit) {
-            return false;
-        }
-        
-        return $true;
     }
 }
