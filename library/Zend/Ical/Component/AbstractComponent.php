@@ -24,7 +24,9 @@
  */
 namespace Zend\Ical\Component;
 
-use Zend\Ical\Property\PropertyList;
+use Zend\Ical\Exception,
+    Zend\Ical\Property\PropertyList,
+    Zend\Ical\Property\Value;
 
 /**
  * Abstract component.
@@ -115,5 +117,28 @@ abstract class AbstractComponent
         }
 
         return self::$nameToTypeMap[$name];
+    }
+    
+    /**
+     * Get the value of a single instance property.
+     * 
+     * @param  string $name
+     * @return mixed
+     */
+    public function getPropertyValue($name)
+    {
+        $property = $this->properties()->get($name);
+        
+        if ($property === null) {
+            return null;
+        }
+        
+        $value = $property->getValue();
+        
+        if ($value instanceof Value\Text) {
+            return $value->getText();
+        }
+        
+        return null;
     }
 }

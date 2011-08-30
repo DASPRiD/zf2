@@ -63,7 +63,7 @@ abstract class AbstractOffsetComponent extends AbstractComponent
         return $this->properties()->get('TZOFFSETFROM');
     }
     
-    public function getOffsetFrom()
+    public function getOffsetTo()
     {
         return $this->properties()->get('TZOFFSETTO');
     }

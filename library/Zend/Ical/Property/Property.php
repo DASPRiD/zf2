@@ -68,9 +68,9 @@ class Property
 
         // Date and time properties
         'COMPLETED' => array('DateTime'),
-        'DTEND'     => array('DateTime', 'Date'),
-        'DUE'       => array('DateTime', 'Date'),
-        'DTSTART'   => array('DateTime', 'Date'),
+        'DTEND'     => array('DateTime'),
+        'DUE'       => array('DateTime'),
+        'DTSTART'   => array('DateTime'),
         'DURATION'  => array('Duration'),
         'FREEBUSY'  => array('Period'),
         'TRANSP'    => array('Text'),
@@ -86,14 +86,14 @@ class Property
         'ATTENDEE'      => array('CalAddress'),
         'CONTACT'       => array('Text'),
         'ORGANIZER'     => array('CalAddress'),
-        'RECURRENCE-ID' => array('DateTime', 'Date'),
+        'RECURRENCE-ID' => array('DateTime'),
         'RELATED-TO'    => array('Text'),
         'URL'           => array('Uri'),
         'UID'           => array('Text'),
 
         // Recurrence properties
-        'EXDATE' => array('DateTime', 'Date'),
-        'RDATE'  => array('DateTime', 'Date', 'Period'),
+        'EXDATE' => array('DateTime'),
+        'RDATE'  => array('DateTime', 'Period'),
         'RRULE'  => array('Recurrence'),
 
         // Alarm properties

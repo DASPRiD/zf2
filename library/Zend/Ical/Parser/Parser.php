@@ -229,7 +229,7 @@ class Parser
                     break;
             }
         }
-        
+
         $this->components->top()->properties()->add($property->setValue($value));
     }
 
@@ -496,7 +496,7 @@ class Parser
         $value     = null;
         $className = 'Zend\Ical\Property\Value\\' . $valueType;
 
-        if (null !== ($value = $className::fromString($string))) {
+        if (null === ($value = $className::fromString($string))) {
             throw new Exception\ParseException(sprintf('Value of property %s doesn\'t match %s type', $propertyName, $valueType));
         }
         

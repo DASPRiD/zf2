@@ -24,6 +24,8 @@
  */
 namespace Zend\Ical\Property\Value;
 
+use Zend\Ical\Exception;
+
 /**
  * Recurrence value.
  *
@@ -499,11 +501,11 @@ class Recurrence implements Value
                 $value = array((int) $match[1], $match[2]);
 
                 if ($value[0] < -53) {
-                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is lower than -53', $value));
+                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is lower than -53', $value[0]));
                 } elseif ($value[0] > 53) {
-                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is greater than 53', $value));
-                } elseif (!in_array($value[1], self::$weekdays)) {
-                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is not valid', $value));
+                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is greater than 53', $value[0]));
+                } elseif (!isset(self::$weekdays[$value[1]])) {
+                    throw new Exception\InvalidArgumentException(sprintf('ByDay value "%s" is not valid', $value[1]));
                 }
                             
                 $values[] = $value;
@@ -908,6 +910,6 @@ class Recurrence implements Value
             return null;
         }
         
-        return $value;
+        return $self;
     }
 }

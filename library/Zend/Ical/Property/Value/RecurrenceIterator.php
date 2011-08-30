@@ -157,7 +157,7 @@ class RecurrenceIterator implements Iterator
     public function rewind()
     {
         $this->currentDate = clone $this->startDate;
-        $this->count       = 0;
+        $this->count       = 1;
         
         foreach ($this->rules as $key => $value) {
             $this->rulePointers[$key] = 0;
@@ -165,6 +165,17 @@ class RecurrenceIterator implements Iterator
         
         if ($this->frequency === 'YEARLY') {
             $this->expandYearDays();
+            
+            // In the first year, remove all days occuring before the start date.
+            $days       = $this->days;
+            $this->days = array();
+            $currentDoy = $this->startDate->getDayOfYear();
+            
+            foreach ($days as $day) {
+                if ($day >= $currentDoy) {
+                    $this->days[] = $day;
+                }
+            }
         }
     }
     
@@ -198,6 +209,7 @@ class RecurrenceIterator implements Iterator
      */
     public function next()
     {
+        $this->count++;
         $this->nextSecond();
     }
     
@@ -409,12 +421,19 @@ class RecurrenceIterator implements Iterator
      * 
      * @return void
      */
-    protected function nextYear()
+    protected function nextYear($increment)
     {
-        $year = $this->currentDate->getYear();
-        
         if ($this->frequency === 'YEARLY') {
+            do {
+                $year = $this->currentDate->getYear();
+                $this->currentDate->setYear($year + $this->interval);
+                $this->expandYearDays();
+            } while (count($this->days) === 0);
             
+            $this->currentDate->setDay($this->days[$this->dayPointer]);
+        } else {
+            $year  = $this->currentDate->getYear();
+            $this->currentDate->setYear($year + $increment);
         }
     }
     
@@ -424,12 +443,13 @@ class RecurrenceIterator implements Iterator
      * For YEARLY frequency, set up the days-array to list all of the days of
      * the current year that are specified in the rules.
      * 
-     * @param  integer $year
      * @return void
      */
-    protected function expandYearDays($year)
+    protected function expandYearDays()
     {
-        $this->days = array();
+        $year             = $this->currentDate->getYear();
+        $this->days       = array();
+        $this->dayPointer = 0;
         
         $flags = ($this->rules['BYDAY']      ? 0x01 : 0)
                + ($this->rules['BYWEEKNO']   ? 0x02 : 0)
@@ -441,7 +461,7 @@ class RecurrenceIterator implements Iterator
             // FREQ=YEARLY;
             case 0:
                 $date = clone $this->startDate;
-                $date->setYear($this->currentDate->getYear());
+                $date->setYear($year);
                 
                 // Make sure that we didn't hit February 29th when it doesn't exist.
                 if ($date->getDay() === $this->startDate->getDay()) {

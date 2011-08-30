@@ -176,14 +176,30 @@ class Calendar extends AbstractCustomContainerComponent
     /**
      * Add a timezone.
      * 
-     * @param  string   $timezoneId
      * @param  Timezone $timezone 
      * @return self
      */
-    public function addTimezone($timezoneId, Timezone $timezone)
+    public function addTimezone(Timezone $timezone)
     {
-        $this->timezones[$timezoneId] = $timezone;
+        $this->timezones[] = $timezone;
         return $this;
+    }
+    
+    /**
+     * Get a timezone.
+     * 
+     * @param  string $timezoneId
+     * @return Timezone
+     */
+    public function getTimezone($timezoneId)
+    {
+        foreach ($this->timezones as $timezone) {
+            if ($timezone->getPropertyValue('TZID') === $timezoneId) {
+                return $timezone;
+            }
+        }
+        
+        return null;        
     }
     
     /**
@@ -194,11 +210,13 @@ class Calendar extends AbstractCustomContainerComponent
      */
     public function removeTimezone($timezoneId)
     {
-        if (!isset($this->timezones[$timezoneId])) {
-            throw new OutOfBoundsException(sprintf('Timezone with ID "%s" does not exist', $timezoneId));
+        foreach ($this->timezones as $key => $timezone) {
+            if ($timezone->getPropertyValue('TZID') === $timezoneId) {
+                unset($this->timezones[$key]);
+                break;
+            }
         }
         
-        unset($this->timezones[$timezoneId]);
         return $this;
     }
 }

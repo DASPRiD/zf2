@@ -74,4 +74,16 @@ class Raw implements Value
     {
         return $this->string;
     }
+    
+    /**
+     * fromString(): defined by Value interface.
+     * 
+     * @see    Value::fromString()
+     * @param  string $string
+     * @return Value
+     */
+    public static function fromString($string)
+    {
+        return new self($string);
+    }
 }

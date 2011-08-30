@@ -1,0 +1,11 @@
+How to update the timezone information:
+
+1. Download Olson database (tzdata) from <ftp://elsie.nci.nih.gov/pub/>
+2. Download vzic from <http://code.google.com/p/tzurl/>
+3. Modify the vzic Makefile:
+   - Set OLSON_DIR to the path of the extracted tzdata
+   - Set PRODUCT_ID to "-//Zend//NONSGML Zend_Ical//EN"
+   - Set TZID_PREFIX to an empty string if not already done
+4. Compile vzic and execut it
+5. Remove all directories in this directory
+6. Copy all directories from the vzic/zoneinfo directory to this directory

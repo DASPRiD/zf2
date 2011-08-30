@@ -24,7 +24,9 @@
  */
 namespace Zend\Ical\Component;
 
-use Zend\Ical\Exception,
+use Zend\Ical\Ical,
+    Zend\Ical\Exception,
+    Zend\Ical\Property\Property,
     Zend\Ical\Property\Value;
 
 /**
@@ -38,6 +40,25 @@ use Zend\Ical\Exception,
  */
 class Timezone extends AbstractComponent
 {
+    /**
+     * Aliases for timezones which are not in the TZ database anymore.
+     * 
+     * @var array
+     */
+    protected static $timezoneAliases = array(
+        'Asia/Katmandu'                    => 'Asia/Kathmandu',
+        'Asia/Calcutta'                    => 'Asia/Kolkata',
+        'Asia/Saigon'                      => 'Asia/Ho_Chi_Minh',
+        'Africa/Asmera'                    => 'Africa/Asmara',
+        'Africa/Timbuktu'                  => 'Africa/Bamako',
+        'Atlantic/Faeroe'                  => 'Atlantic/Faroe',
+        'Atlantic/Jan_Mayen'               => 'Europe/Oslo',
+        'America/Argentina/ComodRivadavia' => 'America/Argentina/Catamarca',
+        'America/Louisville'               => 'America/Kentucky/Louisville',
+        'Europe/Belfast'                   => 'Europe/London',
+        'Pacific/Yap'                      => 'Pacific/Truk',
+    );
+    
     /**
      * Offsets.
      * 
@@ -54,6 +75,30 @@ class Timezone extends AbstractComponent
     public function getName()
     {
         return 'VTIMEZONE';
+    }
+    
+    /**
+     * Create a Timezone component from a timezone ID.
+     * 
+     * @param  string $timezoneId
+     * @return Timezone
+     */
+    public static function fromTimezoneId($timezoneId)
+    {
+        if (isset(self::$timezoneAliases[$timezoneId])) {
+            $filename = self::$timezoneAliases[$timezoneId];
+        } else {
+            $filename = $timezoneId;
+        }
+        
+        $ical     = Ical::fromUri(__DIR__ . '/../Data/Timezones/' . $filename . '.ics');
+        $timezone = $ical->getCalendar()->getTimezone($filename);
+        
+        if ($timezone->getPropertyValue('TZID') !== $timezoneId) {
+            $timezone->properties()->get('TZID')->setText($timezoneId);
+        }
+        
+        return $timezone;
     }
     
     /**
@@ -106,37 +151,5 @@ class Timezone extends AbstractComponent
     public function getOffsets()
     {
         return $this->offsets;
-    }
-    
-    /**
-     * Get timezone ID.
-     * 
-     * @return string
-     */
-    public function getTimezoneId()
-    {
-        $id = $this->properties()->get('TZID');
-        
-        if ($id !== null && $id instanceof Value\Text) {
-            return $id->getText();
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Get timezone name.
-     * 
-     * @return string
-     */
-    public function getTimezoneName()
-    {
-        $name = $this->properties()->get('TZNAME');
-        
-        if ($name !== null && $name instanceof Value\Text) {
-            return $name->getText();
-        }
-        
-        return null;
     }
 }

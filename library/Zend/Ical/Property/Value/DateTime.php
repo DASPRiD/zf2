@@ -103,14 +103,14 @@ class DateTime implements Value
      * 
      * @var boolean
      */
-    protected $isUtc;
+    protected $isUtc = false;
     
     /**
      * Whether this DateTime has no time.
      * 
      * @var boolean
      */
-    protected $isDate;
+    protected $isDate = false;
     
     /**
      * Create a new datetime value.
@@ -551,10 +551,14 @@ class DateTime implements Value
      */
     public static function fromString($string)
     {
-        if (!preg_match('(^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})T(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?<UTC>Z)?$)S', $string, $match)) {
+        if (!preg_match('(^(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<timepart>T(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?<UTC>Z)?)?$)S', $string, $match)) {
             return null;
         }
         
-        return new self($match, isset($match['UTC']));
+        if (isset($match['timepart'])) {
+            return new self($match['year'], $match['month'], $match['day'], $match['hour'], $match['minute'], $match['second'], isset($match['UTC']));
+        } else {
+            return new self($match['year'], $match['month'], $match['day']);
+        }
     }
 }

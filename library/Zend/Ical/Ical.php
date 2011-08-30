@@ -34,6 +34,11 @@ use Zend\Ical\Component,
  */
 class Ical
 {
+    /**
+     * List of calendars.
+     * 
+     * @var array 
+     */
     protected $calendars = array();
 
     /**
@@ -45,6 +50,24 @@ class Ical
     public function addCalendar(Component\Calendar $calendar)
     {
         $this->calendars[] = $calendar;
+    }
+    
+    /**
+     * Get a calendar with a specific index.
+     * 
+     * Usually, an Ical object will only consist of a single calendar, so the
+     * default value for $index is 0.
+     * 
+     * @param  integer $index
+     * @return Component\Calendar
+     */
+    public function getCalendar($index = 0)
+    {
+        if (isset($this->calendars[$index])) {
+            return $this->calendars[$index];
+        }
+        
+        return null;
     }
 
     /**
