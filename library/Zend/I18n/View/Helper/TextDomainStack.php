@@ -70,7 +70,6 @@ class TextDomainStack extends AbstractHelper implements TranslatorAwareInterface
             $translator->setDefaultTextDomain($textDomain);
         }
 
-        $this->stack->push($translator->getDefaultTextDomain());
         return $this;
     }
 
@@ -139,11 +138,6 @@ class TextDomainStack extends AbstractHelper implements TranslatorAwareInterface
             throw new Exception\RuntimeException('Translator has not been set');
         }
 
-        if (count($this->stack)) {
-            $this->stack->pop();
-        }
-
-        $this->stack->push($textDomain);
         $translator->setDefaultTextDomain($textDomain);
         return $this;
     }
@@ -200,7 +194,7 @@ class TextDomainStack extends AbstractHelper implements TranslatorAwareInterface
             throw new Exception\RuntimeException('Translator has not been set');
         }
 
-        $this->stack->push($textDomain);
+        $this->stack->push($translator->getDefaultTextDomain());
         $translator->setDefaultTextDomain($textDomain);
     }
 

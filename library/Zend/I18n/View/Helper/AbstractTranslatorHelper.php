@@ -34,7 +34,7 @@ abstract class AbstractTranslatorHelper extends AbstractHelper implements
      *
      * @var string
      */
-    protected $translatorTextDomain = 'default';
+    protected $translatorTextDomain;
 
     /**
      * Whether translator should be used
@@ -111,10 +111,10 @@ abstract class AbstractTranslatorHelper extends AbstractHelper implements
     /**
      * Set translation text domain
      *
-     * @param  string $textDomain
+     * @param  string|null $textDomain
      * @return AbstractTranslatorHelper
      */
-    public function setTranslatorTextDomain($textDomain = 'default')
+    public function setTranslatorTextDomain($textDomain)
     {
         $this->translatorTextDomain = $textDomain;
         return $this;
