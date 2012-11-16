@@ -68,7 +68,7 @@ class TranslatePluralTest extends \PHPUnit_Framework_TestCase
                            $this->equalTo($singularInput),
                            $this->equalTo($pluralInput),
                            $this->equalTo($numberInput),
-                           $this->equalTo('default'),
+                           $this->equalTo(null),
                            $this->equalTo(null)
                        )
                        ->will($this->returnValue($expected));

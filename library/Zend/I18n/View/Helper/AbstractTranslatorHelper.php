@@ -114,7 +114,7 @@ abstract class AbstractTranslatorHelper extends AbstractHelper implements
      * @param  string|null $textDomain
      * @return AbstractTranslatorHelper
      */
-    public function setTranslatorTextDomain($textDomain)
+    public function setTranslatorTextDomain($textDomain = null)
     {
         $this->translatorTextDomain = $textDomain;
         return $this;

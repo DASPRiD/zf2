@@ -62,7 +62,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
         $translatorMock = $this->getMock('Zend\I18n\Translator\Translator');
         $translatorMock->expects($this->once())
                        ->method('translate')
-                       ->with($this->equalTo($input), $this->equalTo('default'), $this->equalTo(null))
+                       ->with($this->equalTo($input), $this->equalTo(null), $this->equalTo(null))
                        ->will($this->returnValue($expected));
 
         $this->helper->setTranslator($translatorMock);
