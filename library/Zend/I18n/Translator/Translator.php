@@ -57,6 +57,13 @@ class Translator
     protected $remote = array();
 
     /**
+     * Default text domain to use if none is specified.
+     *
+     * @var string
+     */
+    protected $defaultTextDomain = 'default';
+
+    /**
      * Default locale.
      *
      * @var string
@@ -304,6 +311,28 @@ class Translator
     }
 
     /**
+     * Set the defualt text domain.
+     *
+     * @param string $textDomain
+     * @return Translator
+     */
+    public function setDefaultTextDomain($textDomain)
+    {
+        $this->defaultTextDomain = $textDomain;
+        return $this;
+    }
+
+    /**
+     * Get the default text domain.
+     *
+     * @return string
+     */
+    public function getDefaultTextDomain()
+    {
+        return $this->defaultTextDomain;
+    }
+
+    /**
      * Translate a message.
      *
      * @param  string $message
@@ -311,9 +340,10 @@ class Translator
      * @param  string $locale
      * @return string
      */
-    public function translate($message, $textDomain = 'default', $locale = null)
+    public function translate($message, $textDomain = null, $locale = null)
     {
         $locale      = ($locale ?: $this->getLocale());
+        $textDomain  = ($textDomain ?: $this->getDefaultTextDomain());
         $translation = $this->getTranslatedMessage($message, $locale, $textDomain);
 
         if ($translation !== null && $translation !== '') {
@@ -344,10 +374,11 @@ class Translator
         $singular,
         $plural,
         $number,
-        $textDomain = 'default',
+        $textDomain = null,
         $locale = null
     ) {
         $locale      = $locale ?: $this->getLocale();
+        $textDomain  = ($textDomain ?: $this->getDefaultTextDomain());
         $translation = $this->getTranslatedMessage($singular, $locale, $textDomain);
 
         if ($translation === null || $translation === '') {
